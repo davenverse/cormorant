@@ -1,0 +1,10 @@
+target/
+.idea/
+# vim
+*.sw?
+
+.DS_Store
+**/.DS_Store
+
+# Ignore [ce]tags files
+tags
