@@ -1,7 +1,7 @@
 package io.chrisdavenport.cormorant
 
 trait Get[A]{
-  def read(string: CSV.Field): Either[DecodeFailure, A]
+  def read(string: CSV.Field): Either[Error.DecodeFailure, A]
 }
 
 object Get {
