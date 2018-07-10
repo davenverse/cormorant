@@ -1,7 +1,11 @@
-lazy val core = project.in(file("."))
-    .settings(commonSettings)
+lazy val cormorant = project.in(file("."))
+  .settings(skipOnPublishSettings)
+  .aggregate(core)
+
+lazy val core = project.in(file("modules/core"))
+    .settings(commonSettings, releaseSettings, mimaSettings)
     .settings(
-      name := "cormorant"
+      name := "cormorant-core"
     )
 
 val catsV = "1.1.0"
