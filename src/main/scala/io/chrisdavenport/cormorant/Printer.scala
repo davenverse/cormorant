@@ -38,6 +38,7 @@ object Printer {
     }
 
   def default: Printer = generic(",", "\n", "\\", "\"")
+  def tsv: Printer = generic("\t", "\n", "\\", "\"")
 
 
 }
