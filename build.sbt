@@ -5,11 +5,11 @@ lazy val core = project.in(file("."))
     )
 
 val catsV = "1.1.0"
-val shapelessV = "2.3.2"
+val shapelessV = "2.3.3"
 
-val specs2V = "4.2.0"
-val disciplineV = "0.8"
-val scShapelessV = "1.1.6"
+val specs2V = "4.3.1"
+val disciplineV = "0.10.0"
+val scShapelessV = "1.1.8"
 
 
 lazy val contributors = Seq(
