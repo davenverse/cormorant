@@ -69,5 +69,4 @@ object PrinterSpec extends Specification {
     Printer.default.print(csv) should_=== expectedCSVString
   }
 
-
 }
