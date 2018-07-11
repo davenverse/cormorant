@@ -7,7 +7,8 @@ trait Put[A]{
 }
 
 object Put {
-  def apply[A](ev: Put[A]): Put[A] = ev
+  def apply[A](implicit ev: Put[A]): Put[A] = ev
+
   def by[A](f: A => CSV.Field): Put[A] =
     new Put[A]{
       def put(a: A): CSV.Field = f(a)
