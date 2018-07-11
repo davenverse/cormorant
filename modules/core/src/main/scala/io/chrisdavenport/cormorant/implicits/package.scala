@@ -5,3 +5,4 @@ package object implicits
   with syntax.printer
   with syntax.write
   with syntax.labelledwrite
+  with syntax.read

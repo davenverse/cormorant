@@ -8,7 +8,7 @@ trait labelledwrite {
   }
 
   implicit class labelledWriteListOps[A: LabelledWrite](xs: List[A]){
-    def encode: CSV.Complete = Encoding.encode(xs)
+    def encodeCSV: CSV.Complete = Encoding.encode(xs)
   }
 
 }
