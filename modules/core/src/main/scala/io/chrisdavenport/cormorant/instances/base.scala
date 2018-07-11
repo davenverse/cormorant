@@ -34,17 +34,29 @@ trait base {
   implicit val javaCharGet: Get[java.lang.Character] = charGet.map(java.lang.Character.valueOf)
   implicit val javaCharPut: Put[java.lang.Character] = charPut.contramap(_.charValue())
 
-  implicit val intGet: Get[Int] = Get.tryOrMessage[Int](
-    field => Try(field.x.toInt), 
-    field => s"Failed to decode Int: Received Field $field"
+  implicit val floatGet: Get[Float] = Get.tryOrMessage(
+    field => Try(field.x.toDouble.toFloat),
+    field => s"Failed to decode Float: Received Field $field"
   )
-  implicit val intPut: Put[Int] = stringPut.contramap(_.toString)
+  implicit val floatPut: Put[Float] = stringPut.contramap(_.toString)
+
+  implicit val javaFloatGet : Get[java.lang.Float] = floatGet.map(java.lang.Float.valueOf)
+  implicit val javaFolatPut : Put[java.lang.Float] = floatPut.contramap(_.floatValue())
 
   implicit val doubleGet: Get[Double] = Get.tryOrMessage[Double](
     field => Try(field.x.toDouble),
     field => s"Failed to decode Double: Received Field $field"
   )
   implicit val doublePut: Put[Double] = stringPut.contramap(_.toString)
+
+  implicit val javaDoubleGet : Get[java.lang.Double] = doubleGet.map(java.lang.Double.valueOf)
+  implicit val javaDoublePut : Put[java.lang.Double] = doublePut.contramap(_.doubleValue())
+
+  implicit val intGet: Get[Int] = Get.tryOrMessage[Int](
+    field => Try(field.x.toInt), 
+    field => s"Failed to decode Int: Received Field $field"
+  )
+  implicit val intPut: Put[Int] = stringPut.contramap(_.toString)
 
   implicit def optionGet[A: Get]: Get[Option[A]] = new Get[Option[A]]{
     def get(field: CSV.Field): Either[Error.DecodeFailure, Option[A]] = 
