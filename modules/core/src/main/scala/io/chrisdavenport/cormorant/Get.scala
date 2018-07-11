@@ -3,6 +3,7 @@ package io.chrisdavenport.cormorant
 import scala.util.Try
 
 import cats.Functor
+import cats.implicits._
 
 trait Get[A]{
   def get(field: CSV.Field):Either[Error.DecodeFailure, A]
@@ -13,7 +14,7 @@ object Get {
 
   def by[A](f: CSV.Field => A): Get[A] = new Get[A]{
     def get(field: CSV.Field): Either[Error.DecodeFailure, A] =
-      Right(f(field))
+      Either.right(f(field))
   }
 
   def tryOrMessage[A](f: CSV.Field => Try[A], failedMessage: CSV.Field => String): Get[A] =
@@ -21,7 +22,7 @@ object Get {
       def get(field: CSV.Field): Either[Error.DecodeFailure, A] =
         f(field)
           .toOption
-          .fold[Either[Error.DecodeFailure, A]](Left(Error.DecodeFailure(failedMessage(field))))(x => Right(x))
+          .fold[Either[Error.DecodeFailure, A]](Either.left(Error.DecodeFailure(failedMessage(field))))(x => Either.right(x))
     }
 
   implicit val getFunctor: Functor[Get] = new Functor[Get]{
