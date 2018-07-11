@@ -22,7 +22,7 @@ object Get {
       def get(field: CSV.Field): Either[Error.DecodeFailure, A] =
         f(field)
           .toOption
-          .fold[Either[Error.DecodeFailure, A]](Either.left(Error.DecodeFailure(failedMessage(field))))(x => Either.right(x))
+          .fold[Either[Error.DecodeFailure, A]](Either.left(Error.DecodeFailure.single(failedMessage(field))))(x => Either.right(x))
     }
 
   implicit val getFunctor: Functor[Get] = new Functor[Get]{

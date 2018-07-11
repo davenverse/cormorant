@@ -1,7 +1,6 @@
 package io.chrisdavenport.cormorant
 
 import cats.data.Validated
-import cats.data.ValidatedNel
 
 trait Read[A]{
   def read(a: CSV.Row): Either[Error.DecodeFailure, A]
@@ -18,26 +17,26 @@ object Read {
     }
 
     def atHeader(header: String)
-                (headers: CSV.Headers, row: CSV.Row): ValidatedNel[Error.DecodeFailure, CSV.Field] = {
-        optionIndexOf(headers.l)(CSV.Header(header)).fold(
-          Validated.invalidNel[Error.DecodeFailure, Int](Error.DecodeFailure(s"Header $header not present in header: $headers for row: $row"))
-        )(Validated.validNel[Error.DecodeFailure, Int])
+                (headers: CSV.Headers, row: CSV.Row): Validated[Error.DecodeFailure, CSV.Field] = {
+        optionIndexOf(headers.l)(CSV.Header(header)).fold[Validated[Error.DecodeFailure, Int]](
+          Validated.invalid(Error.DecodeFailure.single(s"Header $header not present in header: $headers for row: $row"))
+        )(Validated.valid)
           .andThen(i => atIndex(row, i))
     }
 
-    def atIndex(row: CSV.Row, index: Int): ValidatedNel[Error.DecodeFailure, CSV.Field] = {
+    def atIndex(row: CSV.Row, index: Int): Validated[Error.DecodeFailure, CSV.Field] = {
       row.l.drop(index - 1).headOption.fold(
-        Validated.invalidNel[Error.DecodeFailure, CSV.Field](Error.DecodeFailure(s"Index $index not present in row: $row "))
-      )(Validated.validNel[Error.DecodeFailure, CSV.Field])
+        Validated.invalid[Error.DecodeFailure, CSV.Field](Error.DecodeFailure.single(s"Index $index not present in row: $row "))
+      )(Validated.valid[Error.DecodeFailure, CSV.Field])
     }
 
-    def decodeAtHeader[A: Get](header: String)(headers: CSV.Headers, row: CSV.Row): ValidatedNel[Error.DecodeFailure, A] = 
+    def decodeAtHeader[A: Get](header: String)(headers: CSV.Headers, row: CSV.Row): Validated[Error.DecodeFailure, A] = 
       atHeader(header)(headers, row)
-        .andThen(Get[A].get(_).fold(Validated.invalidNel, Validated.validNel))
+        .andThen(Get[A].get(_).fold(Validated.invalid, Validated.valid))
   
-    def decodeAtIndex[A: Get](row: CSV.Row, index: Int): ValidatedNel[Error.DecodeFailure, A] = 
+    def decodeAtIndex[A: Get](row: CSV.Row, index: Int): Validated[Error.DecodeFailure, A] = 
       atIndex(row,index)
-        .andThen(Get[A].get(_).fold(Validated.invalidNel, Validated.validNel))
+        .andThen(Get[A].get(_).fold(Validated.invalid, Validated.valid))
 
   }
 

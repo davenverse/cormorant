@@ -1,5 +1,10 @@
 package io.chrisdavenport.cormorant
 
+import cats.data.NonEmptyList
+import cats.Semigroup
+
+import cats.implicits._
+
 sealed trait Error extends Exception {
   final override def fillInStackTrace(): Throwable = this
 }
@@ -10,9 +15,17 @@ object Error {
       ParseFailure(s"Invalid Input: Received $input")
   }
 
-  final case class DecodeFailure(failure :String) extends Error
+  final case class DecodeFailure(failure : NonEmptyList[String]) extends Error
   object DecodeFailure {
+    def single(reason: String): DecodeFailure = DecodeFailure(NonEmptyList.of(reason))
+    implicit val decodeFailureSemigroup: Semigroup[DecodeFailure] = {
+      new Semigroup[DecodeFailure]{
+        def combine(x: DecodeFailure, y: DecodeFailure): DecodeFailure = 
+          DecodeFailure(x.failure |+| y.failure)
+      }
+    }
   }
+
 
   final case class PrintFailure(reason: String) extends Error
 
