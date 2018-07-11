@@ -1,5 +1,5 @@
 lazy val cormorant = project.in(file("."))
-  .settings(commonSettings, skipOnPublishSettings)
+  .settings(commonSettings, releaseSettings, skipOnPublishSettings)
   .aggregate(core)
 
 lazy val core = project.in(file("modules/core"))
