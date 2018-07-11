@@ -1,6 +1,6 @@
 package io.chrisdavenport.cormorant
 
-import io.chrisdavenport.cormorant.syntax._
-
-package object implicits extends printer
-  with write
+package object implicits 
+  extends instances.base
+  with syntax.printer
+  with syntax.write

@@ -8,6 +8,15 @@ lazy val core = project.in(file("modules/core"))
       name := "cormorant-core"
     )
 
+lazy val generic = project.in(file("modules/generic"))
+  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(
+    name := "cormorant-generic",
+    libraryDependencies ++= Seq(
+      "com.chuusai" %% "shapeless" % "2.3.3"
+    )
+  )
+
 val catsV = "1.1.0"
 val shapelessV = "2.3.3"
 
