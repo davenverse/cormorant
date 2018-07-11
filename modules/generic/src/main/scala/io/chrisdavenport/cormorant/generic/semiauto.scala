@@ -3,6 +3,8 @@ package io.chrisdavenport.cormorant.generic
 import io.chrisdavenport.cormorant._
 import shapeless._
 import shapeless.labelled._
+import cats.implicits._
+import cats.data.Validated
 
 object semiauto {
   implicit val hnilWrite : Write[HNil]= new Write[HNil]{
@@ -46,5 +48,36 @@ object semiauto {
       def headers: CSV.Headers = writeH.headers
       def write(a: A): CSV.Row = writeH.write(gen.to(a))
     }
+
+  implicit val readHNil: Read[HNil] = new Read[HNil]{
+    def read(a: CSV.Row): Either[Error.DecodeFailure, HNil] = 
+      if (a.l.isEmpty) Right(HNil)
+      else Left(Error.DecodeFailure.single(s"Unexpected Input: Did Not Expect - $a"))
+  }
+
+  implicit def hlistRead[H, T <: HList](
+    implicit G: Get[H], R : Lazy[Read[T]]
+  ): Read[H :: T] = new Read[H :: T]{
+    def read(a: CSV.Row): Either[Error.DecodeFailure, H :: T] = {
+      val headOption = a.l.headOption
+      val validated: Validated[Error.DecodeFailure, H :: T] = 
+        Validated.fromOption[Error.DecodeFailure, CSV.Field](
+          headOption, 
+          Error.DecodeFailure.single("Unexpected End Of Input")
+        ).andThen(h => 
+          (G.get(h).toValidated, R.value.read(CSV.Row(a.l.tail)).toValidated).mapN(_ :: _)
+        )
+      validated.toEither
+    }
+  }
+
+  def deriveRead[A, R](
+    implicit gen: Generic.Aux[A, R],
+    R: Lazy[Read[R]]
+  ): Read[A] = new Read[A]{
+    def read(a: CSV.Row): Either[Error.DecodeFailure, A] =
+      R.value.read(a).map(gen.from)
+  }
+
 
 }
