@@ -5,8 +5,8 @@ import shapeless._
 import shapeless.labelled._
 
 object semiauto {
-  implicit def baseWrite[A: Put]: Write[A :: HNil]= new Write[A :: HNil]{
-    def write(a: A :: HNil): CSV.Row = CSV.Row(List(Put[A].put(a.head)))
+  implicit val hnilWrite : Write[HNil]= new Write[HNil]{
+    def write(a: HNil): CSV.Row = CSV.Row(List())
   }
   implicit def hlistWrite[H, T <: HList](
     implicit P: Put[H], W: Write[T]
