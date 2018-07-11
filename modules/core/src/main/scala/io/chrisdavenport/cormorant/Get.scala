@@ -6,7 +6,7 @@ import cats.Functor
 import cats.implicits._
 
 trait Get[A]{
-  def get(field: CSV.Field):Either[Error.DecodeFailure, A]
+  def get(field: CSV.Field) : Either[Error.DecodeFailure, A]
 }
 
 object Get {
