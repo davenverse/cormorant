@@ -8,6 +8,13 @@ trait base {
   implicit val stringGet: Get[String] = Get.by(_.x)
   implicit val stringPut: Put[String] = Put.by(CSV.Field(_))
 
+  implicit val unitGet : Get[Unit] = new Get[Unit]{
+    def get(csv: CSV.Field): Either[Error.DecodeFailure, Unit] = 
+      if (csv.x == "") Right(())
+      else Left(Error.DecodeFailure.single("Failed to decode Unit: Received Field $field"))
+  }
+  implicit val unitPut : Put[Unit] = stringPut.contramap(_ => "")
+
   implicit val intGet: Get[Int] = Get.tryOrMessage[Int](
     field => Try(field.x.toInt), 
     field => s"Failed to decode Int: Received Field $field"
