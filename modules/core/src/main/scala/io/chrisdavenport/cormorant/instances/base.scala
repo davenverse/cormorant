@@ -15,6 +15,25 @@ trait base {
   }
   implicit val unitPut : Put[Unit] = stringPut.contramap(_ => "")
 
+  implicit val boolGet: Get[Boolean] = Get.tryOrMessage[Boolean](
+    field => Try(field.x.toBoolean),
+    field => s"Failed to decode Boolean: Received Field $field"
+  )
+  implicit val boolPut: Put[Boolean] = stringPut.contramap(_.toString)
+
+  implicit val javaBoolGet = boolGet.map(java.lang.Boolean.valueOf)
+  implicit val javaBoolPut: Put[java.lang.Boolean] = boolPut.contramap(_.booleanValue())
+
+  implicit val charGet : Get[Char] = new Get[Char]{
+    def get(csv: CSV.Field): Either[Error.DecodeFailure, Char] = 
+      if (csv.x.size == 1) Right(csv.x.charAt(0))
+      else Left(Error.DecodeFailure.single("Failed to decode Char: Received Field $field"))
+  }
+  implicit val charPut: Put[Char] = stringPut.contramap(_.toString)
+
+  implicit val javaCharGet: Get[java.lang.Character] = charGet.map(java.lang.Character.valueOf)
+  implicit val javaCharPut: Put[java.lang.Character] = charPut.contramap(_.charValue())
+
   implicit val intGet: Get[Int] = Get.tryOrMessage[Int](
     field => Try(field.x.toInt), 
     field => s"Failed to decode Int: Received Field $field"
