@@ -9,7 +9,7 @@ lazy val core = project.in(file("modules/core"))
     )
 
 lazy val generic = project.in(file("modules/generic"))
-  .settings(commonSettings, skipOnPublishSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings, mimaSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-generic",
