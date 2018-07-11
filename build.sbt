@@ -1,5 +1,5 @@
 lazy val cormorant = project.in(file("."))
-  .settings(skipOnPublishSettings)
+  .settings(commonSettings, skipOnPublishSettings)
   .aggregate(core)
 
 lazy val core = project.in(file("modules/core"))
@@ -45,7 +45,6 @@ lazy val commonSettings = Seq(
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4"),
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
-    "com.chuusai"                 %% "shapeless"                  % shapelessV,
     
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
