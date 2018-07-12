@@ -79,6 +79,35 @@ trait base {
   implicit val javaIntegerGet: Get[java.lang.Integer] = intGet.map(java.lang.Integer.valueOf)
   implicit val javaIntegerPut: Put[java.lang.Integer] = intPut.contramap(_.intValue())
 
+  implicit val longGet: Get[Long] = Get.tryOrMessage(
+    field => Try(field.x.toLong),
+    field => s"Failed to decode Long: Received Field $field"
+  )
+  implicit val longPut: Put[Long] = stringPut.contramap(_.toString)
+  
+  implicit val javaLongGet: Get[java.lang.Long] = longGet.map(java.lang.Long.valueOf)
+  implicit val javaLongPut: Put[java.lang.Long] = longPut.contramap(_.longValue())
+
+  implicit val bigIntGet : Get[BigInt] = Get.tryOrMessage(
+    field => Try(BigInt(field.x)),
+    field => s"Failed to decode BigInt: Received Field $field"
+  )
+  implicit val bigIntPut: Put[BigInt] = stringPut.contramap(_.toString)
+
+  implicit val javaBigIntegerGet : Get[java.math.BigInteger] = 
+    bigIntGet.map(_.bigInteger)
+  implicit val javaBigIntegerPut: Put[java.math.BigInteger] = bigIntPut.contramap(BigInt.apply)
+
+  implicit val bigDecimalGet : Get[BigDecimal] = Get.tryOrMessage[BigDecimal](
+    field => Try(BigDecimal(field.x)),
+    field => s"Failed to decode BigDecimal: Received Field $field"
+  )
+  implicit val bigDecimalPut: Put[BigDecimal] = stringPut.contramap(_.toString)
+
+  implicit val javaBigDecimalGet : Get[java.math.BigDecimal] = bigDecimalGet.map(_.bigDecimal)
+  implicit val javaBigDecimalPut : Put[java.math.BigDecimal] = bigDecimalPut.contramap(BigDecimal.apply)
+
+
   implicit def optionGet[A: Get]: Get[Option[A]] = new Get[Option[A]]{
     def get(field: CSV.Field): Either[Error.DecodeFailure, Option[A]] = 
       if (field.x == "") Right(Option.empty[A])
@@ -87,8 +116,5 @@ trait base {
   implicit def optionPut[A](implicit P: Put[A]): Put[Option[A]] = new Put[Option[A]]{
     def put(a: Option[A]): CSV.Field = a.fold(CSV.Field(""))(a => P.put(a))
   }
-
-
-
 
 }
