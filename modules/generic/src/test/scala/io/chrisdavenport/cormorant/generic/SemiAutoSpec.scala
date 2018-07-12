@@ -63,9 +63,8 @@ class SemiAutoSpec extends Specification {
       CSV.Headers(List(CSV.Header("b"), CSV.Header("s"), CSV.Header("i"))),
       CSV.Rows(List(CSV.Row(List(CSV.Field("73"), CSV.Field("Hello"), CSV.Field("1")))))
     )
-
     val expected = List(Example(1, Option("Hello"), 73)).map(Either.right)
-
+    
     Decoding.readLabelled[Example](fromCSV) must_=== expected
   }
 }
