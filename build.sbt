@@ -48,9 +48,9 @@ lazy val commonSettings = Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
     
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
-    "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
-    "org.typelevel"               %% "discipline"                 % disciplineV   % Test,
-    "com.github.alexarchambault"  %% "scalacheck-shapeless_1.13"  % scShapelessV  % Test
+    // "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
+    // "org.typelevel"               %% "discipline"                 % disciplineV   % Test,
+    // "com.github.alexarchambault"  %% "scalacheck-shapeless_1.13"  % scShapelessV  % Test
   )
 )
 

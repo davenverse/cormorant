@@ -1,7 +1,7 @@
 package io.chrisdavenport.cormorant.generic
 import org.specs2._
 
-object AutoSpec extends Specification {
+class AutoSpec extends Specification {
   override def is = s2"""
   encode a row with Write automatically $rowGenericallyDerived
   encode a comple with LabelledWrite automatically $rowNameDerived
