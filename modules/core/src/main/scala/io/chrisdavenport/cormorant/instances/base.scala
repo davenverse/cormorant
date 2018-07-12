@@ -4,6 +4,8 @@ import cats.implicits._
 import io.chrisdavenport.cormorant._
 import scala.util.Try
 
+import java.util.UUID
+
 trait base {
   implicit val stringGet: Get[String] = Get.by(_.x)
   implicit val stringPut: Put[String] = Put.by(CSV.Field(_))
@@ -107,6 +109,11 @@ trait base {
   implicit val javaBigDecimalGet : Get[java.math.BigDecimal] = bigDecimalGet.map(_.bigDecimal)
   implicit val javaBigDecimalPut : Put[java.math.BigDecimal] = bigDecimalPut.contramap(BigDecimal.apply)
 
+  implicit val uuidGet : Get[UUID] = Get.tryOrMessage[UUID](
+    field => Try(UUID.fromString(field.x)),
+    field => s"Failed to decode UUID: Received Field $field"
+  )
+  implicit val uuidPut : Put[UUID] = stringPut.contramap(_.toString)
 
   implicit def optionGet[A: Get]: Get[Option[A]] = new Get[Option[A]]{
     def get(field: CSV.Field): Either[Error.DecodeFailure, Option[A]] = 
