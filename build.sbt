@@ -1,6 +1,6 @@
 lazy val cormorant = project.in(file("."))
   .settings(commonSettings, releaseSettings, skipOnPublishSettings)
-  .aggregate(core, generic)
+  .aggregate(core, generic, parser)
 
 lazy val core = project.in(file("modules/core"))
     .settings(commonSettings, releaseSettings, mimaSettings)
@@ -15,6 +15,16 @@ lazy val generic = project.in(file("modules/generic"))
     name := "cormorant-generic",
     libraryDependencies ++= Seq(
       "com.chuusai" %% "shapeless" % "2.3.3"
+    )
+  )
+
+lazy val parser = project.in(file("modules/parser"))
+  .settings(commonSettings, releaseSettings, mimaSettings)
+  .dependsOn(core)
+  .settings(
+    name := "cormorant-parser",
+    libraryDependencies ++= Seq(
+      "org.tpolecat" %% "atto-core" % "0.6.2"
     )
   )
 

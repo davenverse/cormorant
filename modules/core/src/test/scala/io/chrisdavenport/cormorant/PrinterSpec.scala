@@ -5,9 +5,8 @@ import org.specs2._
 object PrinterSpec extends Specification {
   override def is = s2"""
   Print a simple csv $simpleCSVPrint
-  Print headers with a surrounded header $headerSurroundedCorrectly
-  Print headers with an escaped header $headerEscapedCorrectly
   Printer field with a surrounded field $fieldSurroundedCorrectly
+  Printer field with escaped field $fieldEscapedCorrectly
   """
 
   def simpleCSVPrint = {
@@ -31,29 +30,6 @@ object PrinterSpec extends Specification {
     Printer.default.print(csv) should_=== expectedCSVString
   }
 
-  def headerSurroundedCorrectly = {
-    val csv = CSV.Headers(
-      List(
-        CSV.Header("Food"),
-        CSV.Header("Snow, John"),
-        CSV.Header("Garbledy")
-      )
-    )
-    val expectedCSVString = """Food,"Snow, John",Garbledy"""
-    Printer.default.print(csv) should_=== expectedCSVString
-  }
-
-  def headerEscapedCorrectly = {
-    val csv = CSV.Headers(
-      List(
-        CSV.Header("Food"),
-        CSV.Header("Snow, \"John\""),
-        CSV.Header("Garbledy")
-      )
-    )
-    val expectedCSVString = """Food,"Snow, \"John\"",Garbledy"""
-    Printer.default.print(csv) should_=== expectedCSVString
-  }
 
   def fieldSurroundedCorrectly = {
     val csv = CSV.Field("Snow, John")
@@ -64,7 +40,7 @@ object PrinterSpec extends Specification {
 
   def fieldEscapedCorrectly = {
     val csv = CSV.Field("Snow, \"John\"")
-    val expectedCSVString = "\"Snow, \\\"John\\\""
+    val expectedCSVString = "\"Snow, \"\"John\"\"\""
     
     Printer.default.print(csv) should_=== expectedCSVString
   }

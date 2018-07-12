@@ -29,7 +29,8 @@ object Printer {
     new Printer {
       def print(csv: CSV): String = csv match {
         case CSV.Field(text) => escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
-        case CSV.Header(text) => escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
+        // Headers Are Not Escaped in Specification
+        case CSV.Header(text) => text
         case CSV.Row(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Headers(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Rows(xs) => xs.map(print).intercalate(rowSeperator)
@@ -37,7 +38,7 @@ object Printer {
       }
     }
 
-  def default: Printer = generic(",", "\n", "\\", "\"")
-  def tsv: Printer = generic("\t", "\n", "\\", "\"")
+  def default: Printer = generic(",", "\n", "\"", "\"")
+  def tsv: Printer = generic("\t", "\n", "\"", "\"")
 
 }
