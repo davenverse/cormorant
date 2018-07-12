@@ -7,3 +7,4 @@ package object implicits
   with syntax.write
   with syntax.labelledwrite
   with syntax.read
+  with syntax.labelledread

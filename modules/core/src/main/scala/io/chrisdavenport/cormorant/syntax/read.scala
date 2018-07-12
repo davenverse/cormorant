@@ -4,14 +4,14 @@ import io.chrisdavenport.cormorant._
 
 trait read {
   implicit class readRow(csv: CSV.Row){
-    def read[A: Read]: Either[Error.DecodeFailure, A] = Read[A].read(csv)
+    def readRow[A: Read]: Either[Error.DecodeFailure, A] = Decoding.readRow(csv)
   }
   implicit class readRows(csv: CSV.Rows){
-    def readAll[A: Read]: List[Either[Error.DecodeFailure, A]] = csv.rows.map(Read[A].read)
+    def readRows[A: Read]: List[Either[Error.DecodeFailure, A]] = Decoding.readRows(csv)
   }
 
   implicit class readComplete(csv: CSV.Complete){
-    def readAll[A: Read]: List[Either[Error.DecodeFailure, A]] = csv.rows.rows.map(Read[A].read)
+    def readComplete[A: Read]: List[Either[Error.DecodeFailure, A]] = csv.rows.rows.map(Read[A].read)
   }
 }
 

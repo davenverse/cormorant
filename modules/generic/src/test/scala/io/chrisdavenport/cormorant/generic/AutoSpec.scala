@@ -42,7 +42,7 @@ class AutoSpec extends Specification {
     case class Example(i: Int, s: Option[String], b: Int)
     val from = CSV.Row(List(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))
     val expected = Example(1, Some("Hello"), 73)
-    from.read[Example] must_=== Right(expected) 
+    from.readRow[Example] must_=== Right(expected) 
   }
 
 
