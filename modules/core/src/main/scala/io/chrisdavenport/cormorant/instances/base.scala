@@ -124,4 +124,25 @@ trait base {
     def put(a: Option[A]): CSV.Field = a.fold(CSV.Field(""))(a => P.put(a))
   }
 
+  /**
+    * Get for Either, favors the Right get if successful
+    **/
+  implicit def eitherGet[A: Get, B: Get]: Get[Either[A, B]] = new Get[Either[A, B]]{
+    def get(field: CSV.Field): Either[Error.DecodeFailure, Either[A, B]] = 
+      (Get[A].get(field), Get[B].get(field)) match {
+        case (_, Right(b)) => Either.right(Either.right(b))
+        case (Right(a), _) => Either.right(Either.left(a))
+        case (Left(e1), Left(e2)) => Either.left(e1 |+| e2)
+      }
+  }
+  implicit def eitherPut[A: Put, B: Put]: Put[Either[A, B]] = new Put[Either[A, B]]{
+    def put(a: Either[A, B]): CSV.Field = a.fold(Put[A].put, Put[B].put)
+  }
+
+  final def enumerationGet[E <: Enumeration](e: E): Get[E#Value] = Get.tryOrMessage(
+    field => Try(e.withName(field.x)),
+    field => s"Failed to decode Enumeration $e: Received Field $field"
+  )
+  final def enumerationPut[E <: Enumeration](e: E): Put[E#Value] = stringPut.contramap(_.toString)
+
 }
