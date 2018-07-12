@@ -52,11 +52,32 @@ trait base {
   implicit val javaDoubleGet : Get[java.lang.Double] = doubleGet.map(java.lang.Double.valueOf)
   implicit val javaDoublePut : Put[java.lang.Double] = doublePut.contramap(_.doubleValue())
 
+  implicit val byteGet : Get[Byte] = Get.tryOrMessage[Byte](
+    field => Try(field.x.toByte),
+    field => s"Failed to decode Byte: Received Field $field"
+  )
+  implicit val bytePut: Put[Byte] = intPut.contramap(_.toInt)
+
+  implicit val javaByteGet : Get[java.lang.Byte] = byteGet.map(java.lang.Byte.valueOf)
+  implicit val javaBytePut : Put[java.lang.Byte] = bytePut.contramap(_.byteValue())
+
+  implicit val shortGet : Get[Short] = Get.tryOrMessage[Short](
+    field => Try(field.x.toShort),
+    field => s"Failed to decode Short: Received Field $field"
+  )
+  implicit val shortPut: Put[Short] = stringPut.contramap(_.toString)
+
+  implicit val javaShortGet : Get[java.lang.Short] = shortGet.map(java.lang.Short.valueOf)
+  implicit val javaShortPut : Put[java.lang.Short] = shortPut.contramap(_.shortValue())
+
   implicit val intGet: Get[Int] = Get.tryOrMessage[Int](
     field => Try(field.x.toInt), 
     field => s"Failed to decode Int: Received Field $field"
   )
   implicit val intPut: Put[Int] = stringPut.contramap(_.toString)
+
+  implicit val javaIntegerGet: Get[java.lang.Integer] = intGet.map(java.lang.Integer.valueOf)
+  implicit val javaIntegerPut: Put[java.lang.Integer] = intPut.contramap(_.intValue())
 
   implicit def optionGet[A: Get]: Get[Option[A]] = new Get[Option[A]]{
     def get(field: CSV.Field): Either[Error.DecodeFailure, Option[A]] = 
