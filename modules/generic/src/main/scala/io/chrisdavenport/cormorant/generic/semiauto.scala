@@ -79,7 +79,30 @@ object semiauto {
       R.value.read(a).map(gen.from)
   }
 
+  implicit val labelledReadHNil : LabelledRead[HNil] = new LabelledRead[HNil]{
+    def read(a: CSV.Row, h: CSV.Headers):Either[Error.DecodeFailure, HNil] = Either.right(HNil)
+  }
 
+  implicit def deriveLabelledReadHList[K <: Symbol, H, T <: HList](
+    implicit witness: Witness.Aux[K],
+    P: Lazy[Get[H]],
+    labelledRead: LabelledRead[T]
+  ): LabelledRead[FieldType[K, H] :: T] = new LabelledRead[FieldType[K, H] :: T]{
+    def read(a: CSV.Row, h: CSV.Headers): Either[Error.DecodeFailure, FieldType[K, H] :: T] = {
+      implicit val getAvailable: Get[H] = P.value
 
+      (Read.cursor.decodeAtHeader[H](CSV.Header(witness.value.name))(h, a).map(field[K](_)), labelledRead.read(a, h).toValidated)
+        .mapN(_ :: _)
+        .toEither
+    }
+  }
+
+  def deriveLabelledRead[A, H <: HList](implicit gen: LabelledGeneric.Aux[A, H], hlw: Lazy[LabelledRead[H]])
+    : LabelledRead[A] = new LabelledRead[A]{
+      val readH: LabelledRead[H] = hlw.value
+      def read(a: CSV.Row, h: CSV.Headers): Either[Error.DecodeFailure, A] = {
+        readH.read(a, h).map(gen.from)
+      }
+    }
 
 }

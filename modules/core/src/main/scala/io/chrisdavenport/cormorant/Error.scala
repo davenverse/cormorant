@@ -15,7 +15,9 @@ object Error {
       ParseFailure(s"Invalid Input: Received $input")
   }
 
-  final case class DecodeFailure(failure : NonEmptyList[String]) extends Error
+  final case class DecodeFailure(failure : NonEmptyList[String]) extends Error {
+    override def toString: String = s"DecodeFailure($failure)"
+  }
   object DecodeFailure {
     def single(reason: String): DecodeFailure = DecodeFailure(NonEmptyList.of(reason))
     implicit val decodeFailureSemigroup: Semigroup[DecodeFailure] = {

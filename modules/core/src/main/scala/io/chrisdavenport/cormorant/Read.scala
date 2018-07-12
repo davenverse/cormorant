@@ -16,21 +16,21 @@ object Read {
       else Some(temp)
     }
 
-    def atHeader(header: String)
+    def atHeader(header: CSV.Header)
                 (headers: CSV.Headers, row: CSV.Row): Validated[Error.DecodeFailure, CSV.Field] = {
-        optionIndexOf(headers.l)(CSV.Header(header)).fold[Validated[Error.DecodeFailure, Int]](
+        optionIndexOf(headers.l)(header).fold[Validated[Error.DecodeFailure, Int]](
           Validated.invalid(Error.DecodeFailure.single(s"Header $header not present in header: $headers for row: $row"))
         )(Validated.valid)
           .andThen(i => atIndex(row, i))
     }
 
     def atIndex(row: CSV.Row, index: Int): Validated[Error.DecodeFailure, CSV.Field] = {
-      row.l.drop(index - 1).headOption.fold(
+      row.l.drop(index).headOption.fold(
         Validated.invalid[Error.DecodeFailure, CSV.Field](Error.DecodeFailure.single(s"Index $index not present in row: $row "))
       )(Validated.valid[Error.DecodeFailure, CSV.Field])
     }
 
-    def decodeAtHeader[A: Get](header: String)(headers: CSV.Headers, row: CSV.Row): Validated[Error.DecodeFailure, A] = 
+    def decodeAtHeader[A: Get](header: CSV.Header)(headers: CSV.Headers, row: CSV.Row): Validated[Error.DecodeFailure, A] = 
       atHeader(header)(headers, row)
         .andThen(Get[A].get(_).fold(Validated.invalid, Validated.valid))
   

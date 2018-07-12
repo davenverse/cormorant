@@ -37,4 +37,14 @@ object auto {
     R: Lazy[Read[R]]
   ): Read[A] = semiauto.deriveRead[A, R]
 
+  implicit val labelledReadHNil : LabelledRead[HNil] = semiauto.labelledReadHNil
+  implicit def deriveLabelledReadHList[K <: Symbol, H, T <: HList](
+    implicit witness: Witness.Aux[K],
+    P: Lazy[Get[H]],
+    labelledRead: LabelledRead[T]
+  ): LabelledRead[FieldType[K, H] :: T] = semiauto.deriveLabelledReadHList
+
+  implicit def deriveLabelledRead[A, H <: HList](implicit gen: LabelledGeneric.Aux[A, H], hlw: Lazy[LabelledRead[H]])
+    : LabelledRead[A] = semiauto.deriveLabelledRead
+
 }

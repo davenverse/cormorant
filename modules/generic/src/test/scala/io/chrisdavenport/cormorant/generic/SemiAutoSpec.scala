@@ -6,6 +6,7 @@ class SemiAutoSpec extends Specification {
   encode a write row correctly $rowGenericallyDerived
   encode a labelledWrite complete correctly $rowNameDerived
   read a correctly encoded row $readRowDerived
+  read a labelledRead row by name $nameBasedReadDerived
   """
 
   def rowGenericallyDerived = {
@@ -46,5 +47,25 @@ class SemiAutoSpec extends Specification {
     val from = CSV.Row(List(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))
     val expected = Example(1, Some("Hello"), 73)
     Read[Example].read(from) must_=== Right(expected) 
+  }
+
+  def nameBasedReadDerived = {
+    import _root_.io.chrisdavenport.cormorant._
+    import _root_.io.chrisdavenport.cormorant.implicits._
+    import _root_.io.chrisdavenport.cormorant.generic.semiauto._
+    import cats.syntax.either._
+
+    case class Example(i: Int, s: Option[String], b: Int)
+    implicit val labelledReadExampled : LabelledRead[Example] = deriveLabelledRead
+
+    // Notice That the order is different than the example above
+    val fromCSV = CSV.Complete(
+      CSV.Headers(List(CSV.Header("b"), CSV.Header("s"), CSV.Header("i"))),
+      CSV.Rows(List(CSV.Row(List(CSV.Field("73"), CSV.Field("Hello"), CSV.Field("1")))))
+    )
+
+    val expected = List(Example(1, Option("Hello"), 73)).map(Either.right)
+
+    Decoding.readLabelled[Example](fromCSV) must_=== expected
   }
 }
