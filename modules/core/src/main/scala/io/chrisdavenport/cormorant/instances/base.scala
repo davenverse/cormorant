@@ -143,6 +143,7 @@ trait base {
     field => Try(e.withName(field.x)),
     field => s"Failed to decode Enumeration $e: Received Field $field"
   )
-  final def enumerationPut[E <: Enumeration](e: E): Put[E#Value] = stringPut.contramap(_.toString)
+  final def enumerationPut[E <: Enumeration]: Put[E#Value] = stringPut.contramap(_.toString)
+
 
 }
