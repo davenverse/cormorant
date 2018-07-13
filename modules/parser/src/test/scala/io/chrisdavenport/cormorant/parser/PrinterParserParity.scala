@@ -8,7 +8,7 @@ import org.scalacheck._
 class PrinterParserParity extends mutable.Specification with ScalaCheck {
 
   implicit val arbField : Arbitrary[CSV.Field] = Arbitrary(
-    Gen.listOf(Gen.asciiChar).map(_.mkString).map(CSV.Field.apply)
+    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Field.apply)
   )
   implicit val arbRow: Arbitrary[CSV.Row] = Arbitrary(
     for {
@@ -25,7 +25,7 @@ class PrinterParserParity extends mutable.Specification with ScalaCheck {
   )
 
   implicit val arbHeader : Arbitrary[CSV.Header] = Arbitrary(
-    Gen.listOf(Gen.asciiChar).map(_.mkString).map(CSV.Header.apply)
+    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Header.apply)
   )
 
   implicit val arbHeaders : Arbitrary[CSV.Headers] = Arbitrary(
