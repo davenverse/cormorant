@@ -51,7 +51,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(commonSettings, releaseSettings, mimaSettings)
   .dependsOn(core % "compile;test->test", parser)
   .settings(
-    name := "coromorant-fs2",
+    name := "cormorant-fs2",
     libraryDependencies ++= Seq(
       "co.fs2" %% "fs2-core" % "0.10.5" 
     )
