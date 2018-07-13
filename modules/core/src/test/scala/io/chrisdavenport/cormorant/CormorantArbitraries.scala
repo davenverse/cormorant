@@ -4,7 +4,7 @@ import org.scalacheck._
 
 trait CormorantArbitraries {
     implicit val arbField : Arbitrary[CSV.Field] = Arbitrary(
-    Gen.listOf(Gen.asciiChar).map(_.mkString).map(CSV.Field.apply)
+    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Field.apply)
   )
   implicit val arbRow: Arbitrary[CSV.Row] = Arbitrary(
     for {
@@ -13,7 +13,7 @@ trait CormorantArbitraries {
     } yield CSV.Row(field :: list)
   )
 
-  implicit val arbRows :Arbitrary[CSV.Rows] = Arbitrary(
+  implicit val arbRows : Arbitrary[CSV.Rows] = Arbitrary(
     for {
       row <- Arbitrary.arbitrary[CSV.Row]
       l <- Gen.listOf(Arbitrary.arbitrary[CSV.Row])
@@ -21,7 +21,7 @@ trait CormorantArbitraries {
   )
 
   implicit val arbHeader : Arbitrary[CSV.Header] = Arbitrary(
-    Gen.listOf(Gen.asciiChar).map(_.mkString).map(CSV.Header.apply)
+    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Header.apply)
   )
 
   implicit val arbHeaders : Arbitrary[CSV.Headers] = Arbitrary(
