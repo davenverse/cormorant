@@ -12,8 +12,8 @@ import java.time.{
   OffsetTime,
   Period,
   YearMonth,
-  ZonedDateTime,
-  ZoneId
+  ZoneId,
+  ZonedDateTime
 }
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.{
@@ -56,13 +56,13 @@ trait time {
       field => Try(ZonedDateTime.parse(field.x, formatter)),
       field => s"Failed to decode ZonedDateTime: Received Field $field"
     )
-  final def putZonedDateTime(formatter: DateTimeFormatter): Put[ZonedDateTime] = 
+  final def putZonedDateTime(formatter: DateTimeFormatter): Put[ZonedDateTime] =
     base.stringPut.contramap(_.format(formatter))
 
   implicit final val zonedDateTimeGetDefault = getZonedDateTime(ISO_ZONED_DATE_TIME)
   implicit final val zonedDateTimePutDefault = putZonedDateTime(ISO_ZONED_DATE_TIME)
 
-  final def getOffsetDateTime(formatter: DateTimeFormatter): Get[OffsetDateTime] = 
+  final def getOffsetDateTime(formatter: DateTimeFormatter): Get[OffsetDateTime] =
     Get.tryOrMessage(
       field => Try(OffsetDateTime.parse(field.x, formatter)),
       field => s"Failed to decode OffsetDateTime: Received Field $field"
@@ -73,7 +73,7 @@ trait time {
   implicit final val offsetDateTimeGetDefault = getOffsetDateTime(ISO_OFFSET_DATE_TIME)
   implicit final val offsetDateTimePutDefault = putOffsetDateTime(ISO_OFFSET_DATE_TIME)
 
-  final def getLocalDate(formatter: DateTimeFormatter): Get[LocalDate] = 
+  final def getLocalDate(formatter: DateTimeFormatter): Get[LocalDate] =
     Get.tryOrMessage(
       field => Try(LocalDate.parse(field.x, formatter)),
       field => s"Failed to decode LocalDate: Received Field $field"
@@ -84,7 +84,7 @@ trait time {
   implicit final val localDateGetDefault = getLocalDate(ISO_LOCAL_DATE)
   implicit final val localDatePutDefault = putLocalDate(ISO_LOCAL_DATE)
 
-  final def getLocalTime(formatter: DateTimeFormatter): Get[LocalTime] = 
+  final def getLocalTime(formatter: DateTimeFormatter): Get[LocalTime] =
     Get.tryOrMessage(
       field => Try(LocalTime.parse(field.x, formatter)),
       field => s"Failed to decode LocalTime: Received Field $field"
@@ -106,7 +106,7 @@ trait time {
   implicit final val offsetTimeGetDefault = getOffsetTime(ISO_OFFSET_TIME)
   implicit final val offsetTimePutDefault = putOffsetTime(ISO_OFFSET_TIME)
 
-  final def getYearMonth(formatter: DateTimeFormatter): Get[YearMonth] = 
+  final def getYearMonth(formatter: DateTimeFormatter): Get[YearMonth] =
     Get.tryOrMessage(
       field => Try(YearMonth.parse(field.x, formatter)),
       field => s"Failed to decode YearMonth: Received Field $field"
@@ -122,7 +122,7 @@ trait time {
     field => Try(Period.parse(field.x)),
     field => s"Failed to decode Period: Received Field $field"
   )
-  implicit final val putPeriod: Put[Period] = 
+  implicit final val putPeriod: Put[Period] =
     base.stringPut.contramap(_.toString)
 
   implicit final val durationGet: Get[Duration] = Get.tryOrMessage(

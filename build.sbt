@@ -14,12 +14,7 @@ val scShapelessV = "1.1.8"
 lazy val core = project.in(file("modules/core"))
   .settings(commonSettings, releaseSettings, mimaSettings)
   .settings(
-    name := "cormorant-core",
-    libraryDependencies ++= Seq(
-      "org.typelevel"               %% "cats-core"                  % catsV,
-    
-      "org.specs2"                  %% "specs2-core"                % specs2V       % Test
-    )
+    name := "cormorant-core"
   )
 
 lazy val generic = project.in(file("modules/generic"))
@@ -70,7 +65,13 @@ lazy val commonSettings = Seq(
   crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
 
   addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.7" cross CrossVersion.binary),
-  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4")
+  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4"),
+
+  libraryDependencies ++= Seq(
+    "org.typelevel"               %% "cats-core"                  % catsV,
+    
+    "org.specs2"                  %% "specs2-core"                % specs2V       % Test
+  )
 )
 
 lazy val releaseSettings = {

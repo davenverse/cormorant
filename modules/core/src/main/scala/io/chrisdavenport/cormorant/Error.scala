@@ -11,25 +11,23 @@ sealed trait Error extends Exception {
 object Error {
   final case class ParseFailure(reason: String) extends Error
   object ParseFailure {
-    def invalidInput(input: String): ParseFailure = 
+    def invalidInput(input: String): ParseFailure =
       ParseFailure(s"Invalid Input: Received $input")
   }
 
-  final case class DecodeFailure(failure : NonEmptyList[String]) extends Error {
+  final case class DecodeFailure(failure: NonEmptyList[String]) extends Error {
     override def toString: String = s"DecodeFailure($failure)"
   }
   object DecodeFailure {
     def single(reason: String): DecodeFailure = DecodeFailure(NonEmptyList.of(reason))
     implicit val decodeFailureSemigroup: Semigroup[DecodeFailure] = {
-      new Semigroup[DecodeFailure]{
-        def combine(x: DecodeFailure, y: DecodeFailure): DecodeFailure = 
+      new Semigroup[DecodeFailure] {
+        def combine(x: DecodeFailure, y: DecodeFailure): DecodeFailure =
           DecodeFailure(x.failure |+| y.failure)
       }
     }
   }
 
-
   final case class PrintFailure(reason: String) extends Error
 
 }
-

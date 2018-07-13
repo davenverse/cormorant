@@ -9,27 +9,33 @@ trait Printer {
 object Printer {
   //
   private[cormorant] def escapedAsNecessary(
-    string: String,
-    columnSeperator: String, 
-    rowSeperator: String, 
-    escape: String,
-    surround: String
+      string: String,
+      columnSeperator: String,
+      rowSeperator: String,
+      escape: String,
+      surround: String
   ): String = {
 
-      if (string.contains(columnSeperator) || string.contains(rowSeperator)) {
-        val escapedString = string.replace(surround, escape + surround)
-        surround + escapedString + surround
-      } else {
-        string
-      }
+    if (string.contains(columnSeperator) || string.contains(rowSeperator)) {
+      val escapedString = string.replace(surround, escape + surround)
+      surround + escapedString + surround
+    } else {
+      string
+    }
 
   }
 
-  def generic(columnSeperator: String, rowSeperator: String, escape: String, surround: String): Printer = 
+  def generic(
+      columnSeperator: String,
+      rowSeperator: String,
+      escape: String,
+      surround: String): Printer =
     new Printer {
       def print(csv: CSV): String = csv match {
-        case CSV.Field(text) => escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
-        case CSV.Header(text) => escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
+        case CSV.Field(text) =>
+          escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
+        case CSV.Header(text) =>
+          escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
         case CSV.Row(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Headers(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Rows(xs) => xs.map(print).intercalate(rowSeperator)
