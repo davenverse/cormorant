@@ -22,7 +22,7 @@ package object refined {
             case Left(err) => Either.left(Error.DecodeFailure.single(err))
             case Right(ftp) => Either.right(ftp)
           }
-        case l@Left(d) => Either.left(d)
+        case Left(d) => Either.left(d)
       }
     
   }

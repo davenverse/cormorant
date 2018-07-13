@@ -3,7 +3,6 @@ package io.chrisdavenport.cormorant.instances
 import cats.implicits._
 import io.chrisdavenport.cormorant._
 import java.time.{
-  DateTimeException,
   Duration,
   Instant,
   LocalDate,
@@ -16,7 +15,7 @@ import java.time.{
   ZonedDateTime,
   ZoneId
 }
-import java.time.format.{ DateTimeFormatter, DateTimeParseException }
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.{
   ISO_LOCAL_DATE,
   ISO_LOCAL_DATE_TIME,
