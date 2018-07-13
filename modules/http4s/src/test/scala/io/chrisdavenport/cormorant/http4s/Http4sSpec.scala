@@ -22,7 +22,7 @@ class Http4sSpec extends CormorantSpec {
         case _ => Ok(rows)
       }
       val client = Client.fromHttpService(service)
-      client.expect[CSV.Complete]("").unsafeRunSync must_=== row
+      client.expect[CSV.Complete]("").unsafeRunSync must_=== rows
     }
   }
 }
