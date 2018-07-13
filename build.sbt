@@ -1,6 +1,6 @@
 lazy val cormorant = project.in(file("."))
   .settings(commonSettings, releaseSettings, skipOnPublishSettings)
-  .aggregate(core, generic, parser, refined, http4s)
+  .aggregate(core, generic, parser, refined, fs2, http4s)
 
 
 val catsV = "1.1.0"
@@ -44,6 +44,16 @@ lazy val refined = project.in(file("modules/refined"))
     name := "cormorant-refined",
     libraryDependencies ++= Seq(
       "eu.timepit" %% "refined" % "0.9.2",
+    )
+  )
+
+lazy val fs2 = project.in(file("modules/fs2"))
+  .settings(commonSettings, releaseSettings, mimaSettings)
+  .dependsOn(core, parser)
+  .settings(
+    name := "coromorant-fs2",
+    libraryDependencies ++= Seq(
+      "co.fs2" %% "fs2-core" % "0.10.5" 
     )
   )
 
