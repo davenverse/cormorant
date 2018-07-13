@@ -10,7 +10,7 @@ class CSVParserSpec extends mutable.Specification {
   // override def is = s2"""
   // Parse a simple csv header $parseASimpleCSVHeader
   // """
-  "CSVParserSpec" should {
+  "CSVParser" should {
     "parse a single header" in {
       val basicString = "Something,"
       val expect = CSV.Header("Something")
@@ -22,7 +22,6 @@ class CSVParserSpec extends mutable.Specification {
       val expect = CSV.Header("Something")
       
       CSVParser.name.parse(baseHeader) must_=== ParseResult.Done(",Something2,Something3", expect)
-      // (CSVParser.name, many(CSVParser.COMMA ~> CSVParser.name)).mapN(_ :: _).parse(baseHeader) must_=== ParseResult.Done("", expect)
     }
 
     "parse a group of headers" in {
@@ -50,27 +49,91 @@ class CSVParserSpec extends mutable.Specification {
       result must_== ParseResult.Done("", expect)
     }
 
-    // "complete a csv parse" in {
-    //   val csv = CSV.Complete(
-    //     CSV.Headers(
-    //       List(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
-    //     ),
-    //     CSV.Rows(
-    //       List(
-    //         CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
-    //         CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
-    //         CSV.Row(List(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
-    //       )
-    //     )
-    //   )
-    //   val expectedCSVString = """Color,Food,Number
-    //   |Blue,Pizza,1
-    //   |Red,Margarine,2
-    //   |Yellow,Broccoli,3""".stripMargin
+    "parse a row correctly" in {
+      val singleRow = "yellow,green,blue"
+      val expected = CSV.Row(
+        List(
+          CSV.Field("yellow"),
+          CSV.Field("green"),
+          CSV.Field("blue")
+        )
+      )
 
-    //   _root_.io.chrisdavenport.cormorant.parser.csv.parseComplete(expectedCSVString) must_=== Either.right(csv)
-    // } 
+      CSVParser.record.parse(singleRow).done.either must_=== Right(expected)
+    }
 
+    "parse rows correctly" in {
+      val csv = CSV.Rows(
+        List(
+          CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
+          CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2")))
+        )
+      )
+      val csvParse = """Blue,Pizza,1
+      |Red,Margarine,2""".stripMargin
+      CSVParser.fileBody.parse(csvParse).done.either must_=== Either.right(csv)
+    }
+
+    "complete a csv parse" in {
+      val csv = CSV.Complete(
+        CSV.Headers(
+          List(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
+        ),
+        CSV.Rows(
+          List(
+            CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
+            CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
+            CSV.Row(List(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
+          )
+        )
+      )
+      val expectedCSVString = """Color,Food,Number
+      |Blue,Pizza,1
+      |Red,Margarine,2
+      |Yellow,Broccoli,3""".stripMargin
+
+      CSVParser.`complete-file`.parse(expectedCSVString).done.either must_=== Either.right(csv)
+    }
+
+    "parse an escaped row with a comma" in {
+      val csv = CSV.Row(List(
+        CSV.Field("Green"),
+        CSV.Field("Yellow,Dog"),
+        CSV.Field("Blue")
+      ))
+      val parseString = "Green,\"Yellow,Dog\",Blue"
+      CSVParser.record.parse(parseString).done.either must_=== Either.right(csv)
+    }
+
+    "parse an escaped row with a double quote escaped" in {
+      val csv = CSV.Row(List(
+        CSV.Field("Green"),
+        CSV.Field("Yellow, \"Dog\""),
+        CSV.Field("Blue")
+      ))
+      val parseString = "Green,\"Yellow, \"\"Dog\"\"\",Blue"
+      CSVParser.record.parse(parseString).done.either must_=== Either.right(csv)
+    }
+
+    "parse an escaped row with embedded newline" in {
+      val csv = CSV.Row(List(
+        CSV.Field("Green"),
+        CSV.Field("Yellow\n Dog"),
+        CSV.Field("Blue")
+      ))
+      val parseString = "Green,\"Yellow\n Dog\",Blue"
+      CSVParser.record.parse(parseString).done.either must_=== Either.right(csv)
+    }
+
+    "parse an escaped row with embedded CRLF" in {
+      val csv = CSV.Row(List(
+        CSV.Field("Green"),
+        CSV.Field("Yellow\r\n Dog"),
+        CSV.Field("Blue")
+      ))
+      val parseString = "Green,\"Yellow\r\n Dog\",Blue"
+      CSVParser.record.parse(parseString).done.either must_=== Either.right(csv)
+    }
 
   }
 
