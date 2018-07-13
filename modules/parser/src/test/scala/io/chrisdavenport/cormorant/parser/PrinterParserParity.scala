@@ -1,4 +1,3 @@
-/**
 package io.chrisdavenport.cormorant.parser
 
 import cats.implicits._
@@ -34,4 +33,3 @@ class PrinterParserParity extends mutable.Specification with ScalaCheck {
   }
 
 }
-**/

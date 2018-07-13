@@ -10,32 +10,32 @@ object Printer {
   //
   private[cormorant] def escapedAsNecessary(
       string: String,
-      columnSeperator: String,
-      rowSeperator: String,
+      stringsToEscape: Set[String],
       escape: String,
       surround: String
   ): String = {
 
-    if (string.contains(columnSeperator) || string.contains(rowSeperator)) {
+    if (stringsToEscape.exists(string.contains(_))) {
       val escapedString = string.replace(surround, escape + surround)
       surround + escapedString + surround
     } else {
       string
     }
-
   }
+
 
   def generic(
       columnSeperator: String,
       rowSeperator: String,
       escape: String,
-      surround: String): Printer =
+      surround: String,
+      additionalEscapes: Set[String] = Set.empty[String]): Printer =
     new Printer {
       def print(csv: CSV): String = csv match {
         case CSV.Field(text) =>
-          escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
+          escapedAsNecessary(text, Set(columnSeperator, rowSeperator, escape, surround) ++ additionalEscapes, escape, surround)
         case CSV.Header(text) =>
-          escapedAsNecessary(text, columnSeperator, rowSeperator, escape, surround)
+          escapedAsNecessary(text, Set(columnSeperator, rowSeperator, escape, surround) ++ additionalEscapes, escape, surround)
         case CSV.Row(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Headers(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Rows(xs) => xs.map(print).intercalate(rowSeperator)
@@ -43,7 +43,7 @@ object Printer {
       }
     }
 
-  def default: Printer = generic(",", "\n", "\"", "\"")
-  def tsv: Printer = generic("\t", "\n", "\"", "\"")
+  def default: Printer = generic(",", "\n", "\"", "\"", Set("\r"))
+  def tsv: Printer = generic("\t", "\n", "\"", "\"", Set("\r"))
 
 }
