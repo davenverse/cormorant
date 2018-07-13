@@ -136,21 +136,4 @@ class CSVParserSpec extends mutable.Specification {
     }
 
   }
-
-  // def parseASingaleHeaderValueTillAComma = 
-
-  // def parseASimpleCSVHeader = {
-  //   val baseString = """Something,Something2,Something3
-  //   |Value1,Value2,Value3
-  //   """.stripMargin
-
-  //   val expected = CSV.Headers(
-  //     List(
-  //       CSV.Header("Something"),
-  //       CSV.Header("Something2"),
-  //       CSV.Header("Something3")
-  //     )
-  //   )
-  //   (CSVParser.header <~ takeRest).parse(baseString) must_== ParseResult.Done("\nValue1,Value2,Value3\n", expected)
-  // }
 }
