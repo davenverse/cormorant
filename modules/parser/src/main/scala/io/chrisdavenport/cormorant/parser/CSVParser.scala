@@ -137,10 +137,10 @@ object CSVParser {
       .named("CSV.Rows")
 
   // file = [header CRLF] record *(CRLF record) [CRLF]
-  val file: Parser[(Option[CSV.Headers], CSV.Rows)] =
-    (opt(header <~ PERMISSIVE_CRLF), fileBody)
-      .mapN((_, _))
-      .named("CSV Specification")
+  // val file: Parser[(Option[CSV.Headers], CSV.Rows)] =
+  //   (opt(header <~ PERMISSIVE_CRLF), fileBody)
+  //     .mapN((_, _))
+  //     .named("CSV Specification")
 
   val `complete-file`: Parser[CSV.Complete] =
     ((header <~ PERMISSIVE_CRLF), fileBody)
