@@ -5,7 +5,7 @@ import cats.implicits._
 
 package object fs2 {
   def parseRowsSafe[F[_]]: Pipe[F, String, Either[Error.ParseFailure, CSV.Row]] =
-    _.through(text.lines).map(parser.parseRow)
+    _.map(parser.parseRow)
   def parseRows[F[_]]: Pipe[F, String, CSV.Row] =
     _.through(parseRowsSafe).rethrow
 
@@ -28,7 +28,7 @@ package object fs2 {
           Pull.done
       }.stream
 
-      _.through(text.lines).through(partialParseComplete).flatMap(_.traverse{
+      _.through(partialParseComplete).flatMap(_.traverse{
         case (h, s) => s.map(s => (h, parser.parseRow(s)))
       })
     }
@@ -55,6 +55,10 @@ package object fs2 {
 
   def writeRows[F[_], A: Write](p: Printer): Pipe[F, A, String] = 
     _.map(Write[A].write).through(encodeRows(p))
+
+  def writeWithHeaders[F[_], A: Write](headers: CSV.Headers, p: Printer): Pipe[F, A, String] = s =>
+    Stream(p.print(headers)).covary[F] ++ Stream("\n") ++
+    s.through(writeRows(p))
 
   def writeLabelled[F[_], A: LabelledWrite](p: Printer): Pipe[F, A, String] = s =>
     Stream(p.print(LabelledWrite[A].headers)).covary[F] ++ Stream("\n") ++

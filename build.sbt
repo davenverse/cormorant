@@ -29,7 +29,7 @@ lazy val generic = project.in(file("modules/generic"))
 
 lazy val parser = project.in(file("modules/parser"))
   .settings(commonSettings, releaseSettings, mimaSettings)
-  .dependsOn(core)
+  .dependsOn(core % "compile;test->test")
   .settings(
     name := "cormorant-parser",
     libraryDependencies ++= Seq(
@@ -49,7 +49,7 @@ lazy val refined = project.in(file("modules/refined"))
 
 lazy val fs2 = project.in(file("modules/fs2"))
   .settings(commonSettings, releaseSettings, mimaSettings)
-  .dependsOn(core, parser)
+  .dependsOn(core % "compile;test->test", parser)
   .settings(
     name := "coromorant-fs2",
     libraryDependencies ++= Seq(
