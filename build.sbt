@@ -59,11 +59,13 @@ lazy val fs2 = project.in(file("modules/fs2"))
 
 lazy val http4s = project.in(file("modules/http4s"))
   .settings(commonSettings, releaseSettings, mimaSettings)
-  .dependsOn(core, parser, fs2)
+  .dependsOn(core % "compile;test->test", parser, fs2)
   .settings(
     name := "cormorant-http4s",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-core" % "0.18.15"
+      "org.http4s" %% "http4s-core"   % "0.18.15",
+      "org.http4s" %% "http4s-dsl"    % "0.18.15" % Test,
+      "org.http4s" %% "http4s-client" % "0.18.15" % Test
     )
   )
 

@@ -10,7 +10,7 @@ import org.http4s._
 
 package object http4s {
 
-  implicit def completeEntityEncoder[F[_]: Applicative](
+  implicit def completeEntityEncoder[F[_]: Applicative]( implicit 
     printer: Printer = Printer.default, 
     mediaType: MediaType = MediaType.`text/csv`
   ): EntityEncoder[F, CSV.Complete] = {
@@ -19,17 +19,17 @@ package object http4s {
       Entity(Stream(printer.print(csvComplete)).through(text.utf8Encode).covary[F]).pure[F]
     )
   }
-  implicit def rowsEntityEncoder[F[_]: Applicative](
+  implicit def rowsEntityEncoder[F[_]: Applicative]( implicit
     printer: Printer = Printer.default, 
     mediaType: MediaType = MediaType.`text/csv`
-  ): EntityEncoder[F, CSV.Complete] = {
+  ): EntityEncoder[F, CSV.Rows] = {
     val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
-    EntityEncoder.encodeBy(Headers(contentTypeHeader))(csvComplete =>
-      Entity(Stream(printer.print(csvComplete)).through(text.utf8Encode).covary[F]).pure[F]
+    EntityEncoder.encodeBy(Headers(contentTypeHeader))(csvRows =>
+      Entity(Stream(printer.print(csvRows)).through(text.utf8Encode).covary[F]).pure[F]
     )
   }
 
-  implicit def streamEncodeRows[F[_]: Applicative](
+  implicit def streamEncodeRows[F[_]: Applicative]( implicit
     p: Printer = Printer.default, 
     mediaType: MediaType = MediaType.`text/csv`
   ): EntityEncoder[F, Stream[F, CSV.Row]] = {
@@ -44,10 +44,11 @@ package object http4s {
   }
   
   def streamEncodeWrite[F[_]: Applicative, A: Write](
+    implicit 
     p: Printer = Printer.default, 
     mediaType: MediaType = MediaType.`text/csv`
   ): EntityEncoder[F, Stream[F, A]] = 
-    streamEncodeRows[F](p, mediaType).contramap(_.map(Write[A].write))
+    streamEncodeRows[F].contramap(_.map(Write[A].write))
 
   def streamEncodeLabelledWrite[F[_]: Applicative, A: LabelledWrite](
     p: Printer = Printer.default, 
