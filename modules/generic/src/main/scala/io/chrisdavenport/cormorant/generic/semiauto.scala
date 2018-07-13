@@ -91,7 +91,7 @@ object semiauto {
     def read(a: CSV.Row, h: CSV.Headers): Either[Error.DecodeFailure, FieldType[K, H] :: T] = {
       implicit val getAvailable: Get[H] = P.value
 
-      (Read.cursor.decodeAtHeader[H](CSV.Header(witness.value.name))(h, a).map(field[K](_)), labelledRead.read(a, h).toValidated)
+      (Cursor.decodeAtHeader[H](CSV.Header(witness.value.name))(h, a).map(field[K](_)), labelledRead.read(a, h).toValidated)
         .mapN(_ :: _)
         .toEither
     }
