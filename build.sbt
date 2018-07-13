@@ -1,12 +1,26 @@
 lazy val cormorant = project.in(file("."))
   .settings(commonSettings, releaseSettings, skipOnPublishSettings)
-  .aggregate(core, generic, parser)
+  .aggregate(core, generic, parser, refined)
+
+
+val catsV = "1.1.0"
+val shapelessV = "2.3.3"
+
+val specs2V = "4.3.2"
+val disciplineV = "0.10.0"
+val scShapelessV = "1.1.8"
+
 
 lazy val core = project.in(file("modules/core"))
-    .settings(commonSettings, releaseSettings, mimaSettings)
-    .settings(
-      name := "cormorant-core"
+  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(
+    name := "cormorant-core",
+    libraryDependencies ++= Seq(
+      "org.typelevel"               %% "cats-core"                  % catsV,
+    
+      "org.specs2"                  %% "specs2-core"                % specs2V       % Test
     )
+  )
 
 lazy val generic = project.in(file("modules/generic"))
   .settings(commonSettings, releaseSettings, mimaSettings)
@@ -28,12 +42,15 @@ lazy val parser = project.in(file("modules/parser"))
     )
   )
 
-val catsV = "1.1.0"
-val shapelessV = "2.3.3"
-
-val specs2V = "4.3.2"
-val disciplineV = "0.10.0"
-val scShapelessV = "1.1.8"
+lazy val refined = project.in(file("modules/refined"))
+  .settings(commonSettings, releaseSettings, mimaSettings)
+  .dependsOn(core)
+  .settings(
+    name := "cormorant-refined",
+    libraryDependencies ++= Seq(
+      "eu.timepit" %% "refined" % "0.9.2",
+    )
+  )
 
 
 lazy val contributors = Seq(
@@ -53,15 +70,7 @@ lazy val commonSettings = Seq(
   crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
 
   addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.7" cross CrossVersion.binary),
-  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4"),
-  libraryDependencies ++= Seq(
-    "org.typelevel"               %% "cats-core"                  % catsV,
-    
-    "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
-    // "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
-    // "org.typelevel"               %% "discipline"                 % disciplineV   % Test,
-    // "com.github.alexarchambault"  %% "scalacheck-shapeless_1.13"  % scShapelessV  % Test
-  )
+  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4")
 )
 
 lazy val releaseSettings = {
