@@ -6,19 +6,21 @@ import io.chrisdavenport.cormorant._
 class StreamingParseSpec extends CormorantSpec {
 
     "Streaming printer should" in {
-
+      "row should round trip" in prop { a : CSV.Row => 
+        Stream.emit(a)
+          .through(encodeRows(Printer.default))
+          .through(parseRows)
+          .toList must_=== List(a)
+      }
     "rows should round trip" in prop { a: CSV.Rows => 
-      val encoded = Stream.emits(a.rows).through(encodeRows(Printer.default))
-      val decoded = CSV.Rows(encoded.through(parseRows).toList)
+      val decoded = CSV.Rows(
+        Stream.emits(a.rows)
+        .through(encodeRows(Printer.default))
+        .through(parseRows)
+        .toList
+      )
       decoded must_=== a
-    }.pendingUntilFixed
-
-
-    // "complete should round trip" in prop {a: CSV.Complete => 
-    //   import _root_.io.chrisdavenport.cormorant.implicits._
-    //   val encoded = a.print(Printer.default)
-    //   parseComplete(encoded) must_=== Either.right(a)
-    // }
+    }
 
   }
 

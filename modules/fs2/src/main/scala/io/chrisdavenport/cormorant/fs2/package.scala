@@ -3,7 +3,12 @@ package io.chrisdavenport.cormorant
 import _root_.fs2._
 import cats.implicits._
 
+  /**
+    * I don't think this is good enough, I think we need a custom pull which emits
+    * spec CSV Rows individually
+    **/
 package object fs2 {
+
   def parseRowsSafe[F[_]]: Pipe[F, String, Either[Error.ParseFailure, CSV.Row]] =
     _.map(parser.parseRow)
   def parseRows[F[_]]: Pipe[F, String, CSV.Row] =
@@ -49,19 +54,18 @@ package object fs2 {
     _.through(readLabelledCompleteSafe).rethrow
 
 
-  //Should I be a stickler about /r/n?
   def encodeRows[F[_]](p: Printer): Pipe[F, CSV.Row, String] = 
-    _.map(p.print).intersperse("\n")
+    _.map(p.print)
 
   def writeRows[F[_], A: Write](p: Printer): Pipe[F, A, String] = 
     _.map(Write[A].write).through(encodeRows(p))
 
   def writeWithHeaders[F[_], A: Write](headers: CSV.Headers, p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(headers)).covary[F] ++ Stream("\n") ++
+    Stream(p.print(headers)).covary[F] ++
     s.through(writeRows(p))
 
   def writeLabelled[F[_], A: LabelledWrite](p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(LabelledWrite[A].headers)).covary[F] ++ Stream("\n") ++
+    Stream(p.print(LabelledWrite[A].headers)).covary[F] ++
     s.map(LabelledWrite[A].write).through(encodeRows(p))
 
 }
