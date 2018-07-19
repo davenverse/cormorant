@@ -224,7 +224,7 @@ lazy val mimaSettings = {
 
 lazy val micrositeSettings = Seq(
   micrositeName := "cormorant",
-  micrositeDescription := "Thread Pool Management for Scala",
+  micrositeDescription := "CSV Library for Scala",
   micrositeAuthor := "Christopher Davenport",
   micrositeGithubOwner := "ChristopherDavenport",
   micrositeGithubRepo := "cormorant",
