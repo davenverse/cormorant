@@ -1,6 +1,6 @@
 lazy val cormorant = project.in(file("."))
-  .settings(commonSettings, releaseSettings, skipOnPublishSettings)
-  .aggregate(core, generic, parser, refined, fs2, http4s)
+  .settings(commonSettings, releaseSettings, noPublishSettings)
+  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
 
 val catsV = "1.1.0"
@@ -68,6 +68,12 @@ lazy val http4s = project.in(file("modules/http4s"))
       "org.http4s" %% "http4s-client" % "0.18.15" % Test
     )
   )
+
+lazy val docs = project.in(file("modules/docs"))
+  .settings(commonSettings, releaseSettings, noPublishSettings, micrositeSettings)
+  .dependsOn(core, generic, parser, refined, fs2, http4s)
+  .enablePlugins(MicrositesPlugin)
+  .enablePlugins(TutPlugin)
 
 
 lazy val contributors = Seq(
@@ -216,7 +222,41 @@ lazy val mimaSettings = {
   )
 }
 
-lazy val skipOnPublishSettings = Seq(
+lazy val micrositeSettings = Seq(
+  micrositeName := "cormorant",
+  micrositeDescription := "Thread Pool Management for Scala",
+  micrositeAuthor := "Christopher Davenport",
+  micrositeGithubOwner := "ChristopherDavenport",
+  micrositeGithubRepo := "cormorant",
+  micrositeBaseUrl := "/cormorant",
+  micrositeDocumentationUrl := "https://christopherdavenport.github.io/cormorant",
+  micrositeFooterText := None,
+  micrositeHighlightTheme := "atom-one-light",
+  micrositePalette := Map(
+    "brand-primary" -> "#3e5b95",
+    "brand-secondary" -> "#294066",
+    "brand-tertiary" -> "#2d5799",
+    "gray-dark" -> "#49494B",
+    "gray" -> "#7B7B7E",
+    "gray-light" -> "#E5E5E6",
+    "gray-lighter" -> "#F4F3F4",
+    "white-color" -> "#FFFFFF"
+  ),
+  fork in tut := true,
+  scalacOptions in Tut --= Seq(
+    "-Xfatal-warnings",
+    "-Ywarn-unused-import",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-dead-code",
+    "-Ywarn-unused:imports",
+    "-Xlint:-missing-interpolator,_"
+  ),
+  libraryDependencies += "com.47deg" %% "github4s" % "0.18.6",
+  micrositePushSiteWith := GitHub4s,
+  micrositeGithubToken := sys.env.get("GITHUB_TOKEN")
+)
+
+lazy val noPublishSettings = Seq(
   skip in publish := true,
   publish := (()),
   publishLocal := (()),
