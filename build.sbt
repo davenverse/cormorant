@@ -12,13 +12,13 @@ val scShapelessV = "1.1.8"
 
 
 lazy val core = project.in(file("modules/core"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .settings(
     name := "cormorant-core"
   )
 
 lazy val generic = project.in(file("modules/generic"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-generic",
@@ -28,7 +28,7 @@ lazy val generic = project.in(file("modules/generic"))
   )
 
 lazy val parser = project.in(file("modules/parser"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core % "compile;test->test")
   .settings(
     name := "cormorant-parser",
@@ -38,7 +38,7 @@ lazy val parser = project.in(file("modules/parser"))
   )
 
 lazy val refined = project.in(file("modules/refined"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-refined",
@@ -48,7 +48,7 @@ lazy val refined = project.in(file("modules/refined"))
   )
 
 lazy val fs2 = project.in(file("modules/fs2"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core % "compile;test->test", parser)
   .settings(
     name := "cormorant-fs2",
@@ -58,7 +58,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   )
 
 lazy val http4s = project.in(file("modules/http4s"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core % "compile;test->test", parser, fs2)
   .settings(
     name := "cormorant-http4s",
