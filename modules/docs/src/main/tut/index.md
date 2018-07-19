@@ -23,3 +23,40 @@ libraryDependencies ++= Seq(
   "io.chrisdavenport" %% "cormorant-refined"  % "<version>"
 )
 ```
+
+First the imports
+
+```tut:silent
+import io.chrisdavenport.cormorant._
+import io.chrisdavenport.cormorant.generic.semiauto._
+import io.chrisdavenport.cormorant.parser._
+import io.chrisdavenport.cormorant.implicits._
+import cats.implicits._
+import java.util.UUID
+import java.time.Instant
+```
+
+Then some basic operations
+
+```tut:book
+case class Bar(a: String, b: Int, c: Long, d: Option[UUID], e: Instant)
+
+implicit val lr: LabelledRead[Bar] = deriveLabelledRead
+implicit val lw: LabelledWrite[Bar] = deriveLabelledWrite
+
+// A List of A given derived type
+// Don't use Instant.Now or UUID.randomUUID in pure code in the real world please.
+val l : List[Bar] = List(
+  Bar("Yellow", 3, 5L, UUID.randomUUID.some, Instant.now),
+  Bar("Boo", 7, 6L, None, Instant.MAX)
+)
+
+// From Type to String
+val csv = l.writeComplete.print(Printer.default)
+
+// From String to Type
+val decoded : Either[Error, List[Bar]] = {
+  parseComplete(csv).leftWiden[Error]
+  .flatMap(_.readLabelled[Bar].sequence)
+}
+```
