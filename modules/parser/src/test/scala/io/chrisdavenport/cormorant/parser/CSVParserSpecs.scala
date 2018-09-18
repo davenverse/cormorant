@@ -92,7 +92,36 @@ class CSVParserSpec extends mutable.Specification {
       |Red,Margarine,2
       |Yellow,Broccoli,3""".stripMargin
 
-      CSVParser.`complete-file`.parse(expectedCSVString).done.either must_=== Either.right(csv)
+      CSVParser.`complete-file`
+        .parse(expectedCSVString)
+        .done
+        .either must_=== Either.right(csv)
+    }
+
+    "parse a complete csv with a trailing new line by stripping it" in {
+      val csv = CSV.Complete(
+        CSV.Headers(
+          List(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
+        ),
+        CSV.Rows(
+          List(
+            CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
+            CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
+            CSV.Row(List(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
+          )
+        )
+      )
+      val expectedCSVString = """Color,Food,Number
+      |Blue,Pizza,1
+      |Red,Margarine,2
+      |Yellow,Broccoli,3
+      |""".stripMargin
+
+      CSVParser.`complete-file`
+        .parse(expectedCSVString)
+        .done
+        .either
+        .map(_.stripTrailingRow) must_=== Either.right(csv)
     }
 
     "parse an escaped row with a comma" in {
@@ -114,6 +143,8 @@ class CSVParserSpec extends mutable.Specification {
       val parseString = "Green,\"Yellow, \"\"Dog\"\"\",Blue"
       CSVParser.record.parse(parseString).done.either must_=== Either.right(csv)
     }
+
+    
 
     "parse an escaped row with embedded newline" in {
       val csv = CSV.Row(List(
