@@ -92,10 +92,13 @@ class CSVParserSpec extends mutable.Specification {
       |Red,Margarine,2
       |Yellow,Broccoli,3""".stripMargin
 
-      CSVParser.`complete-file`.parse(expectedCSVString).done.either must_=== Either.right(csv)
+      CSVParser.`complete-file`
+        .parse(expectedCSVString)
+        .done
+        .either must_=== Either.right(csv)
     }
 
-    "parse a complete csv with a trailing new line" in {
+    "parse a complete csv with a trailing new line by stripping it" in {
       val csv = CSV.Complete(
         CSV.Headers(
           List(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
@@ -114,9 +117,11 @@ class CSVParserSpec extends mutable.Specification {
       |Yellow,Broccoli,3
       |""".stripMargin
 
-      val parsed = CSVParser.`complete-file`.parse(expectedCSVString).done.either
-      println(parsed)
-      parsed must_=== Either.right(csv)
+      CSVParser.`complete-file`
+        .parse(expectedCSVString)
+        .done
+        .either
+        .map(_.stripTrailingRow) must_=== Either.right(csv)
     }
 
     "parse an escaped row with a comma" in {
