@@ -153,6 +153,7 @@ object CSVParser {
     **/
   private def removeLastRowWhenEmpty(l: List[CSV.Row]): List[CSV.Row] = {
     val reversedRemoved = l.reverse match {
+      case CSV.Row(List(CSV.Field(""))) :: Nil => CSV.Row(List(CSV.Field(""))) :: Nil
       case CSV.Row(List(CSV.Field(""))) :: rest => rest
       case otherwise => otherwise
     }
