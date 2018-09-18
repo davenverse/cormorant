@@ -146,5 +146,17 @@ object CSVParser {
     ((header <~ PERMISSIVE_CRLF), fileBody)
       .mapN(CSV.Complete)
       .named("CSV.Complete")
+      .map(complete => CSV.Complete(complete.headers, CSV.Rows(removeLastRowWhenEmpty(complete.rows.rows))))
+
+  /**
+    * Fix this as its 2N added to remove the trailing field
+    **/
+  private def removeLastRowWhenEmpty(l: List[CSV.Row]): List[CSV.Row] = {
+    val reversedRemoved = l.reverse match {
+      case CSV.Row(List(CSV.Field(""))) :: rest => rest
+      case otherwise => otherwise
+    }
+    reversedRemoved.reverse
+  }
 
 }
