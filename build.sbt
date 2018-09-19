@@ -6,7 +6,7 @@ lazy val cormorant = project.in(file("."))
 val catsV = "1.1.0"
 val shapelessV = "2.3.3"
 
-val specs2V = "4.3.2"
+val specs2V = "4.3.4"
 val disciplineV = "0.10.0"
 val scShapelessV = "1.1.8"
 
@@ -33,7 +33,7 @@ lazy val parser = project.in(file("modules/parser"))
   .settings(
     name := "cormorant-parser",
     libraryDependencies ++= Seq(
-      "org.tpolecat" %% "atto-core" % "0.6.2"
+      "org.tpolecat" %% "atto-core" % "0.6.3"
     )
   )
 
