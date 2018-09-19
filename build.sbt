@@ -3,7 +3,7 @@ lazy val cormorant = project.in(file("."))
   .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
 
-val catsV = "1.1.0"
+val catsV = "1.4.0"
 val shapelessV = "2.3.3"
 
 val specs2V = "4.3.4"
@@ -53,7 +53,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "0.10.5" 
+      "co.fs2" %% "fs2-core" % "0.10.6" 
     )
   )
 
@@ -63,9 +63,9 @@ lazy val http4s = project.in(file("modules/http4s"))
   .settings(
     name := "cormorant-http4s",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-core"   % "0.18.17",
-      "org.http4s" %% "http4s-dsl"    % "0.18.17" % Test,
-      "org.http4s" %% "http4s-client" % "0.18.17" % Test
+      "org.http4s" %% "http4s-core"   % "0.18.18",
+      "org.http4s" %% "http4s-dsl"    % "0.18.18" % Test,
+      "org.http4s" %% "http4s-client" % "0.18.18" % Test
     )
   )
 
@@ -252,7 +252,7 @@ lazy val micrositeSettings = Seq(
     "-Ywarn-unused:imports",
     "-Xlint:-missing-interpolator,_"
   ),
-  libraryDependencies += "com.47deg" %% "github4s" % "0.18.6",
+  libraryDependencies += "com.47deg" %% "github4s" % "0.18.8",
   micrositePushSiteWith := GitHub4s,
   micrositeGithubToken := sys.env.get("GITHUB_TOKEN")
 )
