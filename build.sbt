@@ -63,9 +63,9 @@ lazy val http4s = project.in(file("modules/http4s"))
   .settings(
     name := "cormorant-http4s",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-core"   % "0.18.18",
-      "org.http4s" %% "http4s-dsl"    % "0.18.18" % Test,
-      "org.http4s" %% "http4s-client" % "0.18.18" % Test
+      "org.http4s" %% "http4s-core"   % "0.18.19",
+      "org.http4s" %% "http4s-dsl"    % "0.18.19" % Test,
+      "org.http4s" %% "http4s-client" % "0.18.19" % Test
     )
   )
 
