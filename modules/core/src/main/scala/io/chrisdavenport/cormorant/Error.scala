@@ -7,6 +7,7 @@ import cats.implicits._
 
 sealed trait Error extends Exception {
   final override def fillInStackTrace(): Throwable = this
+  final override def getMessage: String = toString
 }
 object Error {
   final case class ParseFailure(reason: String) extends Error
