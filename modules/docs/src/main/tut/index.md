@@ -10,7 +10,7 @@ Cormorant is a CSV Library for Scala
 
 ## Quick Start
 
-To use log4cats in an existing SBT project with Scala 2.11 or a later version, add the following dependencies to your
+To use cormorant in an existing SBT project with Scala 2.11 or a later version, add the following dependencies to your
 `build.sbt` depending on your needs:
 
 ```scala
