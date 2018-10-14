@@ -11,12 +11,12 @@ package object fs2 {
 
   def parseRowsSafe[F[_]]: Pipe[F, String, Either[Error.ParseFailure, CSV.Row]] =
     _.map(parser.parseRow)
-  def parseRows[F[_]]: Pipe[F, String, CSV.Row] =
+  def parseRows[F[_]: RaiseThrowable]: Pipe[F, String, CSV.Row] =
     _.through(parseRowsSafe).rethrow
 
   def readRowsSafe[F[_], A: Read]: Pipe[F, String, Either[Error, A]] = 
     _.through(parseRowsSafe).map(_.leftWiden.flatMap(Read[A].read))
-  def readRows[F[_], A: Read]: Pipe[F, String, A] = _.through(readRowsSafe).rethrow
+  def readRows[F[_]: RaiseThrowable, A: Read]: Pipe[F, String, A] = _.through(readRowsSafe).rethrow
 
   /**
     * Read the first line as the headers, the rest as rows.
@@ -38,7 +38,7 @@ package object fs2 {
       })
     }
 
-  def parseComplete[F[_]]: Pipe[F, String, (CSV.Headers, CSV.Row)] = 
+  def parseComplete[F[_]: RaiseThrowable]: Pipe[F, String, (CSV.Headers, CSV.Row)] =
     _.through(parseCompleteSafe).rethrow.map{case (h, e) => e.map((h, _))}.rethrow
   
   def readLabelledCompleteSafe[F[_], A: LabelledRead]: Pipe[F, String, Either[Error, A]] =
@@ -50,7 +50,7 @@ package object fs2 {
       } yield a
     }
 
-  def readLabelled[F[_], A: LabelledRead]: Pipe[F, String, A] =
+  def readLabelled[F[_]: RaiseThrowable, A: LabelledRead]: Pipe[F, String, A] =
     _.through(readLabelledCompleteSafe).rethrow
 
 

@@ -12,26 +12,26 @@ package object http4s {
 
   implicit def completeEntityEncoder[F[_]: Applicative]( implicit 
     printer: Printer = Printer.default, 
-    mediaType: MediaType = MediaType.`text/csv`
+    mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, CSV.Complete] = {
     val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
     EntityEncoder.encodeBy(Headers(contentTypeHeader))(csvComplete =>
-      Entity(Stream(printer.print(csvComplete)).through(text.utf8Encode).covary[F]).pure[F]
+      Entity(Stream(printer.print(csvComplete)).through(text.utf8Encode).covary[F])
     )
   }
   implicit def rowsEntityEncoder[F[_]: Applicative]( implicit
     printer: Printer = Printer.default, 
-    mediaType: MediaType = MediaType.`text/csv`
+    mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, CSV.Rows] = {
     val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
     EntityEncoder.encodeBy(Headers(contentTypeHeader))(csvRows =>
-      Entity(Stream(printer.print(csvRows)).through(text.utf8Encode).covary[F]).pure[F]
+      Entity(Stream(printer.print(csvRows)).through(text.utf8Encode).covary[F])
     )
   }
 
   implicit def streamEncodeRows[F[_]: Applicative]( implicit
     p: Printer = Printer.default, 
-    mediaType: MediaType = MediaType.`text/csv`
+    mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, Stream[F, CSV.Row]] = {
     val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
     EntityEncoder.encodeBy(Headers(contentTypeHeader))(s => 
@@ -39,20 +39,20 @@ package object http4s {
         s.through(encodeRows(p))
         .intersperse("\r\n")
         .through(text.utf8Encode)
-      ).pure[F]
+      )
     )
   }
   
   def streamEncodeWrite[F[_]: Applicative, A: Write](
     implicit 
     p: Printer = Printer.default, 
-    mediaType: MediaType = MediaType.`text/csv`
+    mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, Stream[F, A]] = 
     streamEncodeRows[F].contramap(_.map(Write[A].write))
 
   def streamEncodeLabelledWrite[F[_]: Applicative, A: LabelledWrite](
     p: Printer = Printer.default, 
-    mediaType: MediaType = MediaType.`text/csv`
+    mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, Stream[F, A]] = {
     val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
     EntityEncoder.encodeBy(Headers(contentTypeHeader))(s => 
@@ -60,13 +60,13 @@ package object http4s {
         s.through(writeLabelled(p))
         .intersperse("\r\n")
         .through(text.utf8Encode)
-      ).pure[F]
+      )
     )
   }
 
   implicit def completeEntityDecoder[F[_]: Sync]: EntityDecoder[F, CSV.Complete] = 
     new EntityDecoder[F, CSV.Complete]{
-      def consumes: Set[MediaRange] = Set(MediaType.`text/csv`)
+      def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Message[F],strict: Boolean): DecodeResult[F,CSV.Complete] = cats.data.EitherT{
         msg.body.through(text.utf8Decode).compile.foldMonoid.map(s =>
           parser.parseComplete(s).leftMap(parseError => org.http4s.MalformedMessageBodyFailure(parseError.reason))
@@ -76,7 +76,7 @@ package object http4s {
 
   implicit def rowsEntityDecoder[F[_]: Sync]: EntityDecoder[F, CSV.Rows] = 
     new EntityDecoder[F, CSV.Rows]{
-      def consumes: Set[MediaRange] = Set(MediaType.`text/csv`)
+      def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Message[F],strict: Boolean): DecodeResult[F,CSV.Rows] = cats.data.EitherT{
         msg.body.through(text.utf8Decode).compile.foldMonoid.map(s =>
           parser.parseRows(s).leftMap(parseError => org.http4s.MalformedMessageBodyFailure(parseError.reason))
@@ -86,7 +86,7 @@ package object http4s {
 
   def streamingLabelledReadDecoder[F[_]: Sync, A: LabelledRead]: EntityDecoder[F, Stream[F, A]] =
     new EntityDecoder[F, Stream[F, A]]{
-      def consumes: Set[MediaRange] = Set(MediaType.`text/csv`)
+      def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Message[F],strict: Boolean): DecodeResult[F,Stream[F, A]] = 
         msg.body.through(text.utf8Decode).through(readLabelled[F, A])
           .pure[DecodeResult[F, ?]]
@@ -94,7 +94,7 @@ package object http4s {
 
   def streamingReadDecoder[F[_]: Sync, A: Read]: EntityDecoder[F, Stream[F, A]] = 
     new EntityDecoder[F, Stream[F, A]]{
-      def consumes: Set[MediaRange] = Set(MediaType.`text/csv`)
+      def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Message[F],strict: Boolean): DecodeResult[F,Stream[F, A]] = 
         msg.body.through(text.utf8Decode).through(readRows[F, A])
           .pure[DecodeResult[F, ?]]

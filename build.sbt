@@ -53,7 +53,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "0.10.6" 
+      "co.fs2" %% "fs2-core" % "1.0.0"
     )
   )
 
@@ -63,9 +63,9 @@ lazy val http4s = project.in(file("modules/http4s"))
   .settings(
     name := "cormorant-http4s",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-core"   % "0.18.19",
-      "org.http4s" %% "http4s-dsl"    % "0.18.19" % Test,
-      "org.http4s" %% "http4s-client" % "0.18.19" % Test
+      "org.http4s" %% "http4s-core"   % "0.19.0-M4",
+      "org.http4s" %% "http4s-dsl"    % "0.19.0-M4" % Test,
+      "org.http4s" %% "http4s-client" % "0.19.0-M4" % Test
     )
   )
 
@@ -90,7 +90,7 @@ lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
   scalacOptions += "-Yrangepos",
 
-  scalaVersion := "2.12.6",
+  scalaVersion := "2.12.7",
   crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
 
   addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.8" cross CrossVersion.binary),
