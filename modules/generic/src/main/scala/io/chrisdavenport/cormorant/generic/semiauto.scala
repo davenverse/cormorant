@@ -4,11 +4,11 @@ import io.chrisdavenport.cormorant._
 import shapeless._
 import shapeless.labelled._
 import cats.implicits._
-import cats.data.Validated
+import cats.data.{Validated, NonEmptyList}
 
 object semiauto {
   implicit val hnilWrite: Write[HNil] = new Write[HNil] {
-    def write(a: HNil): CSV.Row = CSV.Row(List())
+    def write(a: HNil): CSV.Row = null
   }
   implicit def hlistWrite[H, T <: HList](
       implicit P: Put[H],
@@ -25,10 +25,10 @@ object semiauto {
     def write(a: A): CSV.Row = Write[gen.Repr].write(gen.to(a))
   }
 
-  //
+  // TODO: MUST BE A BETTER WAY TO DO THIS
   implicit val labelledWriteHNil: LabelledWrite[HNil] = new LabelledWrite[HNil] {
-    def headers: CSV.Headers = CSV.Headers(List())
-    def write(a: HNil): CSV.Row = CSV.Row(List())
+    def headers: CSV.Headers = null
+    def write(a: HNil): CSV.Row = null
   }
 
   implicit def deriveByNameHList[K <: Symbol, H, T <: HList](
@@ -37,8 +37,15 @@ object semiauto {
       labelledWrite: LabelledWrite[T]
   ): LabelledWrite[FieldType[K, H] :: T] =
     new LabelledWrite[FieldType[K, H] :: T] {
-      def headers: CSV.Headers =
-        CSV.Headers(CSV.Header(witness.value.name) :: LabelledWrite[T].headers.l)
+      def headers: CSV.Headers = {
+        val currentHeader = CSV.Header(witness.value.name)
+        val tailHeaderOpt = Option(LabelledWrite[T].headers.l)
+        tailHeaderOpt.fold(
+          CSV.Headers(NonEmptyList.of(currentHeader))
+        )(headers => 
+          CSV.Headers(NonEmptyList(currentHeader, headers.toList))
+        )
+      }
       def write(a: FieldType[K, H] :: T): CSV.Row =
         CSV.Row(P.value.put(a.head) :: labelledWrite.write(a.tail).l)
     }
@@ -53,25 +60,24 @@ object semiauto {
 
   implicit val readHNil: Read[HNil] = new Read[HNil] {
     def read(a: CSV.Row): Either[Error.DecodeFailure, HNil] =
-      if (a.l.isEmpty) Right(HNil)
-      else Left(Error.DecodeFailure.single(s"Unexpected Input: Did Not Expect - $a"))
+      Either.left(Error.DecodeFailure.single(s"Unexpected Input: Did Not Expect - $a"))
   }
 
   implicit def hlistRead[H, T <: HList](
       implicit G: Get[H],
       R: Lazy[Read[T]]
   ): Read[H :: T] = new Read[H :: T] {
-    def read(a: CSV.Row): Either[Error.DecodeFailure, H :: T] = {
-      val headOption = a.l.headOption
-      val validated: Validated[Error.DecodeFailure, H :: T] =
-        Validated
-          .fromOption[Error.DecodeFailure, CSV.Field](
-            headOption,
-            Error.DecodeFailure.single("Unexpected End Of Input")
+    def read(a: CSV.Row): Either[Error.DecodeFailure, H :: T] = a match {
+      case CSV.Row(NonEmptyList(h, t)) =>
+        val myH : Validated[Error.DecodeFailure, H] = G.get(h).toValidated
+        val myT : Validated[Error.DecodeFailure, T] = NonEmptyList.fromList(t)
+          .fold(
+            Validated.invalid[Error.DecodeFailure, T](Error.DecodeFailure.single("Unexpected End Of Input"))
+          )(nel =>
+            R.value.read(CSV.Row(nel)).toValidated
           )
-          .andThen(h =>
-            (G.get(h).toValidated, R.value.read(CSV.Row(a.l.tail)).toValidated).mapN(_ :: _))
-      validated.toEither
+
+          (myH, myT).mapN(_ :: _).toEither
     }
   }
 
