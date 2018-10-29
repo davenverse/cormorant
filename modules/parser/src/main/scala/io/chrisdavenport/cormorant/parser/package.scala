@@ -56,7 +56,7 @@ package object parser {
   private def filterLastRowIfEmpty(rows: CSV.Rows): CSV.Rows = {
     rows.rows.reverse match {
       case x :: xl if x == CSV.Row(NonEmptyList(CSV.Field(""), Nil)) => CSV.Rows(xl.reverse)
-      case other => CSV.Rows(other.reverse)
+      case _ => rows
     }
   }
 }
