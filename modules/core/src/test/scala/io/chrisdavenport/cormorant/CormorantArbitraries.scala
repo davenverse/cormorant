@@ -1,6 +1,7 @@
 package io.chrisdavenport.cormorant
 
 import org.scalacheck._
+import _root_.cats.data._
 
 trait CormorantArbitraries {
     implicit val arbField : Arbitrary[CSV.Field] = Arbitrary(
@@ -11,7 +12,7 @@ trait CormorantArbitraries {
   def genRow(s: Int): Gen[CSV.Row] = for {
       field <- Arbitrary.arbitrary[CSV.Field]
       list <- Gen.listOfN(s - 1, Arbitrary.arbitrary[CSV.Field])
-    } yield CSV.Row(field :: list)
+    } yield CSV.Row(NonEmptyList(field, list))
 
   implicit val arbRow: Arbitrary[CSV.Row] = Arbitrary(
     for {
@@ -41,7 +42,7 @@ trait CormorantArbitraries {
   def genHeaders(s: Int): Gen[CSV.Headers] = for {
       header <- Arbitrary.arbitrary[CSV.Header]
       list <- Gen.listOfN(s- 1, Arbitrary.arbitrary[CSV.Header])
-  } yield CSV.Headers(header :: list)
+  } yield CSV.Headers(NonEmptyList(header,list))
 
   implicit val arbHeaders : Arbitrary[CSV.Headers] = Arbitrary(
     for {

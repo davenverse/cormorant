@@ -2,6 +2,7 @@ package io.chrisdavenport.cormorant
 
 import io.chrisdavenport.cormorant.Error.ParseFailure
 import cats.implicits._
+import cats.data._
 import atto._
 import Atto._
 
@@ -25,12 +26,12 @@ package object parser {
     .parseOnly(text)
     .either
     .leftMap(ParseFailure.apply)
-    // .map { case rows@CSV.Rows(listRows)
-    //   listRows.headOption
-    //     .fold(rows){
-    //       case CSV.
-    //     }
-    // }
+    .map { 
+      case rows@CSV.Rows(CSV.Row(x) :: _) => 
+        if (x.size > 1) filterLastRowIfEmpty(rows)
+        else rows
+      case otherwise => otherwise
+    }
 
   def parseComplete(text: String): Either[ParseFailure, CSV.Complete] =
     CSVParser.`complete-file`
@@ -39,7 +40,7 @@ package object parser {
     .leftMap(ParseFailure.apply)
     .map{ case c@CSV.Complete(h@CSV.Headers(headers), rows) => 
       // Due to The Grammar Being Unclear CRLF can and will be parsed as 
-      // a field. However the specification states that each
+      // a field. However the specification states that each must have the 
       if (headers.size > 1) {
         CSV.Complete(h, filterLastRowIfEmpty(rows))
       } else {
@@ -48,7 +49,7 @@ package object parser {
     }
   private def filterLastRowIfEmpty(rows: CSV.Rows): CSV.Rows = {
     rows.rows.reverse match {
-      case x :: xl if x == CSV.Row(List(CSV.Field(""))) => CSV.Rows(xl.reverse)
+      case x :: xl if x == CSV.Row(NonEmptyList(CSV.Field(""), Nil)) => CSV.Rows(xl.reverse)
       case other => CSV.Rows(other.reverse)
     }
   }

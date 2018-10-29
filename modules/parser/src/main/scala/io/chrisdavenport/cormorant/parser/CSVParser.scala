@@ -1,9 +1,9 @@
 package io.chrisdavenport.cormorant.parser
 
 import io.chrisdavenport.cormorant.CSV
-
 import atto._
 import Atto._
+import cats.data._
 import cats.implicits._
 
 /**
@@ -120,13 +120,13 @@ object CSVParser {
     .named("CSV.Header")
   // header = name *(COMMA name)
   val header: Parser[CSV.Headers] = (name, many(COMMA ~> name))
-    .mapN(_ :: _)
+    .mapN(NonEmptyList(_, _))
     .map(CSV.Headers)
     .named("CSV.Headers")
 
   // record = field *(COMMA field)
   val record: Parser[CSV.Row] = (field, many(COMMA ~> field))
-    .mapN(_ :: _)
+    .mapN(NonEmptyList(_, _))
     .map(CSV.Row)
     .named("CSV.Row")
 
