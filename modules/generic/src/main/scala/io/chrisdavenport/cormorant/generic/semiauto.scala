@@ -7,8 +7,8 @@ import cats.implicits._
 import cats.data.{Validated, NonEmptyList}
 
 object semiauto {
-  implicit val hnilWrite: Write[HNil] = new Write[HNil] {
-    def write(a: HNil): CSV.Row = null
+  implicit def hnilWrite[H](implicit P: Put[H]): Write[H :: HNil] = new Write[H :: HNil] {
+    def write(a: H :: HNil): CSV.Row = CSV.Row(NonEmptyList.one(P.put(a.head)))
   }
   implicit def hlistWrite[H, T <: HList](
       implicit P: Put[H],
@@ -30,9 +30,10 @@ object semiauto {
   }
 
   // TODO: MUST BE A BETTER WAY TO DO THIS
-  implicit val labelledWriteHNil: LabelledWrite[HNil] = new LabelledWrite[HNil] {
-    def headers: CSV.Headers = null
-    def write(a: HNil): CSV.Row = null
+  implicit def labelledWriteHNil[K <: Symbol, H](implicit witness: Witness.Aux[K],
+      P: Lazy[Put[H]]): LabelledWrite[FieldType[K, H] :: HNil] = new LabelledWrite[FieldType[K, H] :: HNil] {
+    def headers: CSV.Headers = CSV.Headers(NonEmptyList.one(CSV.Header(witness.value.name)))
+    def write(a: FieldType[K, H] :: HNil): CSV.Row = CSV.Row(NonEmptyList.one(P.value.put(a.head)))
   }
 
   implicit def deriveByNameHList[K <: Symbol, H, T <: HList](
@@ -42,12 +43,9 @@ object semiauto {
   ): LabelledWrite[FieldType[K, H] :: T] =
     new LabelledWrite[FieldType[K, H] :: T] {
       def headers: CSV.Headers = {
-        val currentHeader = CSV.Header(witness.value.name)
-        val tailHeaderOpt = Option(LabelledWrite[T].headers.l)
-        tailHeaderOpt.fold(
-          CSV.Headers(NonEmptyList.of(currentHeader))
-        )(headers => 
-          CSV.Headers(NonEmptyList(currentHeader, headers.toList))
+        CSV.Headers(
+          NonEmptyList.one(CSV.Header(witness.value.name)) <+>
+          LabelledWrite[T].headers.l
         )
       }
       def write(a: FieldType[K, H] :: T): CSV.Row =
@@ -62,9 +60,13 @@ object semiauto {
     def write(a: A): CSV.Row = writeH.write(gen.to(a))
   }
 
-  implicit val readHNil: Read[HNil] = new Read[HNil] {
-    def read(a: CSV.Row): Either[Error.DecodeFailure, HNil] =
-      Either.left(Error.DecodeFailure.single(s"Unexpected Input: Did Not Expect - $a"))
+  implicit def readHNil[H](implicit G: Get[H]): Read[H :: HNil] = new Read[H :: HNil] {
+    def read(a: CSV.Row): Either[Error.DecodeFailure, H :: HNil] = a match {
+      case CSV.Row(NonEmptyList(f, Nil)) => 
+        G.get(f).map(h => h :: HNil)
+      case _ => Either.left(Error.DecodeFailure.single(s"Unexpected Input: Did Not Expect - $a"))
+    }
+      
   }
 
   implicit def hlistRead[H, T <: HList](
