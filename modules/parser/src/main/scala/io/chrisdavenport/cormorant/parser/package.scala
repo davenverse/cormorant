@@ -25,12 +25,12 @@ package object parser {
     .parseOnly(text)
     .either
     .leftMap(ParseFailure.apply)
-    // .map { case rows@CSV.Rows(listRows)
-    //   listRows.headOption
-    //     .fold(rows){
-    //       case CSV.
-    //     }
-    // }
+    .map { 
+      case rows@CSV.Rows(CSV.Row(x) :: _) => 
+        if (x.size > 1) filterLastRowIfEmpty(rows)
+        else rows
+      case otherwise => otherwise
+    }
 
   def parseComplete(text: String): Either[ParseFailure, CSV.Complete] =
     CSVParser.`complete-file`
