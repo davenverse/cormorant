@@ -21,8 +21,35 @@ package object parser {
     CSVParser.header.parseOnly(text).either.leftMap(ParseFailure.apply)
 
   def parseRows(text: String): Either[ParseFailure, CSV.Rows] =
-    CSVParser.fileBody.parseOnly(text).either.leftMap(ParseFailure.apply)
+    CSVParser.fileBody
+    .parseOnly(text)
+    .either
+    .leftMap(ParseFailure.apply)
+    // .map { case rows@CSV.Rows(listRows)
+    //   listRows.headOption
+    //     .fold(rows){
+    //       case CSV.
+    //     }
+    // }
 
   def parseComplete(text: String): Either[ParseFailure, CSV.Complete] =
-    CSVParser.`complete-file`.parseOnly(text).either.leftMap(ParseFailure.apply)
+    CSVParser.`complete-file`
+    .parseOnly(text)
+    .either
+    .leftMap(ParseFailure.apply)
+    .map{ case c@CSV.Complete(h@CSV.Headers(headers), rows) => 
+      // Due to The Grammar Being Unclear CRLF can and will be parsed as 
+      // a field. However the specification states that each
+      if (headers.size > 1) {
+        CSV.Complete(h, filterLastRowIfEmpty(rows))
+      } else {
+        c
+      }
+    }
+  private def filterLastRowIfEmpty(rows: CSV.Rows): CSV.Rows = {
+    rows.rows.reverse match {
+      case x :: xl if x == CSV.Row(List(CSV.Field(""))) => CSV.Rows(xl.reverse)
+      case other => CSV.Rows(other.reverse)
+    }
+  }
 }

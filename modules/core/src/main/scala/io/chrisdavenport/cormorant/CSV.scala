@@ -21,5 +21,4 @@ object CSV {
 
   final case class Row(l: List[Field]) extends CSV
   final case class Field(x: String) extends CSV
-
 }
