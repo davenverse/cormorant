@@ -29,7 +29,6 @@ object semiauto {
     def write(a: A): CSV.Row = Write[gen.Repr].write(gen.to(a))
   }
 
-  // TODO: MUST BE A BETTER WAY TO DO THIS
   implicit def labelledWriteHNil[K <: Symbol, H](implicit witness: Witness.Aux[K],
       P: Lazy[Put[H]]): LabelledWrite[FieldType[K, H] :: HNil] = new LabelledWrite[FieldType[K, H] :: HNil] {
     def headers: CSV.Headers = CSV.Headers(NonEmptyList.one(CSV.Header(witness.value.name)))

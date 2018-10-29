@@ -27,9 +27,12 @@ package object parser {
     .either
     .leftMap(ParseFailure.apply)
     .map { 
-      case rows@CSV.Rows(CSV.Row(x) :: _) => 
-        if (x.size > 1) filterLastRowIfEmpty(rows)
-        else rows
+      // Due to The Grammar Being Unclear CRLF can and will be parsed as 
+      // a field. However the specification states that each must have the
+      // same number of fields. We use this to remove this data we know to
+      // be unclear in the specification. In CSV.Rows, we use the first row
+      // as the size of reference
+      case rows@CSV.Rows(CSV.Row(x) :: _) if x.size > 1 => filterLastRowIfEmpty(rows)
       case otherwise => otherwise
     }
 
@@ -40,7 +43,10 @@ package object parser {
     .leftMap(ParseFailure.apply)
     .map{ case c@CSV.Complete(h@CSV.Headers(headers), rows) => 
       // Due to The Grammar Being Unclear CRLF can and will be parsed as 
-      // a field. However the specification states that each must have the 
+      // a field. However the specification states that each must have the
+      // same number of fields. We use this to remove this data we know to
+      // be unclear in the specification. In CSV.Complete, we use headers
+      // as the size of reference.
       if (headers.size > 1) {
         CSV.Complete(h, filterLastRowIfEmpty(rows))
       } else {
