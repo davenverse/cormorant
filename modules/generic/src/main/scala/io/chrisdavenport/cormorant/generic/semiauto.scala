@@ -14,8 +14,12 @@ object semiauto {
       implicit P: Put[H],
       W: Write[T]
   ): Write[H :: T] = new Write[H :: T] {
-    def write(a: H :: T): CSV.Row =
-      CSV.Row(Put[H].put(a.head) :: Write[T].write(a.tail).l)
+    def write(a: H :: T): CSV.Row = {
+      val h = Put[H].put(a.head)
+      val tO = Option(Write[T].write(a.tail).l)
+      val lR = tO.fold(NonEmptyList.of(h))(t => NonEmptyList(h, t.toList))
+      CSV.Row(lR)
+    }
   }
 
   def deriveWrite[A, R](
