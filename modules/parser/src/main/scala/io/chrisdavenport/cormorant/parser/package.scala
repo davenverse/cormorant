@@ -21,7 +21,7 @@ package object parser {
   def parseHeaders(text: String): Either[ParseFailure, CSV.Headers] =
     CSVParser.header.parseOnly(text).either.leftMap(ParseFailure.apply)
 
-  def parseRows(text: String): Either[ParseFailure, CSV.Rows] =
+  def parseRows(text: String, cleanup: Boolean = true): Either[ParseFailure, CSV.Rows] =
     CSVParser.fileBody
     .parseOnly(text)
     .either
@@ -32,11 +32,11 @@ package object parser {
       // same number of fields. We use this to remove this data we know to
       // be unclear in the specification. In CSV.Rows, we use the first row
       // as the size of reference
-      case rows@CSV.Rows(CSV.Row(x) :: _) if x.size > 1 => filterLastRowIfEmpty(rows)
+      case rows@CSV.Rows(CSV.Row(x) :: _) if cleanup && x.size > 1 => filterLastRowIfEmpty(rows)
       case otherwise => otherwise
     }
 
-  def parseComplete(text: String): Either[ParseFailure, CSV.Complete] =
+  def parseComplete(text: String, cleanup: Boolean = true): Either[ParseFailure, CSV.Complete] =
     CSVParser.`complete-file`
     .parseOnly(text)
     .either
@@ -47,7 +47,7 @@ package object parser {
       // same number of fields. We use this to remove this data we know to
       // be unclear in the specification. In CSV.Complete, we use headers
       // as the size of reference.
-      if (headers.size > 1) {
+      if (cleanup && headers.size > 1) {
         CSV.Complete(h, filterLastRowIfEmpty(rows))
       } else {
         c
