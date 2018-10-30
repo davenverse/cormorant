@@ -2,6 +2,7 @@ package io.chrisdavenport.cormorant
 
 import io.chrisdavenport.cormorant.Error.ParseFailure
 import cats.implicits._
+import cats.data._
 import atto._
 import Atto._
 
@@ -20,9 +21,42 @@ package object parser {
   def parseHeaders(text: String): Either[ParseFailure, CSV.Headers] =
     CSVParser.header.parseOnly(text).either.leftMap(ParseFailure.apply)
 
-  def parseRows(text: String): Either[ParseFailure, CSV.Rows] =
-    CSVParser.fileBody.parseOnly(text).either.leftMap(ParseFailure.apply)
+  def parseRows(text: String, cleanup: Boolean = true): Either[ParseFailure, CSV.Rows] =
+    CSVParser.fileBody
+    .parseOnly(text)
+    .either
+    .leftMap(ParseFailure.apply)
+    .map { 
+      // Due to The Grammar Being Unclear CRLF can and will be parsed as 
+      // a field. However the specification states that each must have the
+      // same number of fields. We use this to remove this data we know to
+      // be unclear in the specification. In CSV.Rows, we use the first row
+      // as the size of reference
+      case rows@CSV.Rows(CSV.Row(x) :: _) if cleanup && x.size > 1 => filterLastRowIfEmpty(rows)
+      case otherwise => otherwise
+    }
 
-  def parseComplete(text: String): Either[ParseFailure, CSV.Complete] =
-    CSVParser.`complete-file`.parseOnly(text).either.leftMap(ParseFailure.apply)
+  def parseComplete(text: String, cleanup: Boolean = true): Either[ParseFailure, CSV.Complete] =
+    CSVParser.`complete-file`
+    .parseOnly(text)
+    .either
+    .leftMap(ParseFailure.apply)
+    .map{ case c@CSV.Complete(h@CSV.Headers(headers), rows) => 
+      // Due to The Grammar Being Unclear CRLF can and will be parsed as 
+      // a field. However the specification states that each must have the
+      // same number of fields. We use this to remove this data we know to
+      // be unclear in the specification. In CSV.Complete, we use headers
+      // as the size of reference.
+      if (cleanup && headers.size > 1) {
+        CSV.Complete(h, filterLastRowIfEmpty(rows))
+      } else {
+        c
+      }
+    }
+  private def filterLastRowIfEmpty(rows: CSV.Rows): CSV.Rows = {
+    rows.rows.reverse match {
+      case x :: xl if x == CSV.Row(NonEmptyList(CSV.Field(""), Nil)) => CSV.Rows(xl.reverse)
+      case _ => rows
+    }
+  }
 }

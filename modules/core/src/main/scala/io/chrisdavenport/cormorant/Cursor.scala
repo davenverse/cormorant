@@ -12,7 +12,7 @@ object Cursor {
   def atHeader(header: CSV.Header)(
       headers: CSV.Headers,
       row: CSV.Row): Validated[Error.DecodeFailure, CSV.Field] = {
-    optionIndexOf(headers.l)(header)
+    optionIndexOf(headers.l.toList)(header)
       .fold[Validated[Error.DecodeFailure, Int]](
         Validated.invalid(Error.DecodeFailure.single(
           s"Header $header not present in header: $headers for row: $row"))
@@ -22,6 +22,7 @@ object Cursor {
 
   def atIndex(row: CSV.Row, index: Int): Validated[Error.DecodeFailure, CSV.Field] = {
     row.l
+      .toList
       .drop(index)
       .headOption
       .fold(

@@ -5,6 +5,7 @@ import _root_.io.chrisdavenport.cormorant._
 import atto._
 import Atto._
 import cats.implicits._
+import _root_.cats.data._
 
 class CSVParserSpec extends mutable.Specification {
   // override def is = s2"""
@@ -38,7 +39,7 @@ class CSVParserSpec extends mutable.Specification {
     "parse headers correctly" in {
       val baseHeader = """Something,Something2,Something3"""
       val expect = CSV.Headers(
-        List(
+        NonEmptyList.of(
           CSV.Header("Something"),
           CSV.Header("Something2"),
           CSV.Header("Something3")
@@ -52,7 +53,7 @@ class CSVParserSpec extends mutable.Specification {
     "parse a row correctly" in {
       val singleRow = "yellow,green,blue"
       val expected = CSV.Row(
-        List(
+        NonEmptyList.of(
           CSV.Field("yellow"),
           CSV.Field("green"),
           CSV.Field("blue")
@@ -65,8 +66,8 @@ class CSVParserSpec extends mutable.Specification {
     "parse rows correctly" in {
       val csv = CSV.Rows(
         List(
-          CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
-          CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2")))
+          CSV.Row(NonEmptyList.of(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
+          CSV.Row(NonEmptyList.of(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2")))
         )
       )
       val csvParse = """Blue,Pizza,1
@@ -77,13 +78,13 @@ class CSVParserSpec extends mutable.Specification {
     "complete a csv parse" in {
       val csv = CSV.Complete(
         CSV.Headers(
-          List(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
+          NonEmptyList.of(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
         ),
         CSV.Rows(
           List(
-            CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
-            CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
-            CSV.Row(List(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
+            CSV.Row(NonEmptyList.of(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
+            CSV.Row(NonEmptyList.of(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
+            CSV.Row(NonEmptyList.of(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
           )
         )
       )
@@ -101,13 +102,13 @@ class CSVParserSpec extends mutable.Specification {
     "parse a complete csv with a trailing new line by stripping it" in {
       val csv = CSV.Complete(
         CSV.Headers(
-          List(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
+          NonEmptyList.of(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
         ),
         CSV.Rows(
           List(
-            CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
-            CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
-            CSV.Row(List(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
+            CSV.Row(NonEmptyList.of(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
+            CSV.Row(NonEmptyList.of(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
+            CSV.Row(NonEmptyList.of(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
           )
         )
       )
@@ -125,7 +126,7 @@ class CSVParserSpec extends mutable.Specification {
     }
 
     "parse an escaped row with a comma" in {
-      val csv = CSV.Row(List(
+      val csv = CSV.Row(NonEmptyList.of(
         CSV.Field("Green"),
         CSV.Field("Yellow,Dog"),
         CSV.Field("Blue")
@@ -135,7 +136,7 @@ class CSVParserSpec extends mutable.Specification {
     }
 
     "parse an escaped row with a double quote escaped" in {
-      val csv = CSV.Row(List(
+      val csv = CSV.Row(NonEmptyList.of(
         CSV.Field("Green"),
         CSV.Field("Yellow, \"Dog\""),
         CSV.Field("Blue")
@@ -147,7 +148,7 @@ class CSVParserSpec extends mutable.Specification {
     
 
     "parse an escaped row with embedded newline" in {
-      val csv = CSV.Row(List(
+      val csv = CSV.Row(NonEmptyList.of(
         CSV.Field("Green"),
         CSV.Field("Yellow\n Dog"),
         CSV.Field("Blue")
@@ -157,7 +158,7 @@ class CSVParserSpec extends mutable.Specification {
     }
 
     "parse an escaped row with embedded CRLF" in {
-      val csv = CSV.Row(List(
+      val csv = CSV.Row(NonEmptyList.of(
         CSV.Field("Green"),
         CSV.Field("Yellow\r\n Dog"),
         CSV.Field("Blue")
