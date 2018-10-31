@@ -1,6 +1,7 @@
 package io.chrisdavenport.cormorant
 
 import org.specs2._
+import _root_.cats.data._
 
 object PrinterSpec extends Specification {
   override def is = s2"""
@@ -12,13 +13,13 @@ object PrinterSpec extends Specification {
   def simpleCSVPrint = {
     val csv = CSV.Complete(
       CSV.Headers(
-        List(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
+        NonEmptyList.of(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
       ),
       CSV.Rows(
         List(
-          CSV.Row(List(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
-          CSV.Row(List(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
-          CSV.Row(List(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
+          CSV.Row(NonEmptyList.of(CSV.Field("Blue"), CSV.Field("Pizza"), CSV.Field("1"))),
+          CSV.Row(NonEmptyList.of(CSV.Field("Red"), CSV.Field("Margarine"), CSV.Field("2"))),
+          CSV.Row(NonEmptyList.of(CSV.Field("Yellow"), CSV.Field("Broccoli"), CSV.Field("3")))
         )
       )
     )

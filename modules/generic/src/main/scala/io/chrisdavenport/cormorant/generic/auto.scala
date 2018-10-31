@@ -8,7 +8,7 @@ import shapeless.labelled._
  * Fully Automatic Derivation of Any Product Type
   **/
 object auto {
-  implicit val hnilWrite = semiauto.hnilWrite
+  implicit def hnilWrite[H](implicit P: Put[H]): Write[H :: HNil] = semiauto.hnilWrite[H]
   implicit def hlistWrite[H, T <: HList](
       implicit P: Put[H],
       W: Write[T]
@@ -18,7 +18,8 @@ object auto {
       enc: Write[R]
   ): Write[A] = semiauto.deriveWrite[A, R]
 
-  implicit val labelledWriteHNil = semiauto.labelledWriteHNil
+  implicit def labelledWriteHNil[K <: Symbol, H](implicit witness: Witness.Aux[K],
+      P: Lazy[Put[H]]) = semiauto.labelledWriteHNil
   implicit def deriveByNameHList[K <: Symbol, H, T <: HList](
       implicit witness: Witness.Aux[K],
       P: Lazy[Put[H]],
@@ -29,7 +30,7 @@ object auto {
       hlw: Lazy[LabelledWrite[H]]
   ): LabelledWrite[A] = semiauto.deriveLabelledWrite[A, H]
 
-  implicit val readHNil: Read[HNil] = semiauto.readHNil
+  implicit def readHNil[H](implicit G: Get[H]): Read[H :: HNil] = semiauto.readHNil[H]
   implicit def hlistRead[H, T <: HList](
       implicit G: Get[H],
       R: Lazy[Read[T]]

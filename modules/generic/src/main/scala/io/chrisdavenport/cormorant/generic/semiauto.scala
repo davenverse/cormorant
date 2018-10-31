@@ -4,18 +4,19 @@ import io.chrisdavenport.cormorant._
 import shapeless._
 import shapeless.labelled._
 import cats.implicits._
-import cats.data.Validated
+import cats.data.{Validated, NonEmptyList}
 
 object semiauto {
-  implicit val hnilWrite: Write[HNil] = new Write[HNil] {
-    def write(a: HNil): CSV.Row = CSV.Row(List())
+  implicit def hnilWrite[H](implicit P: Put[H]): Write[H :: HNil] = new Write[H :: HNil] {
+    def write(a: H :: HNil): CSV.Row = CSV.Row(NonEmptyList.one(P.put(a.head)))
   }
   implicit def hlistWrite[H, T <: HList](
       implicit P: Put[H],
       W: Write[T]
   ): Write[H :: T] = new Write[H :: T] {
-    def write(a: H :: T): CSV.Row =
-      CSV.Row(Put[H].put(a.head) :: Write[T].write(a.tail).l)
+    def write(a: H :: T): CSV.Row = {
+      CSV.Row(NonEmptyList(Put[H].put(a.head), Write[T].write(a.tail).l.toList))
+    }
   }
 
   def deriveWrite[A, R](
@@ -25,10 +26,10 @@ object semiauto {
     def write(a: A): CSV.Row = Write[gen.Repr].write(gen.to(a))
   }
 
-  //
-  implicit val labelledWriteHNil: LabelledWrite[HNil] = new LabelledWrite[HNil] {
-    def headers: CSV.Headers = CSV.Headers(List())
-    def write(a: HNil): CSV.Row = CSV.Row(List())
+  implicit def labelledWriteHNil[K <: Symbol, H](implicit witness: Witness.Aux[K],
+      P: Lazy[Put[H]]): LabelledWrite[FieldType[K, H] :: HNil] = new LabelledWrite[FieldType[K, H] :: HNil] {
+    def headers: CSV.Headers = CSV.Headers(NonEmptyList.one(CSV.Header(witness.value.name)))
+    def write(a: FieldType[K, H] :: HNil): CSV.Row = CSV.Row(NonEmptyList.one(P.value.put(a.head)))
   }
 
   implicit def deriveByNameHList[K <: Symbol, H, T <: HList](
@@ -37,8 +38,12 @@ object semiauto {
       labelledWrite: LabelledWrite[T]
   ): LabelledWrite[FieldType[K, H] :: T] =
     new LabelledWrite[FieldType[K, H] :: T] {
-      def headers: CSV.Headers =
-        CSV.Headers(CSV.Header(witness.value.name) :: LabelledWrite[T].headers.l)
+      def headers: CSV.Headers = {
+        CSV.Headers(
+          NonEmptyList.one(CSV.Header(witness.value.name)) <+>
+          LabelledWrite[T].headers.l
+        )
+      }
       def write(a: FieldType[K, H] :: T): CSV.Row =
         CSV.Row(P.value.put(a.head) :: labelledWrite.write(a.tail).l)
     }
@@ -51,27 +56,30 @@ object semiauto {
     def write(a: A): CSV.Row = writeH.write(gen.to(a))
   }
 
-  implicit val readHNil: Read[HNil] = new Read[HNil] {
-    def read(a: CSV.Row): Either[Error.DecodeFailure, HNil] =
-      if (a.l.isEmpty) Right(HNil)
-      else Left(Error.DecodeFailure.single(s"Unexpected Input: Did Not Expect - $a"))
+  implicit def readHNil[H](implicit G: Get[H]): Read[H :: HNil] = new Read[H :: HNil] {
+    def read(a: CSV.Row): Either[Error.DecodeFailure, H :: HNil] = a match {
+      case CSV.Row(NonEmptyList(f, Nil)) => 
+        G.get(f).map(h => h :: HNil)
+      case _ => Either.left(Error.DecodeFailure.single(s"Unexpected Input: Did Not Expect - $a"))
+    }
+      
   }
 
   implicit def hlistRead[H, T <: HList](
       implicit G: Get[H],
       R: Lazy[Read[T]]
   ): Read[H :: T] = new Read[H :: T] {
-    def read(a: CSV.Row): Either[Error.DecodeFailure, H :: T] = {
-      val headOption = a.l.headOption
-      val validated: Validated[Error.DecodeFailure, H :: T] =
-        Validated
-          .fromOption[Error.DecodeFailure, CSV.Field](
-            headOption,
-            Error.DecodeFailure.single("Unexpected End Of Input")
+    def read(a: CSV.Row): Either[Error.DecodeFailure, H :: T] = a match {
+      case CSV.Row(NonEmptyList(h, t)) =>
+        val myH : Validated[Error.DecodeFailure, H] = G.get(h).toValidated
+        val myT : Validated[Error.DecodeFailure, T] = NonEmptyList.fromList(t)
+          .fold(
+            Validated.invalid[Error.DecodeFailure, T](Error.DecodeFailure.single("Unexpected End Of Input"))
+          )(nel =>
+            R.value.read(CSV.Row(nel)).toValidated
           )
-          .andThen(h =>
-            (G.get(h).toValidated, R.value.read(CSV.Row(a.l.tail)).toValidated).mapN(_ :: _))
-      validated.toEither
+
+          (myH, myT).mapN(_ :: _).toEither
     }
   }
 
