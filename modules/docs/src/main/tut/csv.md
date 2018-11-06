@@ -10,7 +10,7 @@ Cormorants CSV Model is a simple protocol for dealing with a fairly simple speci
 several small points of difficulty that need to be addressed. The primary component of this model
 is a sealed trait called CSV which represent valid components and constructors of CSV's.
 
-It important to not that the specification tells us to treat all white space as significant and a
+It important to note that the specification tells us to treat all white space as significant and a
 part of the header/field so modifying and managing your whitespace may need to happen within
 model transformations before `Read` or after `Write` if you have custom white space needs.
 
