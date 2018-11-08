@@ -254,7 +254,12 @@ lazy val micrositeSettings = Seq(
   ),
   libraryDependencies += "com.47deg" %% "github4s" % "0.19.0",
   micrositePushSiteWith := GitHub4s,
-  micrositeGithubToken := sys.env.get("GITHUB_TOKEN")
+  micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
+  micrositeExtraMdFiles := Map(
+    file("CHANGELOG.md")        -> ExtraMdFileConfig("changelog.md", "page", Map("title" -> "changelog", "section" -> "changelog", "position" -> "100")),
+    file("CODE_OF_CONDUCT.md")  -> ExtraMdFileConfig("code-of-conduct.md",   "page", Map("title" -> "code of conduct",   "section" -> "code of conduct",   "position" -> "101")),
+    file("LICENSE")             -> ExtraMdFileConfig("license.md",   "page", Map("title" -> "license",   "section" -> "license",   "position" -> "102"))
+  )
 )
 
 lazy val noPublishSettings = Seq(
