@@ -6,6 +6,8 @@ lazy val cormorant = project.in(file("."))
 val catsV = "1.5.0"
 val shapelessV = "2.3.3"
 
+val http4sV = "0.20.0-M4"
+
 val specs2V = "4.3.5"
 val disciplineV = "0.10.0"
 val scShapelessV = "1.1.8"
@@ -63,11 +65,14 @@ lazy val http4s = project.in(file("modules/http4s"))
   .settings(
     name := "cormorant-http4s",
     libraryDependencies ++= Seq(
-      "org.http4s" %% "http4s-core"   % "0.20.0-M1",
-      "org.http4s" %% "http4s-dsl"    % "0.20.0-M1" % Test,
-      "org.http4s" %% "http4s-client" % "0.20.0-M1" % Test
+      "org.http4s" %% "http4s-core"   % http4sV,
+      "org.http4s" %% "http4s-dsl"    % http4sV % Test,
+      "org.http4s" %% "http4s-client" % http4sV % Test
     )
   )
+
+
+
 
 lazy val docs = project.in(file("modules/docs"))
   .settings(commonSettings, releaseSettings, noPublishSettings, micrositeSettings)
