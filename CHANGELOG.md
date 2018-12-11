@@ -6,6 +6,15 @@ This file summarizes **notable** changes for each release, but does not describe
 
 ## <a name="Unreleased"></a>Unreleased Changes
 
+## <a name="0.2.0-M2"></a>New and Noteworthy for Version 0.2.0-M2
+
+- TSV Parser
+- cats-core 1.5.0
+- cats-effect 1.1.0
+- fs2 1.0.2
+- refined 0.9.3
+- Http4s 0.20.0-M4
+
 ## <a name="0.2.0-M1"></a>New and Noteworthy for Version 0.2.0-M1
 
 - cats-effect 1.0
