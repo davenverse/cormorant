@@ -5,6 +5,7 @@ import cats.effect.IO
 import org.http4s._
 import org.http4s.client._
 import org.http4s.dsl.io._
+import org.http4s.implicits._
 
 class Http4sSpec extends CormorantSpec {
   "Http4s Entity Encoder/Decoder" should {
@@ -23,4 +24,5 @@ class Http4sSpec extends CormorantSpec {
       client.expect[CSV.Complete]("").unsafeRunSync must_=== rows
     }
   }
+  
 }
