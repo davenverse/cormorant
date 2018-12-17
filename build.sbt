@@ -8,7 +8,7 @@ val shapelessV = "2.3.3"
 
 val http4sV = "0.20.0-M4"
 
-val specs2V = "4.3.5"
+val specs2V = "4.3.6"
 val disciplineV = "0.10.0"
 val scShapelessV = "1.1.8"
 
