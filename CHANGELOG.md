@@ -6,6 +6,14 @@ This file summarizes **notable** changes for each release, but does not describe
 
 ## <a name="Unreleased"></a>Unreleased Changes
 
+## <a name="0.2.0-M3"></a>New and Noteworthy for Version 0.2.0-M3
+
+- http4s 0.20.0-M5
+- specs2 4.3.6
+- Ruby Version fix for CI
+- github4s
+- sbt-release
+
 ## <a name="0.2.0-M2"></a>New and Noteworthy for Version 0.2.0-M2
 
 - TSV Parser
