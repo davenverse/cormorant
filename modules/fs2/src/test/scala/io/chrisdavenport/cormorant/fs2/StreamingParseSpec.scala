@@ -14,7 +14,7 @@ class StreamingParseSpec extends CormorantSpec {
           .compile
           .toList
           .unsafeRunSync must_=== List(a)
-      }
+      }.set(minTestsOk = 20, workers = 2)
     "rows should round trip" in prop { a: CSV.Rows => 
       val decoded = CSV.Rows(
         Stream.emits[IO, CSV.Row](a.rows)
@@ -25,7 +25,7 @@ class StreamingParseSpec extends CormorantSpec {
         .unsafeRunSync
       )
       decoded must_=== a
-    }
+    }.set(minTestsOk = 20, workers = 2)
 
   }
 
