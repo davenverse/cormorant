@@ -35,7 +35,7 @@ lazy val parser = project.in(file("modules/parser"))
   .settings(
     name := "cormorant-parser",
     libraryDependencies ++= Seq(
-      "org.tpolecat" %% "atto-core" % "0.6.3"
+      "org.tpolecat" %% "atto-core" % "0.6.5"
     )
   )
 
