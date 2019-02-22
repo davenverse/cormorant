@@ -88,7 +88,7 @@ package object http4s {
     new EntityDecoder[F, Stream[F, A]]{
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Message[F],strict: Boolean): DecodeResult[F,Stream[F, A]] = 
-        msg.body.through(text.utf8Decode).through(readLabelled[F, A])
+        msg.body.through(text.utf8Decode).through(text.lines).through(readLabelled[F, A])
           .pure[DecodeResult[F, ?]]
     }
 
@@ -96,7 +96,7 @@ package object http4s {
     new EntityDecoder[F, Stream[F, A]]{
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Message[F],strict: Boolean): DecodeResult[F,Stream[F, A]] = 
-        msg.body.through(text.utf8Decode).through(readRows[F, A])
+        msg.body.through(text.utf8Decode).through(text.lines).through(readRows[F, A])
           .pure[DecodeResult[F, ?]]
     }
 }
