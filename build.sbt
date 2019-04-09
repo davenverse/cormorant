@@ -6,12 +6,9 @@ lazy val cormorant = project.in(file("."))
 val catsV = "1.6.0"
 val shapelessV = "2.3.3"
 
-val http4sV = "0.20.0-M7"
+val http4sV = "0.20.0-RC1"
 
 val specs2V = "4.5.1"
-val disciplineV = "0.10.0"
-val scShapelessV = "1.1.8"
-
 
 lazy val core = project.in(file("modules/core"))
   .settings(commonSettings, releaseSettings)
@@ -93,12 +90,12 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.12.8",
   crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
 
-  addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.10" cross CrossVersion.binary),
+  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.10.0" cross CrossVersion.binary),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.2.4"),
 
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
-    
+
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
     "io.chrisdavenport"           %% "cats-scalacheck"            % "0.1.1"       % Test
@@ -176,10 +173,10 @@ lazy val mimaSettings = {
 
   def semverBinCompatVersions(major: Int, minor: Int, patch: Int): Set[(Int, Int, Int)] = {
     val majorVersions: List[Int] = List(major)
-    val minorVersions : List[Int] = 
+    val minorVersions : List[Int] =
       if (major >= 1) Range(0, minor).inclusive.toList
       else List(minor)
-    def patchVersions(currentMinVersion: Int): List[Int] = 
+    def patchVersions(currentMinVersion: Int): List[Int] =
       if (minor == 0 && patch == 0) List.empty[Int]
       else if (currentMinVersion != minor) List(0)
       else Range(0, patch - 1).inclusive.toList
@@ -211,7 +208,7 @@ lazy val mimaSettings = {
     mimaFailOnProblem := mimaVersions(version.value).toList.headOption.isDefined,
     mimaPreviousArtifacts := (mimaVersions(version.value) ++ extraVersions)
       .filterNot(excludedVersions.contains(_))
-      .map{v => 
+      .map{v =>
         val moduleN = moduleName.value + "_" + scalaBinaryVersion.value.toString
         organization.value % moduleN % v
       },
