@@ -6,7 +6,7 @@ lazy val cormorant = project.in(file("."))
 val catsV = "1.6.0"
 val shapelessV = "2.3.3"
 
-val http4sV = "0.20.0"
+val http4sV = "0.20.1"
 
 val specs2V = "4.5.1"
 
