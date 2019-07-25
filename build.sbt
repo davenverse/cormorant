@@ -73,6 +73,7 @@ lazy val http4s = project.in(file("modules/http4s"))
 
 
 lazy val docs = project.in(file("modules/docs"))
+  .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, noPublishSettings, micrositeSettings)
   .dependsOn(core, generic, parser, refined, fs2, http4s)
   .enablePlugins(MicrositesPlugin)
