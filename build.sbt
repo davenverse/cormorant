@@ -3,10 +3,10 @@ lazy val cormorant = project.in(file("."))
   .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
 
-val catsV = "1.6.1"
+val catsV = "2.0.0-M4"
 val shapelessV = "2.3.3"
 
-val http4sV = "0.20.7"
+val http4sV = "0.21.0-M1"
 
 val specs2V = "4.6.0"
 
@@ -32,7 +32,7 @@ lazy val parser = project.in(file("modules/parser"))
   .settings(
     name := "cormorant-parser",
     libraryDependencies ++= Seq(
-      "org.tpolecat" %% "atto-core" % "0.6.5"
+      "org.tpolecat" %% "atto-core" % "0.7.0-M1"
     )
   )
 
@@ -52,7 +52,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "1.0.5"
+      "co.fs2" %% "fs2-core" % "1.1.0-M1"
     )
   )
 
@@ -82,23 +82,26 @@ lazy val contributors = Seq(
   "ChristopherDavenport" -> "Christopher Davenport"
 )
 
+lazy val scala2_11 = "2.11.12"
+lazy val scala2_12 = "2.12.8"
+lazy val scala2_13 = "2.13.0"
+
 // General Settings
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
   scalacOptions += "-Yrangepos",
-
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
+  
+  scalaVersion := scala2_13,
+  crossScalaVersions := Seq(scalaVersion.value, scala2_12, scala2_11),
 
   addCompilerPlugin("org.typelevel" % "kind-projector" % "0.10.3" cross CrossVersion.binary),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
-
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
-    "io.chrisdavenport"           %% "cats-scalacheck"            % "0.1.1"       % Test
+    "io.chrisdavenport"           %% "cats-scalacheck"            % "0.2.0-M1"    % Test,
   )
 )
 
