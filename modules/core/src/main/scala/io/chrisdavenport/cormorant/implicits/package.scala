@@ -8,3 +8,4 @@ package object implicits
     with syntax.labelledwrite
     with syntax.read
     with syntax.labelledread
+    with syntax.put
