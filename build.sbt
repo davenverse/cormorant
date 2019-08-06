@@ -1,4 +1,5 @@
 lazy val cormorant = project.in(file("."))
+  .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, noPublishSettings)
   .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
@@ -11,13 +12,13 @@ val http4sV = "0.20.8"
 val specs2V = "4.6.0"
 
 lazy val core = project.in(file("modules/core"))
-  .settings(commonSettings, releaseSettings)
+  .settings(commonSettings, releaseSettings, mimaSettings)
   .settings(
     name := "cormorant-core"
   )
 
 lazy val generic = project.in(file("modules/generic"))
-  .settings(commonSettings, releaseSettings)
+  .settings(commonSettings, releaseSettings, mimaSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-generic",
@@ -27,7 +28,7 @@ lazy val generic = project.in(file("modules/generic"))
   )
 
 lazy val parser = project.in(file("modules/parser"))
-  .settings(commonSettings, releaseSettings)
+  .settings(commonSettings, releaseSettings, mimaSettings)
   .dependsOn(core % "compile;test->test")
   .settings(
     name := "cormorant-parser",
@@ -37,7 +38,7 @@ lazy val parser = project.in(file("modules/parser"))
   )
 
 lazy val refined = project.in(file("modules/refined"))
-  .settings(commonSettings, releaseSettings)
+  .settings(commonSettings, releaseSettings, mimaSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-refined",
@@ -47,7 +48,7 @@ lazy val refined = project.in(file("modules/refined"))
   )
 
 lazy val fs2 = project.in(file("modules/fs2"))
-  .settings(commonSettings, releaseSettings)
+  .settings(commonSettings, releaseSettings, mimaSettings)
   .dependsOn(core % "compile;test->test", parser)
   .settings(
     name := "cormorant-fs2",
@@ -57,7 +58,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   )
 
 lazy val http4s = project.in(file("modules/http4s"))
-  .settings(commonSettings, releaseSettings)
+  .settings(commonSettings, releaseSettings, mimaSettings)
   .dependsOn(core % "compile;test->test", parser, fs2)
   .settings(
     name := "cormorant-http4s",
@@ -68,10 +69,8 @@ lazy val http4s = project.in(file("modules/http4s"))
     )
   )
 
-
-
-
 lazy val docs = project.in(file("modules/docs"))
+  .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, noPublishSettings, micrositeSettings)
   .dependsOn(core, generic, parser, refined, fs2, http4s)
   .enablePlugins(MicrositesPlugin)
@@ -205,6 +204,7 @@ lazy val mimaSettings = {
   lazy val extraVersions: Set[String] = Set()
 
   Seq(
+    mimaFailOnNoPrevious := false,
     mimaFailOnProblem := mimaVersions(version.value).toList.headOption.isDefined,
     mimaPreviousArtifacts := (mimaVersions(version.value) ++ extraVersions)
       .filterNot(excludedVersions.contains(_))
