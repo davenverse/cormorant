@@ -82,7 +82,6 @@ lazy val contributors = Seq(
   "ChristopherDavenport" -> "Christopher Davenport"
 )
 
-lazy val scala2_11 = "2.11.12"
 lazy val scala2_12 = "2.12.8"
 lazy val scala2_13 = "2.13.0"
 
@@ -92,7 +91,7 @@ lazy val commonSettings = Seq(
   scalacOptions += "-Yrangepos",
   
   scalaVersion := scala2_13,
-  crossScalaVersions := Seq(scalaVersion.value, scala2_12, scala2_11),
+  crossScalaVersions := Seq(scalaVersion.value, scala2_12),
 
   addCompilerPlugin("org.typelevel" % "kind-projector" % "0.10.3" cross CrossVersion.binary),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
@@ -255,7 +254,7 @@ lazy val micrositeSettings = {
       "-Xlint:-missing-interpolator,_"
     ),
     scalaVersion := scala2_12,
-    crossScalaVersions := Seq(scala2_12, scala2_11),
+    crossScalaVersions := Seq(scala2_12),
     libraryDependencies += "com.47deg" %% "github4s" % "0.20.1",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
