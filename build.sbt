@@ -72,6 +72,11 @@ lazy val http4s = project.in(file("modules/http4s"))
 lazy val docs = project.in(file("modules/docs"))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, noPublishSettings, micrositeSettings)
+  .settings(
+    //github4s is not yet available for scala 2.13
+    scalaVersion := scala2_12,
+    crossScalaVersions := Seq(scala2_12),
+  )
   .dependsOn(core, generic, parser, refined, fs2, http4s)
   .enablePlugins(MicrositesPlugin)
   .enablePlugins(TutPlugin)
@@ -253,8 +258,6 @@ lazy val micrositeSettings = {
       "-Ywarn-unused:imports",
       "-Xlint:-missing-interpolator,_"
     ),
-    scalaVersion := scala2_12,
-    crossScalaVersions := Seq(scala2_12),
     libraryDependencies += "com.47deg" %% "github4s" % "0.20.1",
     micrositePushSiteWith := GitHub4s,
     micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
