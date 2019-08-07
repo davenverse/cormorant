@@ -69,8 +69,10 @@ package object fs2 {
     *   .through(writeRows(headers, Printer.default))
     * }}}
     */
-  def writeRows[F[_], A: Write](p: Printer): Pipe[F, A, String] = 
-    _.map(Write[A].write).through(encodeRows(p))
+  def writeRows[F[_], A: Write](p: Printer): Pipe[F, A, String] = s =>
+    s.map(Write[A].write)
+      .through(encodeRows(p))
+      .intersperse(p.rowSeparator)
 
   /**
     * Converts the current `Stream` to a `Stream[F, String]` by encoding its content
@@ -85,7 +87,7 @@ package object fs2 {
     * }}}
     */
   def writeWithHeaders[F[_], A: Write](headers: CSV.Headers, p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(headers)).covary[F] ++ s.through(writeRows(p))
+    Stream(p.print(headers)).covary[F] ++ Stream.emit(p.rowSeparator) ++ s.through(writeRows(p))
 
   /**
     * Converts the current `Stream` to a `Stream[F, String]` by encoding its content
