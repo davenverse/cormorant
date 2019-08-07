@@ -1,6 +1,11 @@
 lazy val cormorant = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, noPublishSettings)
+  .settings(
+    // https://www.scala-sbt.org/1.x/docs/Cross-Build.html says:
+    // crossScalaVersions must be set to Nil on the aggregating project
+    crossScalaVersions := Nil,
+  )
   .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
 
