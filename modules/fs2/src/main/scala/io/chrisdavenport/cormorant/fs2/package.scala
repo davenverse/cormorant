@@ -101,6 +101,8 @@ package object fs2 {
     * }}}
     */
   def writeLabelled[F[_], A: LabelledWrite](p: Printer): Pipe[F, A, String] = s =>
-    s.through(writeWithHeaders(LabelledWrite[A].headers, p)(LabelledWrite[A].write))
+    s.through(writeWithHeaders(LabelledWrite[A].headers, p)(new Write[A] {
+      override def write(a: A): CSV.Row = LabelledWrite[A].write(a)
+    }))
 
 }
