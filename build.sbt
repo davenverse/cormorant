@@ -6,7 +6,8 @@ lazy val cormorant = project.in(file("."))
     // crossScalaVersions must be set to Nil on the aggregating project
     crossScalaVersions := Nil,
   )
-  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
+  //also aggregate docs once github4s is available for scala 2.13 and can be compiled properly
+  .aggregate(core, generic, parser, refined, fs2, http4s)
 
 
 val catsV = "2.0.0-RC1"
@@ -98,7 +99,7 @@ lazy val scala2_13 = "2.13.0"
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
   scalacOptions += "-Yrangepos",
-  
+
   scalaVersion := scala2_12,
   crossScalaVersions := Seq(scalaVersion.value, scala2_13),
 
