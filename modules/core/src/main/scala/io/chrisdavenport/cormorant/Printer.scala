@@ -4,6 +4,7 @@ import cats.implicits._
 
 trait Printer {
   def print(csv: CSV): String
+  val rowSeparator: String
 }
 
 object Printer {
@@ -31,7 +32,8 @@ object Printer {
       surround: String,
       additionalEscapes: Set[String] = Set.empty[String]): Printer =
     new Printer {
-      def print(csv: CSV): String = csv match {
+
+      override def print(csv: CSV): String = csv match {
         case CSV.Field(text) =>
           escapedAsNecessary(text, Set(columnSeperator, rowSeperator, escape, surround) ++ additionalEscapes, escape, surround)
         case CSV.Header(text) =>
@@ -41,6 +43,9 @@ object Printer {
         case CSV.Rows(xs) => xs.map(print).intercalate(rowSeperator)
         case CSV.Complete(headers, body) => print(headers) + rowSeperator + print(body)
       }
+
+      override val rowSeparator: String = rowSeperator
+
     }
 
   def default: Printer = generic(",", "\n", "\"", "\"", Set("\r"))
