@@ -20,7 +20,7 @@ install:
 script:
   - sbt ++$TRAVIS_SCALA_VERSION test
   - sbt ++$TRAVIS_SCALA_VERSION mimaReportBinaryIssues
-  - sbt ++2.12.9 ;docs/compile;docs/makeMicrosite #change back to sbt ++$TRAVIS_SCALA_VERSION docs/makeMicrosite once docs can be compiled for 2.13
+  - sbt ++2.12.9 docs/makeMicrosite #change back to sbt ++$TRAVIS_SCALA_VERSION docs/makeMicrosite once docs can be compiled for 2.13
 
 after_success:
 - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_REPO_SLUG == "ChristopherDavenport/cormorant" && sbt ++$TRAVIS_SCALA_VERSION publish
