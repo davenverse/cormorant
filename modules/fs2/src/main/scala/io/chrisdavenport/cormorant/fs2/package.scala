@@ -61,11 +61,9 @@ package object fs2 {
     _.map(Write[A].write).through(encodeRows(p))
 
   def writeWithHeaders[F[_], A: Write](headers: CSV.Headers, p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(headers)).covary[F] ++
-    s.through(writeRows(p))
+    Stream(p.print(headers)).covary[F] ++ s.through(writeRows(p))
 
   def writeLabelled[F[_], A: LabelledWrite](p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(LabelledWrite[A].headers)).covary[F] ++
-    s.map(LabelledWrite[A].write).through(encodeRows(p))
+    s.through(writeWithHeaders(LabelledWrite[A].headers, p)(LabelledWrite[A].write))
 
 }
