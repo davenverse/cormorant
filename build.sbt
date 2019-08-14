@@ -1,13 +1,21 @@
+import sbt.librarymanagement.{ SemanticSelector, VersionNumber }
+
 lazy val cormorant = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, noPublishSettings)
-  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
+  .settings(
+    // https://www.scala-sbt.org/1.x/docs/Cross-Build.html says:
+    // crossScalaVersions must be set to Nil on the aggregating project
+    crossScalaVersions := Nil,
+  )
+  //also aggregate docs once github4s is available for scala 2.13 and can be compiled properly
+  .aggregate(core, generic, parser, refined, fs2, http4s)
 
 
-val catsV = "1.6.1"
+val catsV = "2.0.0-RC1"
 val shapelessV = "2.3.3"
 
-val http4sV = "0.20.9"
+val http4sV = "0.21.0-M3"
 
 val specs2V = "4.6.0"
 
@@ -33,7 +41,7 @@ lazy val parser = project.in(file("modules/parser"))
   .settings(
     name := "cormorant-parser",
     libraryDependencies ++= Seq(
-      "org.tpolecat" %% "atto-core" % "0.6.5"
+      "org.tpolecat" %% "atto-core" % "0.7.0-M1"
     )
   )
 
@@ -53,7 +61,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "1.0.5"
+      "co.fs2" %% "fs2-core" % "1.1.0-M1"
     )
   )
 
@@ -72,6 +80,11 @@ lazy val http4s = project.in(file("modules/http4s"))
 lazy val docs = project.in(file("modules/docs"))
   .disablePlugins(MimaPlugin)
   .settings(commonSettings, releaseSettings, noPublishSettings, micrositeSettings)
+  .settings(
+    //github4s is not yet available for scala 2.13
+    scalaVersion := scala2_12,
+    crossScalaVersions := Seq(scala2_12),
+  )
   .dependsOn(core, generic, parser, refined, fs2, http4s)
   .enablePlugins(MicrositesPlugin)
   .enablePlugins(TutPlugin)
@@ -81,23 +94,25 @@ lazy val contributors = Seq(
   "ChristopherDavenport" -> "Christopher Davenport"
 )
 
+lazy val scala2_12 = "2.12.8"
+lazy val scala2_13 = "2.13.0"
+
 // General Settings
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
   scalacOptions += "-Yrangepos",
 
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq(scalaVersion.value, "2.11.12"),
+  scalaVersion := scala2_12,
+  crossScalaVersions := Seq(scalaVersion.value, scala2_13),
 
   addCompilerPlugin("org.typelevel" % "kind-projector" % "0.10.3" cross CrossVersion.binary),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
-
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
-    "io.chrisdavenport"           %% "cats-scalacheck"            % "0.1.1"       % Test
+    "io.chrisdavenport"           %% "cats-scalacheck"            % "0.2.0-M1"    % Test,
   )
 )
 
@@ -206,12 +221,17 @@ lazy val mimaSettings = {
   Seq(
     mimaFailOnNoPrevious := false,
     mimaFailOnProblem := mimaVersions(version.value).toList.headOption.isDefined,
-    mimaPreviousArtifacts := (mimaVersions(version.value) ++ extraVersions)
-      .filterNot(excludedVersions.contains(_))
-      .map{v =>
-        val moduleN = moduleName.value + "_" + scalaBinaryVersion.value.toString
-        organization.value % moduleN % v
-      },
+    mimaPreviousArtifacts := {
+      if (VersionNumber(scalaVersion.value).matchesSemVer(SemanticSelector(">=2.13"))) Set.empty
+      else {
+        (mimaVersions(version.value) ++ extraVersions)
+          .filterNot(excludedVersions.contains(_))
+          .map { v =>
+            val moduleN = moduleName.value + "_" + scalaBinaryVersion.value.toString
+            organization.value % moduleN % v
+          }
+      }
+    },
     mimaBinaryIssueFilters ++= {
       import com.typesafe.tools.mima.core._
       import com.typesafe.tools.mima.core.ProblemFilters._

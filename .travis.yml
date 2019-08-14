@@ -2,8 +2,8 @@ sudo: false
 language: scala
 
 scala:
+  - 2.13.0
   - 2.12.8
-  - 2.11.12
 
 jdk:
   - openjdk8
@@ -20,7 +20,7 @@ install:
 script:
   - sbt ++$TRAVIS_SCALA_VERSION test
   - sbt ++$TRAVIS_SCALA_VERSION mimaReportBinaryIssues
-  - sbt ++$TRAVIS_SCALA_VERSION docs/makeMicrosite
+  - sbt ++2.12.8 docs/makeMicrosite #change back to sbt ++$TRAVIS_SCALA_VERSION docs/makeMicrosite once docs can be compiled for 2.13
 
 after_success:
 - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_REPO_SLUG == "ChristopherDavenport/cormorant" && sbt ++$TRAVIS_SCALA_VERSION publish
