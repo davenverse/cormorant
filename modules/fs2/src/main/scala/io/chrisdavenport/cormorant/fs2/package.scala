@@ -57,15 +57,52 @@ package object fs2 {
   def encodeRows[F[_]](p: Printer): Pipe[F, CSV.Row, String] = 
     _.map(p.print)
 
-  def writeRows[F[_], A: Write](p: Printer): Pipe[F, A, String] = 
-    _.map(Write[A].write).through(encodeRows(p))
+  /**
+    * Converts the current `Stream` to a `Stream[F, String]` by encoding its content
+    * using the provided `Printer`.
+    *
+    * This method requires a valid `Write[A]` implicit instance.
+    *
+    * @example {{{
+    * Stream
+    *   .emits(list)
+    *   .through(writeRows(headers, Printer.default))
+    * }}}
+    */
+  def writeRows[F[_], A: Write](p: Printer): Pipe[F, A, String] = s =>
+    s.map(Write[A].write)
+      .through(encodeRows(p))
+      .intersperse(p.rowSeparator)
 
+  /**
+    * Converts the current `Stream` to a `Stream[F, String]` by encoding its content
+    * using the provided `Printer` and prepending the provided headers.
+    *
+    * This method requires a valid `Write[A]` implicit instance.
+    *
+    * @example {{{
+    * Stream
+    *   .emits(list)
+    *   .through(writeWithHeaders(headers, Printer.default))
+    * }}}
+    */
   def writeWithHeaders[F[_], A: Write](headers: CSV.Headers, p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(headers)).covary[F] ++
-    s.through(writeRows(p))
+    Stream(p.print(headers)).covary[F] ++ Stream.emit(p.rowSeparator) ++ s.through(writeRows(p))
 
+  /**
+    * Converts the current `Stream` to a `Stream[F, String]` by encoding its content
+    * using the provided `Printer` and prepending the headers extracted from a valid
+    * `LabelledWrite[A]` implicit instance.
+    *
+    * @example {{{
+    * Stream
+    *   .emits(list)
+    *   .through(writeLabelled(Printer.default))
+    * }}}
+    */
   def writeLabelled[F[_], A: LabelledWrite](p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(LabelledWrite[A].headers)).covary[F] ++
-    s.map(LabelledWrite[A].write).through(encodeRows(p))
+    s.through(writeWithHeaders(LabelledWrite[A].headers, p)(new Write[A] {
+      override def write(a: A): CSV.Row = LabelledWrite[A].write(a)
+    }))
 
 }
