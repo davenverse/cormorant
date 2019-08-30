@@ -12,7 +12,7 @@ lazy val cormorant = project.in(file("."))
   .aggregate(core, generic, parser, refined, fs2, http4s)
 
 
-val catsV = "2.0.0-RC1"
+val catsV = "2.0.0-RC2"
 val shapelessV = "2.3.3"
 
 val http4sV = "0.21.0-M4"
