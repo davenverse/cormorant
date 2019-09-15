@@ -1,6 +1,6 @@
 package io.chrisdavenport.cormorant
 
-import cats.data.Validated
+import cats.implicits._
 
 object Cursor {
   private def optionIndexOf[A](xs: List[A])(a: A): Option[Int] = {
@@ -11,32 +11,32 @@ object Cursor {
 
   def atHeader(header: CSV.Header)(
       headers: CSV.Headers,
-      row: CSV.Row): Validated[Error.DecodeFailure, CSV.Field] = {
+      row: CSV.Row): Either[Error.DecodeFailure, CSV.Field] = {
     optionIndexOf(headers.l.toList)(header)
-      .fold[Validated[Error.DecodeFailure, Int]](
-        Validated.invalid(Error.DecodeFailure.single(
+      .fold[Either[Error.DecodeFailure, Int]](
+        Either.left(Error.DecodeFailure.single(
           s"Header $header not present in header: $headers for row: $row"))
-      )(Validated.valid)
-      .andThen(i => atIndex(row, i))
+      )(Either.right)
+      .flatMap(i => atIndex(row, i))
   }
 
-  def atIndex(row: CSV.Row, index: Int): Validated[Error.DecodeFailure, CSV.Field] = {
+  def atIndex(row: CSV.Row, index: Int): Either[Error.DecodeFailure, CSV.Field] = {
     row.l
       .toList
       .drop(index)
       .headOption
       .fold(
-        Validated.invalid[Error.DecodeFailure, CSV.Field](
+        Either.left[Error.DecodeFailure, CSV.Field](
           Error.DecodeFailure.single(s"Index $index not present in row: $row "))
-      )(Validated.valid[Error.DecodeFailure, CSV.Field])
+      )(Either.right[Error.DecodeFailure, CSV.Field])
   }
 
   def decodeAtHeader[A: Get](
-      header: CSV.Header)(headers: CSV.Headers, row: CSV.Row): Validated[Error.DecodeFailure, A] =
+      header: CSV.Header)(headers: CSV.Headers, row: CSV.Row): Either[Error.DecodeFailure, A] =
     atHeader(header)(headers, row)
-      .andThen(Get[A].get(_).fold(Validated.invalid, Validated.valid))
+      .flatMap(Get[A].get(_))
 
-  def decodeAtIndex[A: Get](row: CSV.Row, index: Int): Validated[Error.DecodeFailure, A] =
+  def decodeAtIndex[A: Get](row: CSV.Row, index: Int): Either[Error.DecodeFailure, A] =
     atIndex(row, index)
-      .andThen(Get[A].get(_).fold(Validated.invalid, Validated.valid))
+      .flatMap(Get[A].get(_))
 }
