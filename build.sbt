@@ -13,6 +13,7 @@ lazy val cormorant = project.in(file("."))
 
 
 val catsV = "2.0.0"
+val catsEffectV = "2.0.0"
 val shapelessV = "2.3.3"
 
 val http4sV = "0.21.0-M4"
@@ -100,7 +101,6 @@ lazy val scala2_13 = "2.13.0"
 // General Settings
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
-  scalacOptions += "-Yrangepos",
 
   scalaVersion := scala2_12,
   crossScalaVersions := Seq(scalaVersion.value, scala2_13),
@@ -110,6 +110,7 @@ lazy val commonSettings = Seq(
 
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
+    "org.typelevel"               %% "cats-effect"                % catsEffectV,
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
     "io.chrisdavenport"           %% "cats-scalacheck"            % "0.2.0"    % Test,
