@@ -127,15 +127,15 @@ class SemiAutoSpec extends Specification {
     import _root_.io.chrisdavenport.cormorant._
     import _root_.io.chrisdavenport.cormorant.implicits._
     import _root_.io.chrisdavenport.cormorant.generic.semiauto._
-    case class Foo(i: Int)
+    case class Foo(i: Int, m: String)
     case class Example(i: Foo, s: Option[String], b: Int)
     implicit val f : LabelledWrite[Foo] = deriveLabelledWrite
     val _ = f
     implicit val w : LabelledWrite[Example] = deriveLabelledWrite
-    val encoded = Encoding.writeComplete(List(Example(Foo(1), Option("Hello"), 73)))
+    val encoded = Encoding.writeComplete(List(Example(Foo(1, "bar"), Option("Hello"), 73)))
     val expected = CSV.Complete(
-      CSV.Headers(NonEmptyList.of(CSV.Header("i"), CSV.Header("s"), CSV.Header("b"))),
-      CSV.Rows(List(CSV.Row(NonEmptyList.of(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))))
+      CSV.Headers(NonEmptyList.of(CSV.Header("i"), CSV.Header("m"), CSV.Header("s"), CSV.Header("b"))),
+      CSV.Rows(List(CSV.Row(NonEmptyList.of(CSV.Field("1"), CSV.Field("bar"), CSV.Field("Hello"), CSV.Field("73")))))
     )
     encoded must_=== expected
   }
