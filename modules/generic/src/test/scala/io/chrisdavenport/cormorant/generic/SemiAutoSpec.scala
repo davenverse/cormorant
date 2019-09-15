@@ -131,8 +131,7 @@ class SemiAutoSpec extends Specification {
     case class Example(i: Foo, s: Option[String], b: Int)
     implicit val f : LabelledWrite[Foo] = deriveLabelledWrite
     val _ = f
-    // TODO: LabelledWrite
-    implicit val w : LabelledWrite[Example] = ??? //deriveLabelledWrite
+    implicit val w : LabelledWrite[Example] = deriveLabelledWrite
     val encoded = Encoding.writeComplete(List(Example(Foo(1), Option("Hello"), 73)))
     val expected = CSV.Complete(
       CSV.Headers(NonEmptyList.of(CSV.Header("i"), CSV.Header("s"), CSV.Header("b"))),
