@@ -13,6 +13,7 @@ lazy val cormorant = project.in(file("."))
 
 
 val catsV = "2.0.0"
+val catsEffectV = "2.0.0"
 val shapelessV = "2.3.3"
 
 val http4sV = "0.21.0-M4"
@@ -62,7 +63,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "2.0.0"
+      "co.fs2" %% "fs2-core" % "1.1.0-M1"
     )
   )
 
@@ -111,6 +112,7 @@ lazy val commonSettings = Seq(
 
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
+    "org.typelevel"               %% "cats-effect"                % catsEffectV,
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
     "io.chrisdavenport"           %% "cats-scalacheck"            % "0.2.0"    % Test,
