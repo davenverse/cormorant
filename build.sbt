@@ -31,7 +31,6 @@ lazy val generic = project.in(file("modules/generic"))
   .dependsOn(core)
   .settings(
     name := "cormorant-generic",
-    scalacOptions -= "-Xfatal-warnings",
     libraryDependencies ++= Seq(
       "com.chuusai" %% "shapeless" % "2.3.3"
     )
@@ -102,7 +101,6 @@ lazy val scala2_13 = "2.13.0"
 // General Settings
 lazy val commonSettings = Seq(
   organization := "io.chrisdavenport",
-  scalacOptions += "-Yrangepos",
 
   scalaVersion := scala2_12,
   crossScalaVersions := Seq(scalaVersion.value, scala2_13),
