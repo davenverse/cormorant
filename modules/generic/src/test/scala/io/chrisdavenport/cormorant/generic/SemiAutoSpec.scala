@@ -112,8 +112,7 @@ class SemiAutoSpec extends Specification {
     case class Example(i: Foo, s: Option[String], b: Int)
     implicit val f : LabelledRead[Foo] = deriveLabelledRead
     val _ = f
-    // TODO: LabelledRead
-    implicit val r : LabelledRead[Example] = ??? //deriveLabelledRead
+    implicit val r : LabelledRead[Example] = deriveLabelledRead
     val fromCSV = CSV.Complete(
       CSV.Headers(NonEmptyList.of(CSV.Header("b"), CSV.Header("s"), CSV.Header("i"))),
       CSV.Rows(List(CSV.Row(NonEmptyList.of(CSV.Field("73"), CSV.Field("Hello"), CSV.Field("1")))))
