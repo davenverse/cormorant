@@ -12,7 +12,7 @@ lazy val cormorant = project.in(file("."))
   .aggregate(core, generic, parser, refined, fs2, http4s)
 
 
-val catsV = "2.0.0-RC2"
+val catsV = "2.0.0"
 val shapelessV = "2.3.3"
 
 val http4sV = "0.21.0-M4"
@@ -42,7 +42,7 @@ lazy val parser = project.in(file("modules/parser"))
   .settings(
     name := "cormorant-parser",
     libraryDependencies ++= Seq(
-      "org.tpolecat" %% "atto-core" % "0.7.0-RC2"
+      "org.tpolecat" %% "atto-core" % "0.7.0"
     )
   )
 
@@ -113,7 +113,7 @@ lazy val commonSettings = Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
-    "io.chrisdavenport"           %% "cats-scalacheck"            % "0.2.0-M1"    % Test,
+    "io.chrisdavenport"           %% "cats-scalacheck"            % "0.2.0"    % Test,
   )
 )
 
