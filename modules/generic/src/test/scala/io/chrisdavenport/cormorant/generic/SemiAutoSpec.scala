@@ -2,7 +2,7 @@ package io.chrisdavenport.cormorant.generic
 
 import cats.data._
 import org.specs2._
-// import shapeless._
+import cats.implicits._
 
 class SemiAutoSpec extends Specification {
   override def is = s2"""
@@ -112,9 +112,16 @@ class SemiAutoSpec extends Specification {
     case class Example(i: Foo, s: Option[String], b: Int)
     implicit val f : LabelledRead[Foo] = deriveLabelledRead
     val _ = f
-    ???
     // TODO: LabelledRead
-    // implicit val r : LabelledRead[Example] = deriveLabelledRead
+    implicit val r : LabelledRead[Example] = ??? //deriveLabelledRead
+    val fromCSV = CSV.Complete(
+      CSV.Headers(NonEmptyList.of(CSV.Header("b"), CSV.Header("s"), CSV.Header("i"))),
+      CSV.Rows(List(CSV.Row(NonEmptyList.of(CSV.Field("73"), CSV.Field("Hello"), CSV.Field("1")))))
+    )
+    val expected = List(Example(Foo(1), Option("Hello"), 73))
+      .map(Either.right)
+    
+    Decoding.readLabelled[Example](fromCSV) must_=== expected
   }
 
   def derivedProductLabelledWrite = {
@@ -125,9 +132,14 @@ class SemiAutoSpec extends Specification {
     case class Example(i: Foo, s: Option[String], b: Int)
     implicit val f : LabelledWrite[Foo] = deriveLabelledWrite
     val _ = f
-    ???
     // TODO: LabelledWrite
-    // implicit val w : LabelledWrite[Example] = deriveLabelledWrite
+    implicit val w : LabelledWrite[Example] = ??? //deriveLabelledWrite
+    val encoded = Encoding.writeComplete(List(Example(Foo(1), Option("Hello"), 73)))
+    val expected = CSV.Complete(
+      CSV.Headers(NonEmptyList.of(CSV.Header("i"), CSV.Header("s"), CSV.Header("b"))),
+      CSV.Rows(List(CSV.Row(NonEmptyList.of(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))))
+    )
+    encoded must_=== expected
   }
 
 }

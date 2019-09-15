@@ -30,6 +30,7 @@ lazy val generic = project.in(file("modules/generic"))
   .dependsOn(core)
   .settings(
     name := "cormorant-generic",
+    scalacOptions -= "-Xfatal-warnings",
     libraryDependencies ++= Seq(
       "com.chuusai" %% "shapeless" % "2.3.3"
     )
