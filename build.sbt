@@ -21,13 +21,13 @@ val http4sV = "0.21.0-M4"
 val specs2V = "4.7.0"
 
 lazy val core = project.in(file("modules/core"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .settings(
     name := "cormorant-core"
   )
 
 lazy val generic = project.in(file("modules/generic"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-generic",
@@ -37,7 +37,7 @@ lazy val generic = project.in(file("modules/generic"))
   )
 
 lazy val parser = project.in(file("modules/parser"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core % "compile;test->test")
   .settings(
     name := "cormorant-parser",
@@ -47,7 +47,7 @@ lazy val parser = project.in(file("modules/parser"))
   )
 
 lazy val refined = project.in(file("modules/refined"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-refined",
@@ -57,7 +57,7 @@ lazy val refined = project.in(file("modules/refined"))
   )
 
 lazy val fs2 = project.in(file("modules/fs2"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core % "compile;test->test", parser)
   .settings(
     name := "cormorant-fs2",
@@ -67,7 +67,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
   )
 
 lazy val http4s = project.in(file("modules/http4s"))
-  .settings(commonSettings, releaseSettings, mimaSettings)
+  .settings(commonSettings, releaseSettings)
   .dependsOn(core % "compile;test->test", parser, fs2)
   .settings(
     name := "cormorant-http4s",
@@ -179,64 +179,6 @@ lazy val releaseSettings = {
         </developer>
         }
       </developers>
-    }
-  )
-}
-
-lazy val mimaSettings = {
-  import sbtrelease.Version
-
-  def semverBinCompatVersions(major: Int, minor: Int, patch: Int): Set[(Int, Int, Int)] = {
-    val majorVersions: List[Int] = List(major)
-    val minorVersions : List[Int] =
-      if (major >= 1) Range(0, minor).inclusive.toList
-      else List(minor)
-    def patchVersions(currentMinVersion: Int): List[Int] =
-      if (minor == 0 && patch == 0) List.empty[Int]
-      else if (currentMinVersion != minor) List(0)
-      else Range(0, patch - 1).inclusive.toList
-
-    val versions = for {
-      maj <- majorVersions
-      min <- minorVersions
-      pat <- patchVersions(min)
-    } yield (maj, min, pat)
-    versions.toSet
-  }
-
-  def mimaVersions(version: String): Set[String] = {
-    Version(version) match {
-      case Some(Version(major, Seq(minor, patch), _)) =>
-        semverBinCompatVersions(major.toInt, minor.toInt, patch.toInt)
-          .map{case (maj, min, pat) => maj.toString + "." + min.toString + "." + pat.toString}
-      case _ =>
-        Set.empty[String]
-    }
-  }
-  // Safety Net For Exclusions
-  lazy val excludedVersions: Set[String] = Set()
-
-  // Safety Net for Inclusions
-  lazy val extraVersions: Set[String] = Set()
-
-  Seq(
-    mimaFailOnNoPrevious := false,
-    mimaFailOnProblem := mimaVersions(version.value).toList.headOption.isDefined,
-    mimaPreviousArtifacts := {
-      if (VersionNumber(scalaVersion.value).matchesSemVer(SemanticSelector(">=2.13"))) Set.empty
-      else {
-        (mimaVersions(version.value) ++ extraVersions)
-          .filterNot(excludedVersions.contains(_))
-          .map { v =>
-            val moduleN = moduleName.value + "_" + scalaBinaryVersion.value.toString
-            organization.value % moduleN % v
-          }
-      }
-    },
-    mimaBinaryIssueFilters ++= {
-      import com.typesafe.tools.mima.core._
-      import com.typesafe.tools.mima.core.ProblemFilters._
-      Seq()
     }
   )
 }
