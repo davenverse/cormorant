@@ -95,7 +95,7 @@ lazy val contributors = Seq(
   "ChristopherDavenport" -> "Christopher Davenport"
 )
 
-lazy val scala2_12 = "2.12.8"
+lazy val scala2_12 = "2.12.10"
 lazy val scala2_13 = "2.13.0"
 
 // General Settings
