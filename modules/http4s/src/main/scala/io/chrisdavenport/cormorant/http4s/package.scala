@@ -41,7 +41,7 @@ package object http4s {
       s =>
         Entity(
           s.through(encodeRows(p))
-            .intersperse("\r\n")
+            .intersperse(p.rowSeparator)
             .through(text.utf8Encode)
         )
     )
@@ -63,7 +63,7 @@ package object http4s {
       s =>
         Entity(
           s.through(writeLabelled(p))
-            .intersperse("\r\n")
+            .intersperse(p.rowSeparator)
             .through(text.utf8Encode)
         )
     )
