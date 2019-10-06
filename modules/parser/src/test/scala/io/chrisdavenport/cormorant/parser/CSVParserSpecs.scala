@@ -32,7 +32,7 @@ class CSVParserSpec extends mutable.Specification {
         CSV.Header("Something2"),
         CSV.Header("Something3")
       )
-      val result = (CSVParser.name, many(CSVParser.COMMA ~> CSVParser.name)).mapN(_ :: _).parse(baseHeader).done
+      val result = (CSVParser.name, many(CSVParser.SEPARATOR ~> CSVParser.name)).mapN(_ :: _).parse(baseHeader).done
       result must_=== ParseResult.Done("", expect)
     }
 
