@@ -10,7 +10,7 @@ import cats.implicits._
 package object fs2 {
 
   def parseRowsSafe[F[_]]: Pipe[F, String, Either[Error.ParseFailure, CSV.Row]] =
-    _.map(parser.parseRow)
+    _.map(parser.parseRow(_))
   def parseRows[F[_]: RaiseThrowable]: Pipe[F, String, CSV.Row] =
     _.through(parseRowsSafe).rethrow
 
