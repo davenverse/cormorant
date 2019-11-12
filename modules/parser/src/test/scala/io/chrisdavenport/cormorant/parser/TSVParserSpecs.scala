@@ -32,7 +32,7 @@ class TSVParserSpec extends mutable.Specification {
         CSV.Header("Something2"),
         CSV.Header("Something3")
       )
-      val result = (TSVParser.name, many(TSVParser.TAB ~> TSVParser.name)).mapN(_ :: _).parse(baseHeader).done
+      val result = (TSVParser.name, many(TSVParser.SEPARATOR ~> TSVParser.name)).mapN(_ :: _).parse(baseHeader).done
       result must_=== ParseResult.Done("", expect)
     }
 

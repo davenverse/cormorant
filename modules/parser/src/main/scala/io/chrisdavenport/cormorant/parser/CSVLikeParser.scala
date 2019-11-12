@@ -5,7 +5,6 @@ import atto._
 import Atto._
 import cats.data._
 import cats.implicits._
-
 /**
  * This CSVParser tries to stay fairly close to the initial specification
  * https://tools.ietf.org/html/rfc4180
@@ -65,13 +64,11 @@ import cats.implicits._
  *     another double quote.  For example:
  *
  *     "aaa","b""bb","ccc"
-  **/
-object CSVParser {
-
+ **/
+abstract class CSVLikeParser(val separator: Char) {
   val dquote: Char = '\"'
   val dquoteS: String = dquote.toString
-  val comma: Char = ','
-  val commaS: String = comma.toString
+  val separatorS: String = separator.toString
   val cr: Char = '\r'
   val crS: String = cr.toString
   val lf: Char = '\n'
@@ -93,14 +90,14 @@ object CSVParser {
     (CRLF | char(lf).map((cr, _))).named("PERMISSIVE_CRLF")
 
   // COMMA = %x2C
-  val COMMA: Parser[Char] = char(comma).named("COMMA")
+  val SEPARATOR: Parser[Char] = char(separator).named("SEPARATOR")
 
   // TEXTDATA =  %x20-21 / %x23-2B / %x2D-7E
-  val TEXTDATA: Parser[Char] = noneOf(dquoteS + commaS + crS + lfS).named("TEXTDATA")
+  val TEXTDATA: Parser[Char] = noneOf(dquoteS + separatorS + crS + lfS).named("TEXTDATA")
 
   // escaped = DQUOTE *(TEXTDATA / COMMA / CR / LF / 2DQUOTE) DQUOTE
   val escaped: Parser[CSV.Field] =
-    (DQUOTE ~> many(TEXTDATA | COMMA | CR | LF | TWO_DQUOTE.map(_ => dquote))
+    (DQUOTE ~> many(TEXTDATA | SEPARATOR | CR | LF | TWO_DQUOTE.map(_ => dquote))
       .map(_.mkString)
       .map(CSV.Field) <~ DQUOTE)
       .named("escaped")
@@ -119,13 +116,13 @@ object CSVParser {
     .map(f => CSV.Header(f.x))
     .named("CSV.Header")
   // header = name *(COMMA name)
-  val header: Parser[CSV.Headers] = (name, many(COMMA ~> name))
+  val header: Parser[CSV.Headers] = (name, many(SEPARATOR ~> name))
     .mapN(NonEmptyList(_, _))
     .map(CSV.Headers)
     .named("CSV.Headers")
 
   // record = field *(COMMA field)
-  val record: Parser[CSV.Row] = (field, many(COMMA ~> field))
+  val record: Parser[CSV.Row] = (field, many(SEPARATOR ~> field))
     .mapN(NonEmptyList(_, _))
     .map(CSV.Row)
     .named("CSV.Row")
