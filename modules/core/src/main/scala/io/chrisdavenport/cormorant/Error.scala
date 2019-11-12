@@ -8,6 +8,7 @@ import cats.implicits._
 sealed trait Error extends Exception {
   final override def fillInStackTrace(): Throwable = this
   final override def getMessage: String = toString
+  def toString: String
 }
 object Error {
   final case class ParseFailure(reason: String) extends Error
@@ -16,9 +17,7 @@ object Error {
       ParseFailure(s"Invalid Input: Received $input")
   }
 
-  final case class DecodeFailure(failure: NonEmptyList[String]) extends Error {
-    override def toString: String = s"DecodeFailure($failure)"
-  }
+  final case class DecodeFailure(failure: NonEmptyList[String]) extends Error
   object DecodeFailure {
     def single(reason: String): DecodeFailure = DecodeFailure(NonEmptyList.of(reason))
     implicit val decodeFailureSemigroup: Semigroup[DecodeFailure] = {
@@ -30,5 +29,4 @@ object Error {
   }
 
   final case class PrintFailure(reason: String) extends Error
-
 }
