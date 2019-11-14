@@ -18,7 +18,7 @@ val shapelessV = "2.3.3"
 
 val http4sV = "0.21.0-M5"
 
-val specs2V = "4.8.0"
+val specs2V = "4.8.1"
 
 lazy val core = project.in(file("modules/core"))
   .settings(commonSettings, releaseSettings)
