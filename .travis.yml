@@ -1,30 +1,57 @@
 sudo: false
 language: scala
 
-scala:
-  - 2.13.0
-  - 2.12.8
-
 jdk:
-  - openjdk8
+  - openjdk11
 
 before_install:
+  - git fetch --tags
   - export PATH=${PATH}:./vendor/bundle
 
-install:
-  - rvm use 2.6.0 --install --fuzzy
-  - gem update --system
-  - gem install sass
-  - gem install jekyll -v 3.2.1
+stages:
+  - name: test
+  - name: release
+    if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
 
-script:
-  - sbt ++$TRAVIS_SCALA_VERSION test
-  - sbt ++$TRAVIS_SCALA_VERSION mimaReportBinaryIssues
-  - sbt ++2.12.8 docs/makeMicrosite #change back to sbt ++$TRAVIS_SCALA_VERSION docs/makeMicrosite once docs can be compiled for 2.13
 
-after_success:
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_REPO_SLUG == "ChristopherDavenport/cormorant" && sbt ++$TRAVIS_SCALA_VERSION publish
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_REPO_SLUG == "ChristopherDavenport/cormorant" && test $TRAVIS_SCALA_VERSION == "2.12.8" && sbt docs/publishMicrosite
+scala_version_212: &scala_version_212 "2.12.10"
+scala_version_213: &scala_version_213 "2.13.1"
+
+jobs:
+  include:
+    # stage="test" if no stage is specified
+    -
+      name: test 2.13
+      scala: *scala_version_213
+      script: sbt ++$TRAVIS_SCALA_VERSION test
+    - name: test 2.12
+      scala: *scala_version_212
+      script: sbt ++$TRAVIS_SCALA_VERSION test
+    # - 
+    #   name: mima
+    #   script: sbt +mimaReportBinaryIssues
+    -
+      name: docs
+      scala: *scala_version_212
+      install:
+        - rvm use 2.6.0 --install --fuzzy
+        - gem update --system
+        - gem install sass
+        - gem install jekyll -v 3.2.1
+      script: sbt ++$TRAVIS_SCALA_VERSION docs/makeMicrosite
+    # run ci-release only if previous stages passed
+    - stage: release
+      name: release
+      script: sbt ci-release
+    - stage: release
+      name: microsite
+      scala: *scala_version_212
+      install:
+        - rvm use 2.6.0 --install --fuzzy
+        - gem update --system
+        - gem install sass
+        - gem install jekyll -v 3.2.1
+      script: sbt ++$TRAVIS_SCALA_VERSION docs/publishMicrosite
 
 cache:
   directories:
