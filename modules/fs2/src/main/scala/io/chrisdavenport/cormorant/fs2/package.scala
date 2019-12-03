@@ -2,15 +2,20 @@ package io.chrisdavenport.cormorant
 
 import _root_.fs2._
 import cats.implicits._
+import atto._
+import Atto._
 
   /**
     * I don't think this is good enough, I think we need a custom pull which emits
     * spec CSV Rows individually
     **/
 package object fs2 {
+import io.chrisdavenport.cormorant.parser.`package`.CSVParser
+import atto.ParseResult
 
   def parseRowsSafe[F[_]]: Pipe[F, String, Either[Error.ParseFailure, CSV.Row]] =
-    _.map(parser.parseRow(_))
+    _.through(parseN[F, CSV.Row](CSVParser.record <~ opt(CSVParser.PERMISSIVE_CRLF)))
+      .map(row => Either.right(row))
   def parseRows[F[_]: RaiseThrowable]: Pipe[F, String, CSV.Row] =
     _.through(parseRowsSafe).rethrow
 
@@ -24,18 +29,58 @@ package object fs2 {
     **/
   def parseCompleteSafe[F[_]]: Pipe[F, String, 
     Either[Error.ParseFailure,(CSV.Headers, Either[Error.ParseFailure, CSV.Row])]] = {
-      def partialParseComplete: Pipe[F, String, Either[Error.ParseFailure, (CSV.Headers, Stream[F,String])]] = 
-        _.pull.uncons1.flatMap{
-        case Some((headers, s)) => 
-          val headersParsed : Either[Error.ParseFailure, CSV.Headers] = parser.parseHeaders(headers)
-          Pull.output1(headersParsed.map((_, s))) >> Pull.done
-        case None =>
-          Pull.done
-      }.stream
+      _.through(parse1(parser.CSVParser.header <~ parser.CSVParser.PERMISSIVE_CRLF)).map[Either[Error.ParseFailure, (CSV.Headers, Stream[F, String])]]{
+        case (ParseResult.Done(rest, a), s) => Either.right((a, Stream(rest) ++ s))
+        case (e, _) => e.either.leftMap(Error.ParseFailure.apply).map(h => (h, Stream.empty))
+      }.flatMap{_.traverse{
+        case (h, s) => s.through(parseN(parser.CSVParser.record <~ opt(parser.CSVParser.PERMISSIVE_CRLF))).map{row => (h, Either.right(row))}
+      }}
+    }
 
-      _.through(partialParseComplete).flatMap(_.traverse{
-        case (h, s) => s.map(s => (h, parser.parseRow(s)))
-      })
+  private def parse1[F[_], A](p: atto.Parser[A]): Pipe[F, String, (ParseResult[A], Stream[F, String])] = s => {
+      def go(r: ParseResult[A])(s: Stream[F, String]): Pull[F, (ParseResult[A], Stream[F, String]), Unit] = {
+        r match {
+          case p@ParseResult.Partial(_) =>
+            s.pull.uncons.flatMap{
+              // Add String To Result If Stream Has More Values
+              case Some((c, rest)) => go(p.feed(Stream.chunk(c).compile.string))(rest)
+              // Reached Stream Termination and Still Partial - Return the partial
+              // If we do not call done here, if this can still accept input it will
+              // be a partial rather than a done.
+              case None => Pull.output1((r.done, Stream.empty))
+            }
+          case other => Pull.output1((other.done, s))
+        }
+      }
+      go(p.parse(""))(s).stream
+    }
+
+  private def parseN[F[_], A](p: Parser[A]): Pipe[F, String, A] = s => {
+      def exhaust(r: ParseResult[A], acc: List[A]): (ParseResult[A], List[A]) = {
+        r match {
+          case ParseResult.Done(in, a) if in === "" =>  (r, a :: acc)
+          case ParseResult.Done(in, a) => exhaust(p.parse(in), a :: acc)
+          case _           => (r, acc)
+        }
+      }
+
+  
+      def go(r: ParseResult[A])(s: Stream[F, String]): Pull[F, A, Unit] = {
+        s.pull.uncons.flatMap{
+          case Some((c, rest)) =>
+            val s = Stream.chunk(c).compile.string
+            val (r0, acc) = r match {
+              case ParseResult.Done(in, a)    => (p.parse(in + s), List(a))
+              case ParseResult.Fail(_, _, _) => (r, Nil)
+              case ParseResult.Partial(_)     => (r.feed(s), Nil)
+            }
+            val (r1, as) = exhaust(r0, acc)
+            Pull.output(Chunk.seq(as.reverse)) >> go(r1)(rest)
+          case None => Pull.output(Chunk.seq(exhaust(r.done, Nil)._2))
+        }
+      }
+  
+      go(p.parse(""))(s).stream
     }
 
   def parseComplete[F[_]: RaiseThrowable]: Pipe[F, String, (CSV.Headers, CSV.Row)] =

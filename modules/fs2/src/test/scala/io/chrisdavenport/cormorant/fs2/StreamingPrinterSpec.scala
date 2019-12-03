@@ -1,12 +1,17 @@
-package io.chrisdavenport.cormorant.fs2
+package io.chrisdavenport.cormorant
+package fs2
 
 import cats.data.NonEmptyList
-import cats.effect.IO
-import fs2.Stream
+import cats.effect._
+import cats.effect.specs2.CatsIO
+import _root_.fs2.Stream
 import io.chrisdavenport.cormorant._
 import io.chrisdavenport.cormorant.implicits._
+import scala.concurrent.duration._
 
-class StreamingParseSpec extends CormorantSpec {
+class StreamingPrinterSpec extends CormorantSpec with CatsIO {
+
+  override val Timeout = 1.minute
 
   "Streaming printer should" in {
 
@@ -34,7 +39,7 @@ class StreamingParseSpec extends CormorantSpec {
     }.set(minTestsOk = 20, workers = 2)
 
     "complete should round trip " in {
-      case class Foo(color: String, food: String, number: Int)
+      final case class Foo(color: String, food: String, number: Int)
 
       val list = List(
         Foo("Blue", "Pizza", 1),
@@ -64,6 +69,8 @@ class StreamingParseSpec extends CormorantSpec {
 
       result should_=== expectedCSVString
     }
+
+    
 
   }
 
