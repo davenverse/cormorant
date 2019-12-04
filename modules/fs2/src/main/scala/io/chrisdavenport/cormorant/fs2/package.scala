@@ -12,9 +12,17 @@ import io.chrisdavenport.cormorant.parser.CSVParser
     **/
 package object fs2 {
 
+  /**
+   * Removes any empty row - i.e. Row(NonEmptyList.of(""))
+   */
   def parseRowsSafe[F[_]]: Pipe[F, String, Either[Error.ParseFailure, CSV.Row]] =
-    _.through(parseN[F, CSV.Row](CSVParser.record <~ opt(CSVParser.PERMISSIVE_CRLF)))
+    _.through(parseN[F, CSV.Row](opt(CSVParser.PERMISSIVE_CRLF) ~> CSVParser.record))
+      .through(clearEmptyRows)
       .map(row => Either.right(row))
+
+  /**
+   * Removes any empty row - i.e. Row(NonEmptyList.of(""))
+   **/
   def parseRows[F[_]: RaiseThrowable]: Pipe[F, String, CSV.Row] =
     _.through(parseRowsSafe).rethrow
 
@@ -25,17 +33,18 @@ package object fs2 {
   /**
     * Read the first line as the headers, the rest as rows.
     * This is super general to allow for better combinators based on it
+    * Removes Empty Rows
     **/
   def parseCompleteSafe[F[_]]: Pipe[F, String, 
     Either[Error.ParseFailure,(CSV.Headers, Either[Error.ParseFailure, CSV.Row])]] = {
       // _.through(cleanLastStringCRLF[F])
-      _.through(parse1(CSVParser.header <~ CSVParser.PERMISSIVE_CRLF)).map[Either[Error.ParseFailure, (CSV.Headers, Stream[F, String])]]{
+      _.through(parse1(opt(CSVParser.PERMISSIVE_CRLF) ~> CSVParser.header)).map[Either[Error.ParseFailure, (CSV.Headers, Stream[F, String])]]{
         case (ParseResult.Done(rest, a), s) => Either.right((a, Stream(rest) ++ s))
         case (e, _) => e.either.leftMap(Error.ParseFailure.apply).map(h => (h, Stream.empty))
       }.flatMap{_.traverse{
-        case (h, s) => s.through(parseN(CSVParser.record <~ opt(CSVParser.PERMISSIVE_CRLF))).map{row => (h, Either.right(row))}
+        case (h, s) => s.through(parseN(opt(CSVParser.PERMISSIVE_CRLF) ~> CSVParser.record)).map{row => (h, Either.right(row))}
       }}
-      .through(clearEmptyRowsIfHeadersNonEmpty)
+      .through(clearEmptyRowsE)
     }
 
   private def parse1[F[_], A](p: atto.Parser[A]): Pipe[F, String, (ParseResult[A], Stream[F, String])] = s => {
@@ -83,15 +92,16 @@ package object fs2 {
       go(p.parse(""))(s).stream
     }
 
+  private val emptyRow = CSV.Row(cats.data.NonEmptyList(CSV.Field(""), Nil))
   private type T = Either[Error.ParseFailure,(CSV.Headers, Either[Error.ParseFailure, CSV.Row])]
-  private def clearEmptyRowsIfHeadersNonEmpty[F[_]]: Pipe[F, T, T] = 
+  private def clearEmptyRowsE[F[_]]: Pipe[F, T, T] = 
     s => {
       def removeEmptyPull(s: Stream[F, T]): Pull[F, T, Unit] =  {
         s.pull.uncons1.flatMap{
           case Some((next, rest)) => 
-            next.flatMap{case (h, eRow) => 
+            next.flatMap{case (_, eRow) => 
               eRow.map{row => 
-                if (row == CSV.Row(cats.data.NonEmptyList(CSV.Field(""), Nil)) && h.l.size > 1) removeEmptyPull(rest)
+                if (row == emptyRow) removeEmptyPull(rest)
                 else Pull.output1(next) >> removeEmptyPull(rest)
             }
           }.getOrElse(Pull.output1(next))
@@ -100,6 +110,19 @@ package object fs2 {
         
       }
       removeEmptyPull(s).stream
+    }
+
+  private def clearEmptyRows[F[_]]: Pipe[F, CSV.Row, CSV.Row] =
+    s => {
+      def removeEmpty(s: Stream[F, CSV.Row]): Pull[F, CSV.Row, Unit] = {
+        s.pull.uncons1.flatMap{ 
+          case Some((next, rest)) => 
+            if (next == emptyRow) removeEmpty(rest)
+            else Pull.output1(next) >> removeEmpty(rest)
+          case None => Pull.done
+        }
+      }
+      removeEmpty(s).stream
     }
 
   def parseComplete[F[_]: RaiseThrowable]: Pipe[F, String, (CSV.Headers, CSV.Row)] =
@@ -117,9 +140,8 @@ package object fs2 {
   def readLabelled[F[_]: RaiseThrowable, A: LabelledRead]: Pipe[F, String, A] =
     _.through(readLabelledCompleteSafe).rethrow
 
-
   def encodeRows[F[_]](p: Printer): Pipe[F, CSV.Row, String] = 
-    _.map(p.print)
+    _.map(p.print).intersperse(p.rowSeparator)
 
   /**
     * Converts the current `Stream` to a `Stream[F, String]` by encoding its content
@@ -136,8 +158,9 @@ package object fs2 {
   def writeRows[F[_], A: Write](p: Printer): Pipe[F, A, String] = s =>
     s.map(Write[A].write)
       .through(encodeRows(p))
-      .intersperse(p.rowSeparator)
 
+  def encodeWithHeaders[F[_]](headers: CSV.Headers, p: Printer): Pipe[F, CSV.Row, String] = s =>
+    Stream(p.print(headers)).covary[F] ++ Stream(p.rowSeparator) ++ s.through(encodeRows(p))
   /**
     * Converts the current `Stream` to a `Stream[F, String]` by encoding its content
     * using the provided `Printer` and prepending the provided headers.
@@ -151,7 +174,7 @@ package object fs2 {
     * }}}
     */
   def writeWithHeaders[F[_], A: Write](headers: CSV.Headers, p: Printer): Pipe[F, A, String] = s =>
-    Stream(p.print(headers)).covary[F] ++ Stream.emit(p.rowSeparator) ++ s.through(writeRows(p))
+    Stream(p.print(headers)).covary[F] ++ Stream(p.rowSeparator) ++ s.through(writeRows(p))
 
   /**
     * Converts the current `Stream` to a `Stream[F, String]` by encoding its content

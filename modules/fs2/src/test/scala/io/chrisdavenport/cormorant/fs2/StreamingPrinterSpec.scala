@@ -23,7 +23,7 @@ class StreamingPrinterSpec extends CormorantSpec with CatsIO {
         .compile
         .toList
         .unsafeRunSync must_=== List(a)
-    }.set(minTestsOk = 20, workers = 2)
+    }//.set(minTestsOk = 20, workers = 2)
 
     "rows should round trip" in prop { a: CSV.Rows =>
       val decoded = CSV.Rows(
@@ -36,9 +36,29 @@ class StreamingPrinterSpec extends CormorantSpec with CatsIO {
           .unsafeRunSync
       )
       decoded must_=== a
-    }.set(minTestsOk = 20, workers = 2)
+    }//.set(minTestsOk = 20, workers = 2)
 
-    "complete should round trip " in {
+    "rows special case for empty removal" in {
+      import CSV._
+
+      val rows = Rows(
+        List(
+          Row(NonEmptyList.of(Field(""))),
+          // Row(NonEmptyList.of(Field("")))
+        )
+      )
+      val expected = List.empty[CSV.Row]
+
+      Stream
+        .emits[IO, CSV.Row](rows.rows)
+        .through(encodeRows(Printer.default))
+        .through(parseRows)
+        .compile
+        .toList
+        .unsafeRunSync must_=== expected
+    }
+
+    "complete should write as expected" in {
       final case class Foo(color: String, food: String, number: Int)
 
       val list = List(
@@ -70,7 +90,28 @@ class StreamingPrinterSpec extends CormorantSpec with CatsIO {
       result should_=== expectedCSVString
     }
 
-    
+
+    "complete should round trip with streaming encoder" in prop { csv: CSV.Complete => 
+      val expected = csv.rows.rows.map(row => (csv.headers, row))
+      Stream.emits(csv.rows.rows)
+        .through(encodeWithHeaders(csv.headers, Printer.default))
+        .covary[IO]
+        .through(parseComplete)
+        .compile
+        .toList
+        .map(_ must_=== expected)
+    }
+
+    "complete should round trip with printer" in prop { csv: CSV.Complete => 
+      val output = Printer.default.print(csv)
+      val expected = csv.rows.rows.map(row => (csv.headers, row))
+      Stream(output)
+        .covary[IO]
+        .through(parseComplete)
+        .compile
+        .toList
+        .map(_ must_=== expected)
+    }
 
   }
 
