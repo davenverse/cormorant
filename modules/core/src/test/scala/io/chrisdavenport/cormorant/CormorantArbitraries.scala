@@ -40,8 +40,12 @@ trait CormorantArbitraries {
     } yield rows
   )
 
+  // Same logic as fields
   implicit val arbHeader : Arbitrary[CSV.Header] = Arbitrary(
-    Gen.listOf(Gen.alphaNumStr).map(_.mkString).map(CSV.Header.apply)
+    for {
+      char <- Gen.asciiPrintableChar
+      string  <- Gen.asciiPrintableStr
+    } yield  CSV.Header(char.toString() + string)
   )
 
   // Must be 1 or more
