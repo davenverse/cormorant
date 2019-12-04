@@ -5,7 +5,7 @@ import _root_.cats.data._
 
 trait CormorantArbitraries {
     implicit val arbField : Arbitrary[CSV.Field] = Arbitrary(
-    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Field.apply)
+    Gen.listOf(Gen.alphaNumStr).map(_.mkString).map(CSV.Field.apply)
   )
 
   // Must be 1 or More
@@ -35,7 +35,7 @@ trait CormorantArbitraries {
   )
 
   implicit val arbHeader : Arbitrary[CSV.Header] = Arbitrary(
-    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Header.apply)
+    Gen.listOf(Gen.alphaNumStr).map(_.mkString).map(CSV.Header.apply)
   )
 
   // Must be 1 or more
