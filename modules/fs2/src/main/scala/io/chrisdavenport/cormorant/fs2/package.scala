@@ -4,14 +4,13 @@ import _root_.fs2._
 import cats.implicits._
 import atto._
 import Atto._
+import io.chrisdavenport.cormorant.parser.CSVParser
 
   /**
     * I don't think this is good enough, I think we need a custom pull which emits
     * spec CSV Rows individually
     **/
 package object fs2 {
-import io.chrisdavenport.cormorant.parser.`package`.CSVParser
-import atto.ParseResult
 
   def parseRowsSafe[F[_]]: Pipe[F, String, Either[Error.ParseFailure, CSV.Row]] =
     _.through(parseN[F, CSV.Row](CSVParser.record <~ opt(CSVParser.PERMISSIVE_CRLF)))
@@ -30,11 +29,11 @@ import atto.ParseResult
   def parseCompleteSafe[F[_]]: Pipe[F, String, 
     Either[Error.ParseFailure,(CSV.Headers, Either[Error.ParseFailure, CSV.Row])]] = {
       // _.through(cleanLastStringCRLF[F])
-      _.through(parse1(parser.CSVParser.header <~ parser.CSVParser.PERMISSIVE_CRLF)).map[Either[Error.ParseFailure, (CSV.Headers, Stream[F, String])]]{
+      _.through(parse1(CSVParser.header <~ CSVParser.PERMISSIVE_CRLF)).map[Either[Error.ParseFailure, (CSV.Headers, Stream[F, String])]]{
         case (ParseResult.Done(rest, a), s) => Either.right((a, Stream(rest) ++ s))
         case (e, _) => e.either.leftMap(Error.ParseFailure.apply).map(h => (h, Stream.empty))
       }.flatMap{_.traverse{
-        case (h, s) => s.through(parseN(parser.CSVParser.record <~ opt(parser.CSVParser.PERMISSIVE_CRLF))).map{row => (h, Either.right(row))}
+        case (h, s) => s.through(parseN(CSVParser.record <~ opt(CSVParser.PERMISSIVE_CRLF))).map{row => (h, Either.right(row))}
       }}
       .through(clearEmptyRowsIfHeadersNonEmpty)
     }
