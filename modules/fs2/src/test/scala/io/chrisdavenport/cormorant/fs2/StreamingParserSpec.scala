@@ -13,13 +13,18 @@ import java.io.InputStream
 
 class StreamingParserSpec extends CormorantSpec with CatsIO {
 
+  def ruinDelims(str: String) = augmentString(str).flatMap {
+    case '\n' => "\r\n"
+    case c => c.toString
+  }
+
   "Streaming Parser" should {
     // https://github.com/ChristopherDavenport/cormorant/pull/84
     "parse a known value that did not work with streaming" in {
       val x = """First Name,Last Name,Email
 Larry,Bordowitz,larry@example.com
 Anonymous,Hippopotamus,hippo@example.com"""
-      val source = IO.pure(new ByteArrayInputStream(x.getBytes): InputStream)
+      val source = IO.pure(new ByteArrayInputStream(ruinDelims(x).getBytes): InputStream)
       Stream.resource(Blocker[IO]).flatMap{blocker => 
         _root_.fs2.io.readInputStream(
           source,

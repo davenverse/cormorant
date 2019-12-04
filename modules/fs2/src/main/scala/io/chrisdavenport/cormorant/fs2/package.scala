@@ -29,12 +29,14 @@ import atto.ParseResult
     **/
   def parseCompleteSafe[F[_]]: Pipe[F, String, 
     Either[Error.ParseFailure,(CSV.Headers, Either[Error.ParseFailure, CSV.Row])]] = {
+      // _.through(cleanLastStringCRLF[F])
       _.through(parse1(parser.CSVParser.header <~ parser.CSVParser.PERMISSIVE_CRLF)).map[Either[Error.ParseFailure, (CSV.Headers, Stream[F, String])]]{
         case (ParseResult.Done(rest, a), s) => Either.right((a, Stream(rest) ++ s))
         case (e, _) => e.either.leftMap(Error.ParseFailure.apply).map(h => (h, Stream.empty))
       }.flatMap{_.traverse{
         case (h, s) => s.through(parseN(parser.CSVParser.record <~ opt(parser.CSVParser.PERMISSIVE_CRLF))).map{row => (h, Either.right(row))}
       }}
+      .through(clearEmptyRowsIfHeadersNonEmpty)
     }
 
   private def parse1[F[_], A](p: atto.Parser[A]): Pipe[F, String, (ParseResult[A], Stream[F, String])] = s => {
@@ -79,8 +81,26 @@ import atto.ParseResult
           case None => Pull.output(Chunk.seq(exhaust(r.done, Nil)._2))
         }
       }
-  
       go(p.parse(""))(s).stream
+    }
+
+  private type T = Either[Error.ParseFailure,(CSV.Headers, Either[Error.ParseFailure, CSV.Row])]
+  private def clearEmptyRowsIfHeadersNonEmpty[F[_]]: Pipe[F, T, T] = 
+    s => {
+      def removeEmptyPull(s: Stream[F, T]): Pull[F, T, Unit] =  {
+        s.pull.uncons1.flatMap{
+          case Some((next, rest)) => 
+            next.flatMap{case (h, eRow) => 
+              eRow.map{row => 
+                if (row == CSV.Row(cats.data.NonEmptyList(CSV.Field(""), Nil)) && h.l.size > 1) removeEmptyPull(rest)
+                else Pull.output1(next) >> removeEmptyPull(rest)
+            }
+          }.getOrElse(Pull.output1(next))
+          case None => Pull.done
+        }
+        
+      }
+      removeEmptyPull(s).stream
     }
 
   def parseComplete[F[_]: RaiseThrowable]: Pipe[F, String, (CSV.Headers, CSV.Row)] =
