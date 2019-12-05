@@ -4,9 +4,15 @@ import org.scalacheck._
 import _root_.cats.data._
 
 trait CormorantArbitraries {
+    // Necessary for Round-tripping for fs2. As we can't always clarify the empty string following
+    // semantics. We use printable to remove the subset that doesn't pass through utf8 encoding
     implicit val arbField : Arbitrary[CSV.Field] = Arbitrary(
-    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Field.apply)
-  )
+      for {
+        char <- Gen.asciiPrintableChar
+        string  <- Gen.asciiPrintableStr
+      } yield  CSV.Field(char.toString() + string)
+    )
+
 
   // Must be 1 or More
   def genRow(s: Int): Gen[CSV.Row] = for {
@@ -16,7 +22,7 @@ trait CormorantArbitraries {
 
   implicit val arbRow: Arbitrary[CSV.Row] = Arbitrary(
     for {
-      size <- Gen.choose(1, 100)
+      size <- Gen.choose(1, 25)
       row <- genRow(size)
     } yield row
   )
@@ -29,13 +35,17 @@ trait CormorantArbitraries {
 
   implicit val arbRows : Arbitrary[CSV.Rows] = Arbitrary(
     for {
-      choose <- Gen.choose(1, 100)
+      choose <- Gen.choose(1, 25)
       rows <- genRows(choose)
     } yield rows
   )
 
+  // Same logic as fields
   implicit val arbHeader : Arbitrary[CSV.Header] = Arbitrary(
-    Gen.listOf(Arbitrary.arbitrary[String]).map(_.mkString).map(CSV.Header.apply)
+    for {
+      char <- Gen.asciiPrintableChar
+      string  <- Gen.asciiPrintableStr
+    } yield  CSV.Header(char.toString() + string)
   )
 
   // Must be 1 or more
@@ -46,14 +56,14 @@ trait CormorantArbitraries {
 
   implicit val arbHeaders : Arbitrary[CSV.Headers] = Arbitrary(
     for {
-      choose <- Gen.choose(1, 100)
+      choose <- Gen.choose(1, 25)
       headers <- genHeaders(choose)
     } yield headers
   )
 
   implicit val arbComplete : Arbitrary[CSV.Complete] = Arbitrary(
     for {
-      choose <- Gen.choose(1, 100)
+      choose <- Gen.choose(1, 25)
       headers <- genHeaders(choose)
       rows <- genRows(choose)
     } yield CSV.Complete(headers, rows)
