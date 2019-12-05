@@ -27,9 +27,9 @@ jobs:
     - name: test 2.12
       scala: *scala_version_212
       script: sbt ++$TRAVIS_SCALA_VERSION test
-    # - 
-    #   name: mima
-    #   script: sbt +mimaReportBinaryIssues
+    - 
+      name: mima
+      script: sbt +mimaReportBinaryIssues
     -
       name: docs
       scala: *scala_version_212
