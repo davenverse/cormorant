@@ -87,7 +87,7 @@ abstract class CSVLikeParser(val separator: Char) {
 
   // Genuine CRLF or a Line Feed which is translated to a CRLF
   val PERMISSIVE_CRLF: Parser[(Char, Char)] =
-    (CRLF | char(lf).map((cr, _))).named("PERMISSIVE_CRLF")
+    (CRLF | LF.map((cr, _))).named("PERMISSIVE_CRLF")
 
   // COMMA = %x2C
   val SEPARATOR: Parser[Char] = char(separator).named("SEPARATOR")
