@@ -10,7 +10,9 @@ import cats.implicits._
  * https://tools.ietf.org/html/rfc4180
  *
  * Deviations from the specification, here I have chosen to use a
- * permissive CRLF that will accept a CRLF or a LF.
+ * permissive CRLF that will accept a CRLF, LF, or CR.
+ * Note that the CR is not directly in the initial spec, but in rare
+ * cases csvs can have this delimiter
  *
  * The important details are as follows
  * 1.  Each record is located on a separate line, delimited by a line
@@ -85,9 +87,9 @@ abstract class CSVLikeParser(val separator: Char) {
   // CRLF = CR LF ;as per section 6.1 of RFC 2234 [2]
   val CRLF: Parser[(Char, Char)] = CR ~ LF
 
-  // Genuine CRLF or a Line Feed which is translated to a CRLF
+  // Genuine CRLF, a Line Feed, or a CR which is translated to a CRLF
   val PERMISSIVE_CRLF: Parser[(Char, Char)] =
-    (CRLF | LF.map((cr, _))).named("PERMISSIVE_CRLF")
+    (CRLF | LF.map((cr, _)) | CR.map((_, lf))).named("PERMISSIVE_CRLF")
 
   // COMMA = %x2C
   val SEPARATOR: Parser[Char] = char(separator).named("SEPARATOR")
