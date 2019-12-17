@@ -35,7 +35,7 @@ jobs:
       scala: *scala_version_212
       install:
         - rvm use 2.6.0 --install --fuzzy
-        - gem update --system
+        - gem update --system --force
         - gem install sass
         - gem install jekyll -v 3.2.1
       script: sbt ++$TRAVIS_SCALA_VERSION docs/makeMicrosite
@@ -48,7 +48,7 @@ jobs:
       scala: *scala_version_212
       install:
         - rvm use 2.6.0 --install --fuzzy
-        - gem update --system
+        - gem update --system --force
         - gem install sass
         - gem install jekyll -v 3.2.1
       script: sbt ++$TRAVIS_SCALA_VERSION docs/publishMicrosite
