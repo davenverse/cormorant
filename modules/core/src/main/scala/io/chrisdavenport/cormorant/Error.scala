@@ -8,7 +8,11 @@ import cats.implicits._
 sealed trait Error extends Exception {
   final override def fillInStackTrace(): Throwable = this
   final override def getMessage: String = toString
-  def toString: String
+  override def toString: String = this match {
+    case Error.DecodeFailure(failure) => s"DecodeFailure($failure)"
+    case Error.ParseFailure(reason) => s"ParseFailure($reason)"
+    case Error.PrintFailure(reason) => s"PrintFailure($reason)"
+  }
 }
 object Error {
   final case class ParseFailure(reason: String) extends Error
