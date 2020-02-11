@@ -72,7 +72,7 @@ package object http4s {
   implicit def completeEntityDecoder[F[_]: Sync]: EntityDecoder[F, CSV.Complete] =
     new EntityDecoder[F, CSV.Complete] {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
-      def decode(msg: Message[F], strict: Boolean): DecodeResult[F, CSV.Complete] =
+      def decode(msg: Media[F], strict: Boolean): DecodeResult[F, CSV.Complete] =
         cats.data.EitherT {
           msg.body
             .through(text.utf8Decode)
@@ -90,7 +90,7 @@ package object http4s {
   implicit def rowsEntityDecoder[F[_]: Sync]: EntityDecoder[F, CSV.Rows] =
     new EntityDecoder[F, CSV.Rows] {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
-      def decode(msg: Message[F], strict: Boolean): DecodeResult[F, CSV.Rows] = cats.data.EitherT {
+      def decode(msg: Media[F], strict: Boolean): DecodeResult[F, CSV.Rows] = cats.data.EitherT {
         msg.body
           .through(text.utf8Decode)
           .compile
@@ -107,7 +107,7 @@ package object http4s {
   def streamingLabelledReadDecoder[F[_]: Sync, A: LabelledRead]: EntityDecoder[F, Stream[F, A]] =
     new EntityDecoder[F, Stream[F, A]] {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
-      def decode(msg: Message[F], strict: Boolean): DecodeResult[F, Stream[F, A]] =
+      def decode(msg: Media[F], strict: Boolean): DecodeResult[F, Stream[F, A]] =
         msg.body
           .through(text.utf8Decode)
           .through(readLabelled[F, A])
@@ -117,7 +117,7 @@ package object http4s {
   def streamingReadDecoder[F[_]: Sync, A: Read]: EntityDecoder[F, Stream[F, A]] =
     new EntityDecoder[F, Stream[F, A]] {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
-      def decode(msg: Message[F], strict: Boolean): DecodeResult[F, Stream[F, A]] =
+      def decode(msg: Media[F], strict: Boolean): DecodeResult[F, Stream[F, A]] =
         msg.body
           .through(text.utf8Decode)
           .through(readRows[F, A])
