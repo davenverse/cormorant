@@ -10,3 +10,4 @@ target/
 tags
 .metals
 .bloop
+project/metals.sbt

@@ -3,7 +3,7 @@ package fs2
 
 import cats.data.NonEmptyList
 import cats.effect._
-import cats.effect.specs2.CatsIO
+import cats.effect.testing.specs2.CatsIO
 import _root_.fs2.Stream
 import io.chrisdavenport.cormorant._
 // import io.chrisdavenport.cormorant.implicits._
