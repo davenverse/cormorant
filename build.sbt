@@ -26,7 +26,7 @@ val catsV = "2.1.0"
 val catsEffectV = "2.1.1"
 val catsEffectTestV = "0.4.0"
 val shapelessV = "2.3.3"
-val http4sV = "0.21.0"
+val http4sV = "0.21.1"
 val catsScalacheckV = "0.2.0"
 val specs2V = "4.8.3"
 
