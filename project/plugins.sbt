@@ -1,5 +1,5 @@
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.1.11")
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.1")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.3.2")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.0.0")
 addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.6.13")
 addSbtPlugin("com.47deg" % "sbt-microsites" % "0.9.7")
