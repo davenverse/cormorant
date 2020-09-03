@@ -3,7 +3,7 @@ package io.chrisdavenport.cormorant
 import scala.util.Try
 
 import cats.Functor
-import cats.implicits._
+import cats.syntax.all._
 
 trait Get[A] {
   def get(field: CSV.Field): Either[Error.DecodeFailure, A]

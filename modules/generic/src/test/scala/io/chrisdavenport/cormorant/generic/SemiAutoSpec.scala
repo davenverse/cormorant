@@ -2,7 +2,7 @@ package io.chrisdavenport.cormorant.generic
 
 import cats.data._
 import org.specs2._
-import cats.implicits._
+import cats.syntax.all._
 
 class SemiAutoSpec extends Specification {
   override def is = s2"""
