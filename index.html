@@ -38,10 +38,10 @@
 <span class="c1">// defined class Bar
 </span>
 <span class="k">implicit</span> <span class="k">val</span> <span class="n">lr</span><span class="k">:</span> <span class="kt">LabelledRead</span><span class="o">[</span><span class="kt">Bar</span><span class="o">]</span> <span class="k">=</span> <span class="n">deriveLabelledRead</span>
-<span class="c1">// lr: io.chrisdavenport.cormorant.LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@4f15f022
+<span class="c1">// lr: io.chrisdavenport.cormorant.LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@2c2b20c1
 </span>
 <span class="k">implicit</span> <span class="k">val</span> <span class="n">lw</span><span class="k">:</span> <span class="kt">LabelledWrite</span><span class="o">[</span><span class="kt">Bar</span><span class="o">]</span> <span class="k">=</span> <span class="n">deriveLabelledWrite</span>
-<span class="c1">// lw: io.chrisdavenport.cormorant.LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@afdd6ba
+<span class="c1">// lw: io.chrisdavenport.cormorant.LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@2af8aa77
 </span>
 <span class="c1">// A List of A given derived type
 // Don't use Instant.Now or UUID.randomUUID in pure code in the real world please.
@@ -49,13 +49,13 @@
   <span class="nc">Bar</span><span class="o">(</span><span class="s">"Yellow"</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5L</span><span class="o">,</span> <span class="nc">UUID</span><span class="o">.</span><span class="n">randomUUID</span><span class="o">.</span><span class="n">some</span><span class="o">,</span> <span class="nc">Instant</span><span class="o">.</span><span class="n">now</span><span class="o">),</span>
   <span class="nc">Bar</span><span class="o">(</span><span class="s">"Boo"</span><span class="o">,</span> <span class="mi">7</span><span class="o">,</span> <span class="mi">6L</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Instant</span><span class="o">.</span><span class="nc">MAX</span><span class="o">)</span>
 <span class="o">)</span>
-<span class="c1">// l: List[Bar] = List(Bar(Yellow,3,5,Some(5e8ea467-d65e-48e5-8776-26cbb0b9ceff),2020-11-11T19:42:43.173141Z), Bar(Boo,7,6,None,+1000000000-12-31T23:59:59.999999999Z))
+<span class="c1">// l: List[Bar] = List(Bar(Yellow,3,5,Some(3a8a531c-0e00-4362-804c-c51fe8fcc4fe),2020-11-14T09:25:18.758099Z), Bar(Boo,7,6,None,+1000000000-12-31T23:59:59.999999999Z))
 </span>
 <span class="c1">// From Type to String
 </span><span class="k">val</span> <span class="n">csv</span> <span class="k">=</span> <span class="n">l</span><span class="o">.</span><span class="n">writeComplete</span><span class="o">.</span><span class="n">print</span><span class="o">(</span><span class="nc">Printer</span><span class="o">.</span><span class="n">default</span><span class="o">)</span>
 <span class="c1">// csv: String =
 // a,b,c,d,e
-// Yellow,3,5,5e8ea467-d65e-48e5-8776-26cbb0b9ceff,2020-11-11T19:42:43.173141Z
+// Yellow,3,5,3a8a531c-0e00-4362-804c-c51fe8fcc4fe,2020-11-14T09:25:18.758099Z
 // Boo,7,6,,+1000000000-12-31T23:59:59.999999999Z
 </span>
 <span class="c1">// From String to Type
@@ -63,7 +63,7 @@
   <span class="n">parseComplete</span><span class="o">(</span><span class="n">csv</span><span class="o">).</span><span class="n">leftWiden</span><span class="o">[</span><span class="kt">Error</span><span class="o">]</span>
   <span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">readLabelled</span><span class="o">[</span><span class="kt">Bar</span><span class="o">].</span><span class="n">sequence</span><span class="o">)</span>
 <span class="o">}</span>
-<span class="c1">// decoded: Either[io.chrisdavenport.cormorant.Error,List[Bar]] = Right(List(Bar(Yellow,3,5,Some(5e8ea467-d65e-48e5-8776-26cbb0b9ceff),2020-11-11T19:42:43.173141Z), Bar(Boo,7,6,None,+1000000000-12-31T23:59:59.999999999Z)))
+<span class="c1">// decoded: Either[io.chrisdavenport.cormorant.Error,List[Bar]] = Right(List(Bar(Yellow,3,5,Some(3a8a531c-0e00-4362-804c-c51fe8fcc4fe),2020-11-14T09:25:18.758099Z), Bar(Boo,7,6,None,+1000000000-12-31T23:59:59.999999999Z)))
 </span></code></pre>
 </div>
 </div></div></section><section class="technologies"><div class="container"><div class="row"></div></div></section></main><footer id="site-footer"><div class="container"><div class="row"><div class="col-xs-6"><p>cormorant is designed and developed by <a href="https://github.com/ChristopherDavenport/cormorant" target="_blank" rel="noopener noreferrer">Christopher Davenport</a></p></div><div class="col-xs-6"><p class="text-right"><a href="https://github.com/ChristopherDavenport/cormorant"><span class="fa fa-github"></span>View on GitHub</a></p></div></div><script src="/cormorant/highlight/highlight.pack.js"></script><script>hljs.initHighlighting();
