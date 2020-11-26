@@ -1,6 +1,6 @@
 package io.chrisdavenport.cormorant
 
-import cats.implicits._
+import cats.syntax.all._
 import eu.timepit.refined.api.{RefType, Validate}
 
 package object refined {

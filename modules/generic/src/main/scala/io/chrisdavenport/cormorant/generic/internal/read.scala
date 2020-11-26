@@ -2,7 +2,7 @@ package io.chrisdavenport.cormorant.generic.internal
 
 import io.chrisdavenport.cormorant._
 import shapeless._
-import cats.implicits._
+import cats.syntax.all._
 import cats.data.NonEmptyList
 
 trait ReadProofs extends LowPriorityReadProofs {

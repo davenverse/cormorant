@@ -1,6 +1,6 @@
 package io.chrisdavenport.cormorant.parser
 
-import cats.implicits._
+import cats.syntax.all._
 import io.chrisdavenport.cormorant._
 
 class PrinterParserParity extends CormorantSpec {
