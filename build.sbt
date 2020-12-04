@@ -26,7 +26,7 @@ val catsV = "2.1.1"
 val catsEffectV = "2.1.4"
 val catsEffectTestV = "0.4.2"
 val shapelessV = "2.3.3"
-val http4sV = "0.21.8"
+val http4sV = "0.21.13"
 val catsScalacheckV = "0.3.0"
 val specs2V = "4.10.5"
 
@@ -62,7 +62,7 @@ lazy val refined = project.in(file("modules/refined"))
   .settings(
     name := "cormorant-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %% "refined" % "0.9.17",
+      "eu.timepit" %% "refined" % "0.9.19",
     )
   )
 
@@ -72,8 +72,8 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "2.4.5",
-      "co.fs2" %% "fs2-io"   % "2.4.5" % Test,
+      "co.fs2" %% "fs2-core" % "2.4.6",
+      "co.fs2" %% "fs2-io"   % "2.4.6" % Test,
       "com.codecommit" %% "cats-effect-testing-specs2" % catsEffectTestV % Test
     )
   )
@@ -153,7 +153,7 @@ lazy val commonSettings = Seq(
   scalaVersion := scala2_12,
   crossScalaVersions := Seq(scalaVersion.value, scala2_13),
 
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.0" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.1" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
   libraryDependencies ++= Seq(
