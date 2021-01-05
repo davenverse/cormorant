@@ -62,7 +62,7 @@ lazy val refined = project.in(file("modules/refined"))
   .settings(
     name := "cormorant-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %% "refined" % "0.9.19",
+      "eu.timepit" %% "refined" % "0.9.20",
     )
   )
 
