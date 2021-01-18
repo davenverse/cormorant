@@ -28,7 +28,7 @@ val catsEffectTestV = "0.4.2"
 val shapelessV = "2.3.3"
 val http4sV = "0.21.15"
 val catsScalacheckV = "0.3.0"
-val specs2V = "4.10.5"
+val specs2V = "4.10.6"
 
 lazy val core = project.in(file("modules/core"))
   .settings(commonSettings)
