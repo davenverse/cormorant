@@ -14,7 +14,7 @@ stages:
     if: ((branch = master AND type = push) OR (tag IS present)) AND NOT fork
 
 
-scala_version_212: &scala_version_212 "2.12.10"
+scala_version_212: &scala_version_212 "2.12.13"
 scala_version_213: &scala_version_213 "2.13.1"
 
 jobs:
