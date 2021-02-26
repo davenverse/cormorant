@@ -145,7 +145,7 @@ lazy val docs = project.in(file("modules/docs"))
   }
 
 
-lazy val scala2_12 = "2.12.10"
+lazy val scala2_12 = "2.12.13"
 lazy val scala2_13 = "2.13.1"
 
 // General Settings
