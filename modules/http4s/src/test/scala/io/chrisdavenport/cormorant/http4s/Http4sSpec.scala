@@ -2,6 +2,7 @@ package io.chrisdavenport.cormorant.http4s
 
 import io.chrisdavenport.cormorant._
 import cats.effect.IO
+import cats.effect.unsafe.implicits.global
 import org.http4s._
 import org.http4s.client._
 import org.http4s.dsl.io._
