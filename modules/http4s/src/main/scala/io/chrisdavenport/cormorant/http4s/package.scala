@@ -111,7 +111,7 @@ package object http4s {
         msg.body
           .through(text.utf8Decode)
           .through(readLabelled[F, A])
-          .pure[DecodeResult[F, ?]]
+          .pure[DecodeResult[F, *]]
     }
 
   def streamingReadDecoder[F[_]: Sync, A: Read]: EntityDecoder[F, Stream[F, A]] =
@@ -121,6 +121,6 @@ package object http4s {
         msg.body
           .through(text.utf8Decode)
           .through(readRows[F, A])
-          .pure[DecodeResult[F, ?]]
+          .pure[DecodeResult[F, *]]
     }
 }
