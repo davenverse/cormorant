@@ -91,59 +91,59 @@ lazy val http4s = project.in(file("modules/http4s"))
     )
   )
 
-lazy val docs = project.in(file("modules/docs"))
-  .disablePlugins(MimaPlugin)
-  .settings(skip in publish := true)
-  .settings(commonSettings)
-  .settings(
-    //github4s is not yet available for scala 2.13
-    scalaVersion := scala2_12,
-    crossScalaVersions := Seq(scala2_12),
-  )
-  .dependsOn(core, generic, parser, refined, fs2, http4s)
-  .enablePlugins(MicrositesPlugin)
-  .enablePlugins(TutPlugin)
-  .settings{
-    import microsites._
-    Seq(
-      micrositeName := "cormorant",
-      micrositeDescription := "CSV Library for Scala",
-      micrositeAuthor := "Christopher Davenport",
-      micrositeGithubOwner := "ChristopherDavenport",
-      micrositeGithubRepo := "cormorant",
-      micrositeBaseUrl := "/cormorant",
-      micrositeDocumentationUrl := "https://www.javadoc.io/doc/io.chrisdavenport/cormorant-core_2.12",
-      micrositeFooterText := None,
-      micrositeHighlightTheme := "atom-one-light",
-      micrositePalette := Map(
-        "brand-primary" -> "#3e5b95",
-        "brand-secondary" -> "#294066",
-        "brand-tertiary" -> "#2d5799",
-        "gray-dark" -> "#49494B",
-        "gray" -> "#7B7B7E",
-        "gray-light" -> "#E5E5E6",
-        "gray-lighter" -> "#F4F3F4",
-        "white-color" -> "#FFFFFF"
-      ),
-      fork in tut := true,
-      scalacOptions in Tut --= Seq(
-        "-Xfatal-warnings",
-        "-Ywarn-unused-import",
-        "-Ywarn-numeric-widen",
-        "-Ywarn-dead-code",
-        "-Ywarn-unused:imports",
-        "-Xlint:-missing-interpolator,_"
-      ),
-      libraryDependencies += "com.47deg" %% "github4s" % "0.20.1",
-      micrositePushSiteWith := GitHub4s,
-      micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
-      micrositeExtraMdFiles := Map(
-        file("CHANGELOG.md")        -> ExtraMdFileConfig("changelog.md", "page", Map("title" -> "changelog", "section" -> "changelog", "position" -> "100")),
-        file("CODE_OF_CONDUCT.md")  -> ExtraMdFileConfig("code-of-conduct.md",   "page", Map("title" -> "code of conduct",   "section" -> "code of conduct",   "position" -> "101")),
-        file("LICENSE")             -> ExtraMdFileConfig("license.md",   "page", Map("title" -> "license",   "section" -> "license",   "position" -> "102"))
-      )
-    )
-  }
+//lazy val docs = project.in(file("modules/docs"))
+//  .disablePlugins(MimaPlugin)
+//  .settings(skip in publish := true)
+//  .settings(commonSettings)
+//  .settings(
+//    //github4s is not yet available for scala 2.13
+//    scalaVersion := scala2_12,
+//    crossScalaVersions := Seq(scala2_12),
+//  )
+//  .dependsOn(core, generic, parser, refined, fs2, http4s)
+//  .enablePlugins(MicrositesPlugin)
+//  .enablePlugins(TutPlugin)
+//  .settings{
+//    import microsites._
+//    Seq(
+//      micrositeName := "cormorant",
+//      micrositeDescription := "CSV Library for Scala",
+//      micrositeAuthor := "Christopher Davenport",
+//      micrositeGithubOwner := "ChristopherDavenport",
+//      micrositeGithubRepo := "cormorant",
+//      micrositeBaseUrl := "/cormorant",
+//      micrositeDocumentationUrl := "https://www.javadoc.io/doc/io.chrisdavenport/cormorant-core_2.12",
+//      micrositeFooterText := None,
+//      micrositeHighlightTheme := "atom-one-light",
+//      micrositePalette := Map(
+//        "brand-primary" -> "#3e5b95",
+//        "brand-secondary" -> "#294066",
+//        "brand-tertiary" -> "#2d5799",
+//        "gray-dark" -> "#49494B",
+//        "gray" -> "#7B7B7E",
+//        "gray-light" -> "#E5E5E6",
+//        "gray-lighter" -> "#F4F3F4",
+//        "white-color" -> "#FFFFFF"
+//      ),
+//      fork in tut := true,
+//      scalacOptions in Tut --= Seq(
+//        "-Xfatal-warnings",
+//        "-Ywarn-unused-import",
+//        "-Ywarn-numeric-widen",
+//        "-Ywarn-dead-code",
+//        "-Ywarn-unused:imports",
+//        "-Xlint:-missing-interpolator,_"
+//      ),
+//      libraryDependencies += "com.47deg" %% "github4s" % "0.20.1",
+//      micrositePushSiteWith := GitHub4s,
+//      micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
+//      micrositeExtraMdFiles := Map(
+//        file("CHANGELOG.md")        -> ExtraMdFileConfig("changelog.md", "page", Map("title" -> "changelog", "section" -> "changelog", "position" -> "100")),
+//        file("CODE_OF_CONDUCT.md")  -> ExtraMdFileConfig("code-of-conduct.md",   "page", Map("title" -> "code of conduct",   "section" -> "code of conduct",   "position" -> "101")),
+//        file("LICENSE")             -> ExtraMdFileConfig("license.md",   "page", Map("title" -> "license",   "section" -> "license",   "position" -> "102"))
+//      )
+//    )
+//  }
 
 
 lazy val scala2_12 = "2.12.10"
