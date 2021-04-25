@@ -3,15 +3,14 @@ package fs2
 
 import cats.data.NonEmptyList
 import cats.effect._
-import cats.effect.testing.specs2.CatsIO
-import _root_.fs2.Stream
+import cats.effect.testing.specs2.CatsEffect
 import io.chrisdavenport.cormorant._
 // import io.chrisdavenport.cormorant.implicits._
 // import scala.concurrent.duration._
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 
-class StreamingParserSpec extends CormorantSpec with CatsIO {
+class StreamingParserSpec extends CormorantSpec with CatsEffect {
 
   def ruinDelims(str: String) = augmentString(str).flatMap {
     case '\n' => "\r\n"
@@ -25,13 +24,10 @@ class StreamingParserSpec extends CormorantSpec with CatsIO {
 Larry,Bordowitz,larry@example.com
 Anonymous,Hippopotamus,hippo@example.com"""
       val source = IO.pure(new ByteArrayInputStream(ruinDelims(x).getBytes): InputStream)
-      Stream.resource(Blocker[IO]).flatMap{blocker => 
         _root_.fs2.io.readInputStream(
           source,
-          chunkSize = 4,
-          blocker
+          chunkSize = 4
         )
-      }
         .through(_root_.fs2.text.utf8Decode)
         .through(parseComplete[IO])
         .compile

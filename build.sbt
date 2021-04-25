@@ -24,9 +24,10 @@ lazy val cormorant = project.in(file("."))
 
 val catsV = "2.1.1"
 val catsEffectV = "3.1.0"
-val catsEffectTestV = "0.4.2"
+val catsEffectTestV = "1.0.1"
+val fs2V = "3.0.2"
 val shapelessV = "2.3.3"
-val http4sV = "0.21.18"
+val http4sV = "1.0.0-M21"
 val catsScalacheckV = "0.3.0"
 val specs2V = "4.10.6"
 
@@ -72,9 +73,9 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "2.4.6",
-      "co.fs2" %% "fs2-io"   % "2.4.6" % Test,
-      "com.codecommit" %% "cats-effect-testing-specs2" % catsEffectTestV % Test
+      "co.fs2" %% "fs2-core" % fs2V,
+      "co.fs2" %% "fs2-io"   % fs2V % Test,
+      "org.typelevel" %% "cats-effect-testing-specs2" % catsEffectTestV % Test
     )
   )
 
@@ -150,8 +151,8 @@ lazy val scala2_13 = "2.13.1"
 
 // General Settings
 lazy val commonSettings = Seq(
-  scalaVersion := scala2_12,
-  crossScalaVersions := Seq(scalaVersion.value, scala2_13),
+  scalaVersion := scala2_13,
+  crossScalaVersions := Seq(scala2_13),
 
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
