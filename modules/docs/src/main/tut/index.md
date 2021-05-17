@@ -38,7 +38,7 @@ import java.time.Instant
 
 Then some basic operations
 
-```tut:book
+```mdoc
 case class Bar(a: String, b: Int, c: Long, d: Option[UUID], e: Instant)
 
 implicit val lr: LabelledRead[Bar] = deriveLabelledRead

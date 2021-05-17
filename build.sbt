@@ -1,3 +1,60 @@
+val Scala213 = "2.13.5"
+
+ThisBuild / crossScalaVersions := Seq("2.12.13", Scala213)
+ThisBuild / scalaVersion := crossScalaVersions.value.last
+
+ThisBuild / githubWorkflowArtifactUpload := false
+
+val Scala213Cond = s"matrix.scala == '$Scala213'"
+
+def rubySetupSteps(cond: Option[String]) = Seq(
+  WorkflowStep.Use(
+    UseRef.Public("ruby", "setup-ruby", "v1"),
+    name = Some("Setup Ruby"),
+    params = Map("ruby-version" -> "2.6.0"),
+    cond = cond),
+
+  WorkflowStep.Run(
+    List(
+      "gem install saas",
+      "gem install jekyll -v 3.2.1"),
+    name = Some("Install microsite dependencies"),
+    cond = cond))
+
+ThisBuild / githubWorkflowBuildPreamble ++=
+  rubySetupSteps(Some(Scala213Cond))
+
+ThisBuild / githubWorkflowBuild := Seq(
+  WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")),
+
+  WorkflowStep.Sbt(
+    List("docs/makeMicrosite"),
+    cond = Some(Scala213Cond)))
+
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+
+// currently only publishing tags
+ThisBuild / githubWorkflowPublishTargetBranches :=
+  Seq(RefPredicate.StartsWith(Ref.Tag("v")))
+
+ThisBuild / githubWorkflowPublishPreamble ++=
+  WorkflowStep.Use(UseRef.Public("olafurpg", "setup-gpg", "v3")) +: rubySetupSteps(None)
+
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    name = Some("Publish artifacts to Sonatype"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}")),
+
+  WorkflowStep.Sbt(
+    List(s"++$Scala213", "docs/publishMicrosite"),
+    name = Some("Publish microsite")
+  )
+)
 
 inThisBuild(List(
   organization := "io.chrisdavenport",
@@ -18,8 +75,7 @@ lazy val cormorant = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
-  //also aggregate docs once github4s is available for scala 2.13 and can be compiled properly
-  .aggregate(core, generic, parser, refined, fs2, http4s)
+  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
 
 val catsV = "2.1.1"
@@ -94,14 +150,9 @@ lazy val docs = project.in(file("modules/docs"))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
-  .settings(
-    //github4s is not yet available for scala 2.13
-    scalaVersion := scala2_12,
-    crossScalaVersions := Seq(scala2_12),
-  )
   .dependsOn(core, generic, parser, refined, fs2, http4s)
   .enablePlugins(MicrositesPlugin)
-  .enablePlugins(TutPlugin)
+  .enablePlugins(MdocPlugin)
   .settings{
     import microsites._
     Seq(
@@ -124,16 +175,7 @@ lazy val docs = project.in(file("modules/docs"))
         "gray-lighter" -> "#F4F3F4",
         "white-color" -> "#FFFFFF"
       ),
-      fork in tut := true,
-      scalacOptions in Tut --= Seq(
-        "-Xfatal-warnings",
-        "-Ywarn-unused-import",
-        "-Ywarn-numeric-widen",
-        "-Ywarn-dead-code",
-        "-Ywarn-unused:imports",
-        "-Xlint:-missing-interpolator,_"
-      ),
-      libraryDependencies += "com.47deg" %% "github4s" % "0.20.1",
+      libraryDependencies += "com.47deg" %% "github4s" % "0.28.1",
       micrositePushSiteWith := GitHub4s,
       micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
       micrositeExtraMdFiles := Map(
@@ -144,16 +186,9 @@ lazy val docs = project.in(file("modules/docs"))
     )
   }
 
-
-lazy val scala2_12 = "2.12.10"
-lazy val scala2_13 = "2.13.1"
-
 // General Settings
 lazy val commonSettings = Seq(
-  scalaVersion := scala2_12,
-  crossScalaVersions := Seq(scalaVersion.value, scala2_13),
-
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.1" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
   libraryDependencies ++= Seq(
