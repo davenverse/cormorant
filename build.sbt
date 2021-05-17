@@ -146,7 +146,7 @@ lazy val http4s = project.in(file("modules/http4s"))
     )
   )
 
-lazy val docs = project.in(file("modules/docs"))
+lazy val docs = project.in(file("modules"))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
