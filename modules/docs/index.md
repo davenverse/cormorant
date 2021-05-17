@@ -13,7 +13,7 @@ Cormorant is a CSV Library for Scala
 To use cormorant in an existing SBT project with Scala 2.12 or a later version, add the following dependencies to your
 `build.sbt` depending on your needs:
 
-```scala mdoc
+```scala
 libraryDependencies ++= Seq(
   "io.chrisdavenport" %% "cormorant-core"     % "<version>",
   "io.chrisdavenport" %% "cormorant-generic"  % "<version>",
