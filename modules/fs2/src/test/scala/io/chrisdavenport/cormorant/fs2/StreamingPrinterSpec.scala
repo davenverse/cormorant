@@ -22,7 +22,7 @@ class StreamingPrinterSpec extends CormorantSpec with CatsIO {
         .through(parseRows)
         .compile
         .toList
-        .unsafeRunSync must_=== List(a)
+        .unsafeRunSync() must_=== List(a)
     }//.set(minTestsOk = 20, workers = 2)
 
     "rows should round trip" in prop { a: CSV.Rows =>
@@ -33,7 +33,7 @@ class StreamingPrinterSpec extends CormorantSpec with CatsIO {
           .through(parseRows)
           .compile
           .toList
-          .unsafeRunSync
+          .unsafeRunSync()
       )
       decoded must_=== a
     }//.set(minTestsOk = 20, workers = 2)
@@ -55,7 +55,7 @@ class StreamingPrinterSpec extends CormorantSpec with CatsIO {
         .through(parseRows)
         .compile
         .toList
-        .unsafeRunSync must_=== expected
+        .unsafeRunSync() must_=== expected
     }
 
     "complete should write as expected" in {
