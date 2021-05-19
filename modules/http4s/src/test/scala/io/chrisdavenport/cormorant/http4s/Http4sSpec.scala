@@ -14,14 +14,14 @@ class Http4sSpec extends CormorantSpec {
         case _ => Ok(rows)
       }
       val client = Client.fromHttpApp(service.orNotFound)
-      client.expect[CSV.Rows]("").unsafeRunSync must_=== rows
+      client.expect[CSV.Rows]("").unsafeRunSync() must_=== rows
     }.set(minTestsOk = 20, workers = 2)
     "round trip complete" in prop { rows: CSV.Complete =>
       val service = HttpRoutes.of[IO] {
         case _ => Ok(rows)
       }
       val client = Client.fromHttpApp(service.orNotFound)
-      client.expect[CSV.Complete]("").unsafeRunSync must_=== rows
+      client.expect[CSV.Complete]("").unsafeRunSync() must_=== rows
     }.set(minTestsOk = 20, workers = 2)
   }
 
