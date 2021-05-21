@@ -154,7 +154,8 @@ lazy val poi = project.in(file("modules/poi"))
     libraryDependencies ++= Seq(
       "org.apache.poi" % "poi-ooxml" % "5.0.0",
       "co.fs2" %% "fs2-io" % "2.4.6",
-    )
+    ),
+    scalacOptions -= "-Xfatal-warnings"
   )
 
 lazy val docs = project.in(file("modules"))

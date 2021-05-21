@@ -10,8 +10,29 @@ import fs2._
 
 object POI {
 
+  private object JDKCollectionConvertersCompat {
+    object Scope1 {
+      object jdk {
+        type CollectionConverters = Int
+      }
+    }
+    import Scope1._
+
+    object Scope2 {
+      import scala.collection.{JavaConverters => CollectionConverters}
+      object Inner {
+        import scala._
+        import jdk.CollectionConverters
+        val Converters = CollectionConverters
+      }
+    }
+
+    val Converters = Scope2.Inner.Converters
+  }
+
+  import JDKCollectionConvertersCompat.Converters._
+
   private def fromSheetInternal(sheet: XSSFSheet): Either[Throwable, List[List[String]]] = Either.catchNonFatal{
-    import scala.jdk.CollectionConverters._
     val lb : scala.collection.mutable.ListBuffer[List[String]] = 
       scala.collection.mutable.ListBuffer.empty[List[String]]
     
