@@ -75,7 +75,7 @@ lazy val cormorant = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
-  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
+  .aggregate(core, generic, parser, refined, fs2, http4s, poi, docs)
 
 
 val catsV = "2.1.1"
@@ -144,6 +144,18 @@ lazy val http4s = project.in(file("modules/http4s"))
       "org.http4s" %% "http4s-dsl"    % http4sV % Test,
       "org.http4s" %% "http4s-client" % http4sV % Test
     )
+  )
+
+lazy val poi = project.in(file("modules/poi"))
+  .settings(commonSettings)
+  .dependsOn(core % "compile;test->test")
+  .settings(
+    name := "cormorant-poi",
+    libraryDependencies ++= Seq(
+      "org.apache.poi" % "poi-ooxml" % "5.0.0",
+      "co.fs2" %% "fs2-io" % "2.4.6",
+    ),
+    scalacOptions -= "-Xfatal-warnings"
   )
 
 lazy val docs = project.in(file("modules"))
