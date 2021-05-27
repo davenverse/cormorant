@@ -83,7 +83,7 @@ val catsEffectV = "3.1.1"
 val catsEffectTestV = "1.1.0"
 val fs2V = "3.0.3"
 val shapelessV = "2.3.3"
-val http4sV = "1.0.0-M21"
+val http4sV = "0.23.0-RC1"
 val catsScalacheckV = "0.3.0"
 val specs2V = "4.10.6"
 
