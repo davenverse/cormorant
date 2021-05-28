@@ -132,8 +132,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
       "co.fs2" %% "fs2-core" % "2.4.6",
-      "co.fs2" %% "fs2-io"   % "2.4.6" % Test,
-      "com.codecommit" %% "cats-effect-testing-specs2" % catsEffectTestV % Test
+      "co.fs2" %% "fs2-io"   % "2.4.6" % Test
     )
   )
 
