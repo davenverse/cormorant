@@ -8,35 +8,42 @@ import _root_.fs2.Stream
 import io.chrisdavenport.cormorant._
 import io.chrisdavenport.cormorant.implicits._
 import scala.concurrent.duration._
+import munit.CatsEffectSuite
+import munit.ScalaCheckEffectSuite
+import org.scalacheck.effect.PropF
 
-class StreamingPrinterSpec extends CormorantSpec with CatsIO {
+class StreamingPrinterSuite extends CatsEffectSuite with ScalaCheckEffectSuite with CormorantArbitraries {
 
-  override val Timeout = 1.minute
-
-  "Streaming printer should" in {
-
-    "row should round trip" in prop { a: CSV.Row =>
+  test("Streaming printer row should round trip") {
+    PropF.forAllF { (a: CSV.Row) =>
       Stream
         .emit[IO, CSV.Row](a)
         .through(encodeRows(Printer.default))
         .through(parseRows)
         .compile
         .toList
-        .unsafeRunSync() must_=== List(a)
-    }//.set(minTestsOk = 20, workers = 2)
+        .map(r => assertEquals(r, List(a)))
+    }
+  }
 
-    "rows should round trip" in prop { a: CSV.Rows =>
-      val decoded = CSV.Rows(
-        Stream
-          .emits[IO, CSV.Row](a.rows)
-          .through(encodeRows(Printer.default))
-          .through(parseRows)
-          .compile
-          .toList
-          .unsafeRunSync()
-      )
-      decoded must_=== a
-    }//.set(minTestsOk = 20, workers = 2)
+  test("Streaming printer rows should round trip") {
+    PropF.forAllF { (a: CSV.Rows) =>
+      Stream
+        .emits[IO, CSV.Row](a.rows)
+        .through(encodeRows(Printer.default))
+        .through(parseRows)
+        .compile
+        .toList
+        .map(CSV.Rows)
+        .map(r => assertEquals(r, a))
+    }
+  }
+}
+class StreamingPrinterSpec extends CormorantSpec with CatsIO {
+
+  override val Timeout = 1.minute
+
+  "Streaming printer should" in {
 
     "rows special case for empty removal" in {
       import CSV._

@@ -87,6 +87,7 @@ val catsScalacheckV = "0.3.0"
 val specs2V = "4.10.6"
 val munitV = "0.7.26"
 val munitCatsEffectV = "1.0.3"
+val scalacheckEffectV = "1.0.2"
 
 lazy val core = project.in(file("modules/core"))
   .settings(commonSettings)
@@ -198,7 +199,9 @@ lazy val commonSettings = Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
     "org.typelevel"               %% "cats-effect"                % catsEffectV,
     "org.scalameta"               %% "munit"                      % munitV        % Test,
+    "org.scalameta"               %% "munit-scalacheck"           % munitV        % Test,
     "org.typelevel"               %% "munit-cats-effect-2"        % munitCatsEffectV % Test,
+    "org.typelevel"               %% "scalacheck-effect-munit"    % scalacheckEffectV % Test,
     "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
     "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
     "io.chrisdavenport"           %% "cats-scalacheck"            % catsScalacheckV % Test,
