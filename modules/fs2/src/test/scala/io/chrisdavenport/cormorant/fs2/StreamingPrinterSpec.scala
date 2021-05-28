@@ -3,16 +3,17 @@ package fs2
 
 import cats.data.NonEmptyList
 import cats.effect._
-import cats.effect.testing.specs2.CatsIO
 import _root_.fs2.Stream
 import io.chrisdavenport.cormorant._
 import io.chrisdavenport.cormorant.implicits._
-import scala.concurrent.duration._
 import munit.CatsEffectSuite
 import munit.ScalaCheckEffectSuite
 import org.scalacheck.effect.PropF
 
-class StreamingPrinterSuite extends CatsEffectSuite with ScalaCheckEffectSuite with CormorantArbitraries {
+class StreamingPrinterSuite
+    extends CatsEffectSuite
+    with ScalaCheckEffectSuite
+    with CormorantArbitraries {
 
   test("Streaming printer row should round trip") {
     PropF.forAllF { (a: CSV.Row) =>
@@ -38,78 +39,78 @@ class StreamingPrinterSuite extends CatsEffectSuite with ScalaCheckEffectSuite w
         .map(r => assertEquals(r, a))
     }
   }
-}
-class StreamingPrinterSpec extends CormorantSpec with CatsIO {
 
-  override val Timeout = 1.minute
+  test("Streaming printer rows special case for empty removal") {
+    import CSV._
 
-  "Streaming printer should" in {
-
-    "rows special case for empty removal" in {
-      import CSV._
-
-      val rows = Rows(
-        List(
-          Row(NonEmptyList.of(Field(""))),
-          // Row(NonEmptyList.of(Field("")))
-        )
+    val rows = Rows(
+      List(
+        Row(NonEmptyList.of(Field("")))
+        // Row(NonEmptyList.of(Field("")))
       )
-      val expected = List.empty[CSV.Row]
+    )
+    val expected = List.empty[CSV.Row]
 
-      Stream
-        .emits[IO, CSV.Row](rows.rows)
-        .through(encodeRows(Printer.default))
-        .through(parseRows)
-        .compile
-        .toList
-        .unsafeRunSync() must_=== expected
-    }
+    Stream
+      .emits[IO, CSV.Row](rows.rows)
+      .through(encodeRows(Printer.default))
+      .through(parseRows)
+      .compile
+      .toList
+      .map(assertEquals(_, expected))
+  }
 
-    "complete should write as expected" in {
-      final case class Foo(color: String, food: String, number: Int)
+  test("Streaming printer should complete should write as expected") {
+    final case class Foo(color: String, food: String, number: Int)
 
-      val list = List(
-        Foo("Blue", "Pizza", 1),
-        Foo("Red", "Margarine", 2),
-        Foo("Yellow", "Broccoli", 3)
-      )
+    val list = List(
+      Foo("Blue", "Pizza", 1),
+      Foo("Red", "Margarine", 2),
+      Foo("Yellow", "Broccoli", 3)
+    )
 
-      implicit val L: LabelledWrite[Foo] = new LabelledWrite[Foo] {
-        override def headers: CSV.Headers = CSV.Headers(
+    implicit val L: LabelledWrite[Foo] = new LabelledWrite[Foo] {
+      override def headers: CSV.Headers =
+        CSV.Headers(
           NonEmptyList.of(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
         )
 
-        override def write(a: Foo): CSV.Row = CSV.Row(
+      override def write(a: Foo): CSV.Row =
+        CSV.Row(
           NonEmptyList.of(a.color.field, a.food.field, a.number.field)
         )
-      }
+    }
 
-      val result = Stream.emits(list)
-        .through(writeLabelled(Printer.default))
-        .compile
-        .string
+    val result = Stream
+      .emits(list)
+      .through(writeLabelled(Printer.default))
+      .compile
+      .string
 
-      val expectedCSVString = """Color,Food,Number
+    val expectedCSVString = """Color,Food,Number
                                 |Blue,Pizza,1
                                 |Red,Margarine,2
                                 |Yellow,Broccoli,3""".stripMargin
 
-      result should_=== expectedCSVString
-    }
+    assertEquals(result, expectedCSVString)
+  }
 
-
-    "complete should round trip with streaming encoder" in prop { csv: CSV.Complete => 
+  test("Streaming printer should round trip with streaming encoder") {
+    PropF.forAllF { (csv: CSV.Complete) =>
       val expected = csv.rows.rows.map(row => (csv.headers, row))
-      Stream.emits(csv.rows.rows)
+      Stream
+        .emits(csv.rows.rows)
         .through(encodeWithHeaders(csv.headers, Printer.default))
         .covary[IO]
         .through(parseComplete)
         .compile
         .toList
-        .map(_ must_=== expected)
+        .map(assertEquals(_, expected))
     }
+  }
 
-    "complete should round trip with printer" in prop { csv: CSV.Complete => 
+  test("Streaming printer should round trip with printer") {
+    PropF.forAllF { (csv: CSV.Complete) =>
       val output = Printer.default.print(csv)
       val expected = csv.rows.rows.map(row => (csv.headers, row))
       Stream(output)
@@ -117,9 +118,7 @@ class StreamingPrinterSpec extends CormorantSpec with CatsIO {
         .through(parseComplete)
         .compile
         .toList
-        .map(_ must_=== expected)
+        .map(assertEquals(_, expected))
     }
-
   }
-
 }
