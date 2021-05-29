@@ -3,6 +3,8 @@ target/
 # vim
 *.sw?
 
+.vscode/
+
 .DS_Store
 **/.DS_Store
 
