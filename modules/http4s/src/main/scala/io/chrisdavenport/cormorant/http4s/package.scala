@@ -14,8 +14,8 @@ package object http4s {
       printer: Printer = Printer.default,
       mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, CSV.Complete] = {
-    val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
-    EntityEncoder.encodeBy(Headers.of(contentTypeHeader))(
+    val contentTypeHeader = headers.`Content-Type`(mediaType)
+    EntityEncoder.encodeBy(contentTypeHeader)(
       csvComplete => Entity(Stream(printer.print(csvComplete)).through(text.utf8Encode).covary[F])
     )
   }
@@ -24,8 +24,8 @@ package object http4s {
       printer: Printer = Printer.default,
       mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, CSV.Rows] = {
-    val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
-    EntityEncoder.encodeBy(Headers.of(contentTypeHeader))(
+    val contentTypeHeader = headers.`Content-Type`(mediaType)
+    EntityEncoder.encodeBy(contentTypeHeader)(
       csvRows => Entity(Stream(printer.print(csvRows)).through(text.utf8Encode).covary[F])
     )
   }
@@ -35,8 +35,8 @@ package object http4s {
       p: Printer = Printer.default,
       mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, Stream[F, CSV.Row]] = {
-    val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
-    EntityEncoder.encodeBy(Headers.of(contentTypeHeader))(
+    val contentTypeHeader = headers.`Content-Type`(mediaType)
+    EntityEncoder.encodeBy(contentTypeHeader)(
       s =>
         Entity(
           s.through(encodeRows(p))
@@ -57,8 +57,8 @@ package object http4s {
       p: Printer = Printer.default,
       mediaType: MediaType = MediaType.text.csv
   ): EntityEncoder[F, Stream[F, A]] = {
-    val contentTypeHeader: Header = headers.`Content-Type`(mediaType)
-    EntityEncoder.encodeBy(Headers.of(contentTypeHeader))(
+    val contentTypeHeader = headers.`Content-Type`(mediaType)
+    EntityEncoder.encodeBy(contentTypeHeader)(
       s =>
         Entity(
           s.through(writeLabelled(p))
