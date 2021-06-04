@@ -84,7 +84,9 @@ val catsEffectTestV = "0.4.2"
 val shapelessV = "2.3.3"
 val http4sV = "0.21.18"
 val catsScalacheckV = "0.3.0"
-val specs2V = "4.10.6"
+val munitV = "0.7.26"
+val munitCatsEffectV = "1.0.3"
+val scalacheckEffectV = "1.0.2"
 
 lazy val core = project.in(file("modules/core"))
   .settings(commonSettings)
@@ -129,8 +131,7 @@ lazy val fs2 = project.in(file("modules/fs2"))
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
       "co.fs2" %% "fs2-core" % "2.4.6",
-      "co.fs2" %% "fs2-io"   % "2.4.6" % Test,
-      "com.codecommit" %% "cats-effect-testing-specs2" % catsEffectTestV % Test
+      "co.fs2" %% "fs2-io"   % "2.4.6" % Test
     )
   )
 
@@ -190,12 +191,15 @@ lazy val docs = project.in(file("modules"))
 lazy val commonSettings = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
+  testFrameworks += new TestFramework("munit.Framework"),
 
   libraryDependencies ++= Seq(
     "org.typelevel"               %% "cats-core"                  % catsV,
     "org.typelevel"               %% "cats-effect"                % catsEffectV,
-    "org.specs2"                  %% "specs2-core"                % specs2V       % Test,
-    "org.specs2"                  %% "specs2-scalacheck"          % specs2V       % Test,
+    "org.scalameta"               %% "munit"                      % munitV        % Test,
+    "org.scalameta"               %% "munit-scalacheck"           % munitV        % Test,
+    "org.typelevel"               %% "munit-cats-effect-2"        % munitCatsEffectV % Test,
+    "org.typelevel"               %% "scalacheck-effect-munit"    % scalacheckEffectV % Test,
     "io.chrisdavenport"           %% "cats-scalacheck"            % catsScalacheckV % Test,
   )
 )
