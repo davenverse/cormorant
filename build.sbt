@@ -79,10 +79,11 @@ lazy val cormorant = project.in(file("."))
 
 
 val catsV = "2.1.1"
-val catsEffectV = "2.1.4"
-val catsEffectTestV = "0.4.2"
+val catsEffectV = "3.1.1"
+val catsEffectTestV = "1.1.0"
+val fs2V = "3.0.4"
 val shapelessV = "2.3.3"
-val http4sV = "0.21.18"
+val http4sV = "0.23.0-RC1"
 val catsScalacheckV = "0.3.0"
 val munitV = "0.7.26"
 val munitCatsEffectV = "1.0.3"
@@ -130,8 +131,8 @@ lazy val fs2 = project.in(file("modules/fs2"))
   .settings(
     name := "cormorant-fs2",
     libraryDependencies ++= Seq(
-      "co.fs2" %% "fs2-core" % "2.4.6",
-      "co.fs2" %% "fs2-io"   % "2.4.6" % Test
+      "co.fs2" %% "fs2-core" % fs2V,
+      "co.fs2" %% "fs2-io"   % fs2V % Test
     )
   )
 
@@ -198,7 +199,7 @@ lazy val commonSettings = Seq(
     "org.typelevel"               %% "cats-effect"                % catsEffectV,
     "org.scalameta"               %% "munit"                      % munitV        % Test,
     "org.scalameta"               %% "munit-scalacheck"           % munitV        % Test,
-    "org.typelevel"               %% "munit-cats-effect-2"        % munitCatsEffectV % Test,
+    "org.typelevel"               %% "munit-cats-effect-3"        % munitCatsEffectV % Test,
     "org.typelevel"               %% "scalacheck-effect-munit"    % scalacheckEffectV % Test,
     "io.chrisdavenport"           %% "cats-scalacheck"            % catsScalacheckV % Test,
   )
