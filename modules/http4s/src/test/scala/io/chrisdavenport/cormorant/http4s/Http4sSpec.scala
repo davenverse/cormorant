@@ -6,23 +6,41 @@ import org.http4s._
 import org.http4s.client._
 import org.http4s.dsl.io._
 import org.http4s.implicits._
+import munit.CatsEffectSuite
+import munit.ScalaCheckEffectSuite
+import org.scalacheck.effect.PropF
+import org.scalacheck.Test.Parameters
 
-class Http4sSpec extends CormorantSpec {
-  "Http4s Entity Encoder/Decoder" should {
-    "round trip rows" in prop { rows: CSV.Rows =>
-      val service = HttpRoutes.of[IO] {
-        case _ => Ok(rows)
+class StreamingPrinterSuite
+    extends CatsEffectSuite
+    with ScalaCheckEffectSuite
+    with CormorantArbitraries {
+
+  val minTestsOK = Parameters.default
+    .withMinSuccessfulTests(20)
+    .withWorkers(2)
+
+  test("Http4s Entity Encoder/Decoder round trip rows") {
+    PropF
+      .forAllF { (rows: CSV.Rows) =>
+        val service = HttpRoutes.of[IO] {
+          case _ => Ok(rows)
+        }
+        val client = Client.fromHttpApp(service.orNotFound)
+        client.expect[CSV.Rows]("").map(assertEquals(_, rows))
       }
-      val client = Client.fromHttpApp(service.orNotFound)
-      client.expect[CSV.Rows]("").unsafeRunSync must_=== rows
-    }.set(minTestsOk = 20, workers = 2)
-    "round trip complete" in prop { rows: CSV.Complete =>
-      val service = HttpRoutes.of[IO] {
-        case _ => Ok(rows)
-      }
-      val client = Client.fromHttpApp(service.orNotFound)
-      client.expect[CSV.Complete]("").unsafeRunSync must_=== rows
-    }.set(minTestsOk = 20, workers = 2)
+      .check(minTestsOK)
   }
 
+  test("Http4s Entity Encoder/Decoder round trip complete") {
+    PropF
+      .forAllF { (rows: CSV.Complete) =>
+        val service = HttpRoutes.of[IO] {
+          case _ => Ok(rows)
+        }
+        val client = Client.fromHttpApp(service.orNotFound)
+        client.expect[CSV.Complete]("").map(assertEquals(_, rows))
+      }
+      .check(minTestsOK)
+  }
 }
