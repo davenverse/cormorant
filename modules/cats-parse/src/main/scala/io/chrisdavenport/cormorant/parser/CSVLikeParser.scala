@@ -102,12 +102,12 @@ abstract class CSVLikeParser(val separator: Char) {
   val escapedChar: Parser[String] = (TEXTDATA | SEPARATOR | CR | LF).string | TWO_DQUOTE.string.as(dquoteS)
   val escaped: Parser0[CSV.Field] =
     escapedChar
-      .rep0
-      .map(ss => CSV.Field(ss.mkString))
+      .repAs0[String]
+      .map(CSV.Field)
       .surroundedBy(DQUOTE)
 
   val `non-escaped`: Parser0[CSV.Field] = TEXTDATA
-    .rep0.string
+    .repAs0[String]
     .map(CSV.Field)
 
   // field = (escaped / non-escaped)
