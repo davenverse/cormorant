@@ -99,7 +99,7 @@ abstract class CSVLikeParser(val separator: Char) {
   val TEXTDATA: Parser[Char] = charWhere(c => !badChars.contains(c))
 
   // escaped = DQUOTE *(TEXTDATA / COMMA / CR / LF / 2DQUOTE) DQUOTE
-  val escapedChar: Parser[String] = (TEXTDATA | SEPARATOR | CR | LF).string | TWO_DQUOTE.string.as(dquoteS)
+  val escapedChar: Parser[String] = (TEXTDATA | SEPARATOR | CR | LF).string | TWO_DQUOTE.as(dquoteS)
   val escaped: Parser0[CSV.Field] =
     escapedChar
       .repAs0[String]
