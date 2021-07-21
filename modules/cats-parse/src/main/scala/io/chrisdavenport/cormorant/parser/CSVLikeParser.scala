@@ -79,7 +79,7 @@ abstract class CSVLikeParser(val separator: Char) {
   // DQUOTE =  %x22 ;as per section 6.1 of RFC 2234 [2]
   val DQUOTE = char(dquote)
   // Used For Easier Composition in escaped spec is referred to as 2DQUOTE
-  val TWO_DQUOTE = DQUOTE ~ DQUOTE
+  val TWO_DQUOTE = (DQUOTE ~ DQUOTE).backtrack
   //CR = %x0D ;as per section 6.1 of RFC 2234 [2]
   val CR = char(cr)
   // LF = %x0A ;as per section 6.1 of RFC 2234 [2]
@@ -96,14 +96,14 @@ abstract class CSVLikeParser(val separator: Char) {
 
   // TEXTDATA =  %x20-21 / %x23-2B / %x2D-7E
   val badChars = List(dquote, separator, cr, lf)
-  // TODO: consider charsWhile (String)
   val TEXTDATA: Parser[Char] = charWhere(c => !badChars.contains(c))
 
   // escaped = DQUOTE *(TEXTDATA / COMMA / CR / LF / 2DQUOTE) DQUOTE
-  val escaped: Parser0[CSV.Field] = (TEXTDATA | SEPARATOR | CR | LF | TWO_DQUOTE.map(_ => dquote))
+  val escapedChar: Parser[String] = (TEXTDATA | SEPARATOR | CR | LF).string | TWO_DQUOTE.string.as(dquoteS)
+  val escaped: Parser0[CSV.Field] =
+    escapedChar
       .rep0
-      .string
-      .map(CSV.Field)
+      .map(ss => CSV.Field(ss.mkString))
       .surroundedBy(DQUOTE)
 
   val `non-escaped`: Parser0[CSV.Field] = TEXTDATA
