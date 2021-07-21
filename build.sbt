@@ -75,7 +75,7 @@ lazy val cormorant = project.in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
-  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
+  .aggregate(core, generic, catsParse, parser, refined, fs2, http4s, docs)
 
 
 val catsV = "2.1.1"
@@ -102,6 +102,16 @@ lazy val generic = project.in(file("modules/generic"))
     name := "cormorant-generic",
     libraryDependencies ++= Seq(
       "com.chuusai" %% "shapeless" % "2.3.3"
+    )
+  )
+
+lazy val catsParse = project.in(file("modules/cats-parse"))
+  .settings(commonSettings)
+  .dependsOn(core % "compile;test->test")
+  .settings(
+    name := "cormorant-catsParse",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-parse" % "0.3.3"
     )
   )
 
