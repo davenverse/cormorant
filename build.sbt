@@ -79,7 +79,7 @@ lazy val cormorant = project.in(file("."))
 
 
 val catsV = "2.1.1"
-val catsEffectV = "3.1.1"
+val catsEffectV = "3.2.5"
 val catsEffectTestV = "1.1.0"
 val fs2V = "3.0.4"
 val shapelessV = "2.3.3"
