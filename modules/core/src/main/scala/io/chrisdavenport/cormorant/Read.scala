@@ -1,6 +1,6 @@
 package io.chrisdavenport.cormorant
 
-import cats.implicits._
+import cats.syntax.all._
 trait Read[A] {
   def read(a: CSV.Row): Either[Error.DecodeFailure, A] = 
     readPartial(a).map(_.fold(_._2, identity))
