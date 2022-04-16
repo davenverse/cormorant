@@ -4,7 +4,7 @@ import io.chrisdavenport.cormorant.CSV
 import atto._
 import Atto._
 import cats.data._
-import cats.implicits._
+import cats.syntax.all._
 /**
  * This CSVParser tries to stay fairly close to the initial specification
  * https://tools.ietf.org/html/rfc4180
