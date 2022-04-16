@@ -1,7 +1,7 @@
 package io.chrisdavenport.cormorant.generic
 
 import cats.data._
-import cats.implicits._
+import cats.syntax.all._
 import _root_.io.chrisdavenport.cormorant._
 import _root_.io.chrisdavenport.cormorant.implicits._
 import _root_.io.chrisdavenport.cormorant.generic.semiauto._

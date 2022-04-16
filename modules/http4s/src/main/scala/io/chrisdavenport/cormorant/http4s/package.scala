@@ -1,7 +1,7 @@
 package io.chrisdavenport.cormorant
 
 import cats.effect.Sync
-import cats.implicits._
+import cats.syntax.all._
 import _root_.fs2._
 import _root_.io.chrisdavenport.cormorant.{fs2 => _}
 import _root_.io.chrisdavenport.cormorant.fs2._
