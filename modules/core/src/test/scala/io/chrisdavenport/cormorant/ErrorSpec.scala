@@ -1,23 +1,24 @@
 package io.chrisdavenport.cormorant
 
-class ErrorSpec extends org.specs2.mutable.Specification{
-  "Error.DecodeFailure" should {
-    "toString should work" in {
-      Error.DecodeFailure.single("reason").toString()
-        .must_===("DecodeFailure(NonEmptyList(reason))")
-    }
-  }
-  "Error.ParseFailure" should {
-    "toString should work" in {
-      Error.ParseFailure.invalidInput("invalid").toString()
-        .must_===("ParseFailure(Invalid Input: Received invalid)")
-    }
+class ErrorSpec extends munit.FunSuite {
+  test("Error.DecodeFailure toString should work") {
+    assertEquals(
+      Error.DecodeFailure.single("reason").toString(),
+      "DecodeFailure(NonEmptyList(reason))"
+    )
   }
 
-  "Error.PrintFailure" should {
-    "toString should work" in {
-      Error.PrintFailure("reason").toString()
-        .must_===("PrintFailure(reason)")
-    }
+  test("Error.ParseFailure toString should work") {
+    assertEquals(
+      Error.ParseFailure.invalidInput("invalid").toString(),
+      "ParseFailure(Invalid Input: Received invalid)"
+    )
+  }
+
+  test("Error.PrintFailure toString should work") {
+    assertEquals(
+      Error.PrintFailure("reason").toString(),
+      "PrintFailure(reason)"
+    )
   }
 }
