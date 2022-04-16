@@ -1,6 +1,6 @@
 package io.chrisdavenport.cormorant
 
-import cats.implicits._
+import cats.syntax.all._
 
 trait Printer {
   def print(csv: CSV): String

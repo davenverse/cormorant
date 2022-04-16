@@ -3,7 +3,7 @@ package io.chrisdavenport.cormorant.parser
 import _root_.io.chrisdavenport.cormorant._
 import atto._
 import Atto._
-import cats.implicits._
+import cats.syntax.all._
 import _root_.cats.data._
 
 class TSVParserSpec extends munit.FunSuite {
