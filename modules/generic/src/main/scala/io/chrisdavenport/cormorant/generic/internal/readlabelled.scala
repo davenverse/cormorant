@@ -3,7 +3,7 @@ package io.chrisdavenport.cormorant.generic.internal
 import io.chrisdavenport.cormorant._
 import shapeless._
 import shapeless.labelled._
-import cats.implicits._
+import cats.syntax.all._
 
 trait LabelledReadProofs extends LowPriorityLabelledReadProofs {
   implicit val labelledReadHNil: LabelledRead[HNil] = new LabelledRead[HNil] {
