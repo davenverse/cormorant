@@ -1,6 +1,6 @@
 package io.chrisdavenport.cormorant.instances
 
-import cats.implicits._
+import cats.syntax.all._
 import io.chrisdavenport.cormorant._
 import java.time.{
   Duration,
