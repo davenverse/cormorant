@@ -1,16 +1,10 @@
 package io.chrisdavenport.cormorant
 
-import org.specs2._
 import _root_.cats.data._
 
-object PrinterSpec extends Specification {
-  override def is = s2"""
-  Print a simple csv $simpleCSVPrint
-  Printer field with a surrounded field $fieldSurroundedCorrectly
-  Printer field with escaped field $fieldEscapedCorrectly
-  """
+class PrinterSpec extends munit.FunSuite {
 
-  def simpleCSVPrint = {
+  test("Print a simple csv") {
     val csv = CSV.Complete(
       CSV.Headers(
         NonEmptyList.of(CSV.Header("Color"), CSV.Header("Food"), CSV.Header("Number"))
@@ -28,22 +22,20 @@ object PrinterSpec extends Specification {
     |Red,Margarine,2
     |Yellow,Broccoli,3""".stripMargin
 
-    Printer.default.print(csv) should_=== expectedCSVString
+    assertEquals(Printer.default.print(csv), expectedCSVString)
   }
 
-
-  def fieldSurroundedCorrectly = {
+  test("Printer field with a surrounded field") {
     val csv = CSV.Field("Snow, John")
     val expectedCSVString = "\"Snow, John\""
-    
-    Printer.default.print(csv) should_=== expectedCSVString
+
+    assertEquals(Printer.default.print(csv), expectedCSVString)
   }
 
-  def fieldEscapedCorrectly = {
+  test("Printer field with escaped field") {
     val csv = CSV.Field("Snow, \"John\"")
     val expectedCSVString = "\"Snow, \"\"John\"\"\""
-    
-    Printer.default.print(csv) should_=== expectedCSVString
-  }
 
+    assertEquals(Printer.default.print(csv), expectedCSVString)
+  }
 }
