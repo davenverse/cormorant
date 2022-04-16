@@ -7,29 +7,28 @@ ThisBuild / githubWorkflowArtifactUpload := false
 
 val Scala213Cond = s"matrix.scala == '$Scala213'"
 
-def rubySetupSteps(cond: Option[String]) = Seq(
-  WorkflowStep.Use(
-    UseRef.Public("ruby", "setup-ruby", "v1"),
-    name = Some("Setup Ruby"),
-    params = Map("ruby-version" -> "2.6.0"),
-    cond = cond),
-
-  WorkflowStep.Run(
-    List(
-      "gem install saas",
-      "gem install jekyll -v 3.2.1"),
-    name = Some("Install microsite dependencies"),
-    cond = cond))
+def rubySetupSteps(cond: Option[String]) =
+  Seq(
+    WorkflowStep.Use(
+      UseRef.Public("ruby", "setup-ruby", "v1"),
+      name = Some("Setup Ruby"),
+      params = Map("ruby-version" -> "2.6.0"),
+      cond = cond
+    ),
+    WorkflowStep.Run(
+      List("gem install saas", "gem install jekyll -v 3.2.1"),
+      name = Some("Install microsite dependencies"),
+      cond = cond
+    )
+  )
 
 ThisBuild / githubWorkflowBuildPreamble ++=
   rubySetupSteps(Some(Scala213Cond))
 
 ThisBuild / githubWorkflowBuild := Seq(
   WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")),
-
-  WorkflowStep.Sbt(
-    List("docs/makeMicrosite"),
-    cond = Some(Scala213Cond)))
+  WorkflowStep.Sbt(List("docs/makeMicrosite"), cond = Some(Scala213Cond))
+)
 
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 
@@ -48,38 +47,40 @@ ThisBuild / githubWorkflowPublish := Seq(
       "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
       "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
       "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}")),
-
+      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
+    )
+  ),
   WorkflowStep.Sbt(
     List(s"++$Scala213", "docs/publishMicrosite"),
     name = Some("Publish microsite")
   )
 )
 
-inThisBuild(List(
-  organization := "io.chrisdavenport",
-  homepage := Some(url("https://github.com/ChristopherDavenport/cormorant")),
-  licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-  developers := List(
-    Developer(
-      "ChristopherDavenport",
-      "Christopher Davenport",
-      "chris@christopherdavenport.tech",
-      url("https://www.github.com/ChristopherDavenport")
+inThisBuild(
+  List(
+    organization := "io.chrisdavenport",
+    homepage := Some(url("https://github.com/ChristopherDavenport/cormorant")),
+    licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
+    developers := List(
+      Developer(
+        "ChristopherDavenport",
+        "Christopher Davenport",
+        "chris@christopherdavenport.tech",
+        url("https://www.github.com/ChristopherDavenport")
+      )
     )
   )
-))
+)
 
-
-lazy val cormorant = project.in(file("."))
+lazy val cormorant = project
+  .in(file("."))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
   .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
-
-val catsV = "2.1.1"
-val catsEffectV = "3.1.1"
+val catsV = "2.7.0"
+val catsEffectV = "3.3.11"
 val catsEffectTestV = "1.1.0"
 val fs2V = "3.0.4"
 val shapelessV = "2.3.3"
@@ -89,13 +90,15 @@ val munitV = "0.7.26"
 val munitCatsEffectV = "1.0.3"
 val scalacheckEffectV = "1.0.2"
 
-lazy val core = project.in(file("modules/core"))
+lazy val core = project
+  .in(file("modules/core"))
   .settings(commonSettings)
   .settings(
     name := "cormorant-core"
   )
 
-lazy val generic = project.in(file("modules/generic"))
+lazy val generic = project
+  .in(file("modules/generic"))
   .settings(commonSettings)
   .dependsOn(core)
   .settings(
@@ -105,7 +108,8 @@ lazy val generic = project.in(file("modules/generic"))
     )
   )
 
-lazy val parser = project.in(file("modules/parser"))
+lazy val parser = project
+  .in(file("modules/parser"))
   .settings(commonSettings)
   .dependsOn(core % "compile;test->test")
   .settings(
@@ -115,17 +119,19 @@ lazy val parser = project.in(file("modules/parser"))
     )
   )
 
-lazy val refined = project.in(file("modules/refined"))
+lazy val refined = project
+  .in(file("modules/refined"))
   .settings(commonSettings)
   .dependsOn(core)
   .settings(
     name := "cormorant-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %% "refined" % "0.9.20",
+      "eu.timepit" %% "refined" % "0.9.28"
     )
   )
 
-lazy val fs2 = project.in(file("modules/fs2"))
+lazy val fs2 = project
+  .in(file("modules/fs2"))
   .settings(commonSettings)
   .dependsOn(core % "compile;test->test", parser)
   .settings(
@@ -136,7 +142,8 @@ lazy val fs2 = project.in(file("modules/fs2"))
     )
   )
 
-lazy val http4s = project.in(file("modules/http4s"))
+lazy val http4s = project
+  .in(file("modules/http4s"))
   .settings(commonSettings)
   .dependsOn(core % "compile;test->test", parser, fs2)
   .settings(
@@ -148,14 +155,15 @@ lazy val http4s = project.in(file("modules/http4s"))
     )
   )
 
-lazy val docs = project.in(file("modules"))
+lazy val docs = project
+  .in(file("modules"))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
   .dependsOn(core, generic, parser, refined, fs2, http4s)
   .enablePlugins(MicrositesPlugin)
   .enablePlugins(MdocPlugin)
-  .settings{
+  .settings {
     import microsites._
     Seq(
       micrositeName := "cormorant",
@@ -181,26 +189,37 @@ lazy val docs = project.in(file("modules"))
       micrositePushSiteWith := GitHub4s,
       micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
       micrositeExtraMdFiles := Map(
-        file("CHANGELOG.md")        -> ExtraMdFileConfig("changelog.md", "page", Map("title" -> "changelog", "section" -> "changelog", "position" -> "100")),
-        file("CODE_OF_CONDUCT.md")  -> ExtraMdFileConfig("code-of-conduct.md",   "page", Map("title" -> "code of conduct",   "section" -> "code of conduct",   "position" -> "101")),
-        file("LICENSE")             -> ExtraMdFileConfig("license.md",   "page", Map("title" -> "license",   "section" -> "license",   "position" -> "102"))
+        file("CHANGELOG.md") -> ExtraMdFileConfig(
+          "changelog.md",
+          "page",
+          Map("title" -> "changelog", "section" -> "changelog", "position" -> "100")
+        ),
+        file("CODE_OF_CONDUCT.md") -> ExtraMdFileConfig(
+          "code-of-conduct.md",
+          "page",
+          Map("title" -> "code of conduct", "section" -> "code of conduct", "position" -> "101")
+        ),
+        file("LICENSE") -> ExtraMdFileConfig(
+          "license.md",
+          "page",
+          Map("title" -> "license", "section" -> "license", "position" -> "102")
+        )
       )
     )
   }
 
 // General Settings
 lazy val commonSettings = Seq(
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full),
-  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
+  addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.13.2" cross CrossVersion.full),
+  addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1"),
   testFrameworks += new TestFramework("munit.Framework"),
-
   libraryDependencies ++= Seq(
-    "org.typelevel"               %% "cats-core"                  % catsV,
-    "org.typelevel"               %% "cats-effect"                % catsEffectV,
-    "org.scalameta"               %% "munit"                      % munitV        % Test,
-    "org.scalameta"               %% "munit-scalacheck"           % munitV        % Test,
-    "org.typelevel"               %% "munit-cats-effect-3"        % munitCatsEffectV % Test,
-    "org.typelevel"               %% "scalacheck-effect-munit"    % scalacheckEffectV % Test,
-    "io.chrisdavenport"           %% "cats-scalacheck"            % catsScalacheckV % Test,
+    "org.typelevel"     %% "cats-core"               % catsV,
+    "org.typelevel"     %% "cats-effect"             % catsEffectV,
+    "org.scalameta"     %% "munit"                   % munitV            % Test,
+    "org.scalameta"     %% "munit-scalacheck"        % munitV            % Test,
+    "org.typelevel"     %% "munit-cats-effect-3"     % munitCatsEffectV  % Test,
+    "org.typelevel"     %% "scalacheck-effect-munit" % scalacheckEffectV % Test,
+    "io.chrisdavenport" %% "cats-scalacheck"         % catsScalacheckV   % Test
   )
 )

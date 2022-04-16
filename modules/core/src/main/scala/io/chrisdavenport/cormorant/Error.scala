@@ -3,7 +3,7 @@ package io.chrisdavenport.cormorant
 import cats.data.NonEmptyList
 import cats.Semigroup
 
-import cats.implicits._
+import cats.syntax.all._
 
 sealed trait Error extends Exception {
   final override def fillInStackTrace(): Throwable = this
