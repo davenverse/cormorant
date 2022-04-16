@@ -2,46 +2,57 @@ package io.chrisdavenport.cormorant.parser
 
 import cats.implicits._
 import io.chrisdavenport.cormorant._
+import _root_.io.chrisdavenport.cormorant.implicits._
+import munit.ScalaCheckSuite
+import org.scalacheck.Test.Parameters
+import org.scalacheck.Prop._
 
-class PrinterParserParity extends CormorantSpec {
+class PrinterParserParity extends ScalaCheckSuite with CormorantArbitraries {
 
-  "Printer should round trip with parser" in {
-    "field should round trip" in  prop {  a : CSV.Field =>
-      import _root_.io.chrisdavenport.cormorant.implicits._
+  val minTestsOK = Parameters.default
+    .withMinSuccessfulTests(20)
+    .withWorkers(2)
+
+  property("field should round trip") {
+    forAll { a: CSV.Field =>
       val encoded = a.print(Printer.default)
-      parseField(encoded) must_=== Either.right(a)
-    }.set(minTestsOk = 20, workers = 2)
+      assertEquals(parseField(encoded), Either.right(a))
+    }
+  }.check(minTestsOK)
 
-    "row should round trip" in prop { a: CSV.Row => 
-      import _root_.io.chrisdavenport.cormorant.implicits._
+  property("row should round trip") {
+    forAll { a: CSV.Row =>
       val encoded = a.print(Printer.default)
-      parseRow(encoded) must_=== Either.right(a)
-    }.set(minTestsOk = 20, workers = 2)
+      assertEquals(parseRow(encoded), Either.right(a))
+    }
+  }.check(minTestsOK)
 
-    "rows should round trip" in prop { a: CSV.Rows => 
-      import _root_.io.chrisdavenport.cormorant.implicits._
+  property("rows should round trip") {
+    forAll { a: CSV.Rows =>
       val encoded = a.print(Printer.default)
-      parseRows(encoded) must_=== Either.right(a)
-    }.set(minTestsOk = 20, workers = 2)
+      assertEquals(parseRows(encoded), Either.right(a))
+    }
+  }.check(minTestsOK)
 
-    "header should round trip" in prop {a: CSV.Header => 
-      import _root_.io.chrisdavenport.cormorant.implicits._
+  property("header should round trip") {
+    forAll { a: CSV.Header =>
       val encoded = a.print(Printer.default)
-      parseHeader(encoded) must_=== Either.right(a)
-    }.set(minTestsOk = 20, workers = 2)
+      assertEquals(parseHeader(encoded), Either.right(a))
+    }
+  }.check(minTestsOK)
 
-    "headers should round trip" in prop {a: CSV.Headers => 
-      import _root_.io.chrisdavenport.cormorant.implicits._
+  property("headers should round trip") {
+    forAll { a: CSV.Headers =>
       val encoded = a.print(Printer.default)
-      parseHeaders(encoded) must_=== Either.right(a)
-    }.set(minTestsOk = 20, workers = 2)
+      assertEquals(parseHeaders(encoded), Either.right(a))
+    }
+  }.check(minTestsOK)
 
-    "complete should round trip" in prop {a: CSV.Complete => 
-      import _root_.io.chrisdavenport.cormorant.implicits._
+  property("complete should round trip") {
+    forAll { a: CSV.Complete =>
       val encoded = a.print(Printer.default)
-      parseComplete(encoded) must_=== Either.right(a)
-    }.set(minTestsOk = 20, workers = 2)
-
-  }
+      assertEquals(parseComplete(encoded), Either.right(a))
+    }
+  }.check(minTestsOK)
 
 }

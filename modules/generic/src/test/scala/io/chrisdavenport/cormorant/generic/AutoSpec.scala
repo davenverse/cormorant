@@ -1,33 +1,21 @@
 package io.chrisdavenport.cormorant.generic
 
 import cats.data._
-import org.specs2._
+import _root_.io.chrisdavenport.cormorant._
+import _root_.io.chrisdavenport.cormorant.implicits._
+import _root_.io.chrisdavenport.cormorant.generic.auto._
 
-class AutoSpec extends Specification {
-  override def is = s2"""
-  encode a row with Write automatically $rowGenericallyDerived
-  encode a comple with LabelledWrite automatically $rowNameDerived
-  read a row with read automatically $readRowDerived
-  read a row with labelledread automatically $nameBasedReadDerived
-  """
+class AutoSpec extends munit.FunSuite {
 
-  def rowGenericallyDerived = {
-    import _root_.io.chrisdavenport.cormorant._
-    import _root_.io.chrisdavenport.cormorant.implicits._
-    import _root_.io.chrisdavenport.cormorant.generic.auto._
-
+  test("encode a row with Write automatically") {
     case class Example(i: Int, s: String, b: Int)
 
     val encoded = Example(1,"Hello",73).writeRow
     val expected = CSV.Row(NonEmptyList.of(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))
-    
-    encoded must_=== expected
+    assertEquals(encoded, expected)
   }
 
-  def rowNameDerived = {
-    import _root_.io.chrisdavenport.cormorant._
-    import _root_.io.chrisdavenport.cormorant.implicits._
-    import _root_.io.chrisdavenport.cormorant.generic.auto._
+  test("encode a comple with LabelledWrite automatically") {
     case class Example(i: Int, s: Option[String], b: Int)
 
     val encoded = List(Example(1, Option("Hello"), 73)).writeComplete
@@ -35,23 +23,17 @@ class AutoSpec extends Specification {
       CSV.Headers(NonEmptyList.of(CSV.Header("i"), CSV.Header("s"), CSV.Header("b"))),
       CSV.Rows(List(CSV.Row(NonEmptyList.of(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))))
     )
-    encoded must_=== expected
+    assertEquals(encoded, expected)
   }
 
-  def readRowDerived = {
-    import _root_.io.chrisdavenport.cormorant._
-    import _root_.io.chrisdavenport.cormorant.implicits._
-    import _root_.io.chrisdavenport.cormorant.generic.auto._
+  test("read a row with read automatically") {
     case class Example(i: Int, s: Option[String], b: Int)
     val from = CSV.Row(NonEmptyList.of(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))
     val expected = Example(1, Some("Hello"), 73)
-    from.readRow[Example] must_=== Right(expected) 
+    assertEquals(from.readRow[Example], Right(expected))
   }
 
-  def nameBasedReadDerived = {
-    import _root_.io.chrisdavenport.cormorant._
-    import _root_.io.chrisdavenport.cormorant.implicits._
-    import _root_.io.chrisdavenport.cormorant.generic.auto._
+  test("read a row with labelledread automatically") {
     import cats.syntax.either._
 
     case class Example(i: Int, s: Option[String], b: Int)
@@ -63,9 +45,6 @@ class AutoSpec extends Specification {
     )
 
     val expected = List(Example(1, Option("Hello"), 73)).map(Either.right)
-
-    fromCSV.readLabelled[Example] must_=== expected
+    assertEquals(fromCSV.readLabelled[Example], expected)
   }
-
-
 }
