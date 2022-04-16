@@ -1,7 +1,7 @@
 package io.chrisdavenport.cormorant
 
 import _root_.fs2._
-import cats.implicits._
+import cats.syntax.all._
 import atto._
 import Atto._
 import io.chrisdavenport.cormorant.parser.CSVParser
