@@ -104,7 +104,7 @@ lazy val generic = project
   .settings(
     name := "cormorant-generic",
     libraryDependencies ++= Seq(
-      "com.chuusai" %% "shapeless" % "2.3.3"
+      "com.chuusai" %% "shapeless" % "2.3.9"
     )
   )
 
