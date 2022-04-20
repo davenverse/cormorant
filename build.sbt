@@ -1,6 +1,6 @@
-val Scala213 = "2.13.5"
+val Scala213 = "2.13.8"
 
-ThisBuild / crossScalaVersions := Seq("2.12.13", Scala213)
+ThisBuild / crossScalaVersions := Seq("2.12.15", Scala213)
 ThisBuild / scalaVersion := crossScalaVersions.value.last
 
 ThisBuild / githubWorkflowArtifactUpload := false
@@ -85,10 +85,10 @@ val catsEffectTestV = "1.1.0"
 val fs2V = "3.0.4"
 val shapelessV = "2.3.3"
 val http4sV = "0.23.0-RC1"
-val catsScalacheckV = "0.3.0"
-val munitV = "0.7.26"
-val munitCatsEffectV = "1.0.3"
-val scalacheckEffectV = "1.0.2"
+val catsScalacheckV = "0.3.1"
+val munitV = "0.7.29"
+val munitCatsEffectV = "1.0.7"
+val scalacheckEffectV = "1.0.3"
 
 lazy val core = project
   .in(file("modules/core"))
@@ -104,7 +104,7 @@ lazy val generic = project
   .settings(
     name := "cormorant-generic",
     libraryDependencies ++= Seq(
-      "com.chuusai" %% "shapeless" % "2.3.3"
+      "com.chuusai" %% "shapeless" % "2.3.9"
     )
   )
 
