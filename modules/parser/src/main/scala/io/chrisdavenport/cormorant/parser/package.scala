@@ -1,7 +1,7 @@
 package io.chrisdavenport.cormorant
 
 import io.chrisdavenport.cormorant.Error.ParseFailure
-import cats.implicits._
+import cats.syntax.all._
 import cats.data._
 import atto._
 import Atto._
