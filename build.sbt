@@ -77,7 +77,7 @@ lazy val cormorant = project
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
-  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
+  .aggregate(core, generic, parser, refined, fs2, http4s, enumeratum, docs)
 
 val catsV = "2.7.0"
 val catsEffectV = "3.3.12"
@@ -86,6 +86,7 @@ val fs2V = "3.0.4"
 val shapelessV = "2.3.3"
 val http4sV = "0.23.0-RC1"
 val catsScalacheckV = "0.3.1"
+val enumeratumV = "1.7.0"
 val munitV = "0.7.29"
 val munitCatsEffectV = "1.0.7"
 val scalacheckEffectV = "1.0.4"
@@ -155,12 +156,23 @@ lazy val http4s = project
     )
   )
 
+lazy val enumeratum = project
+  .in(file("modules/enumeratum"))
+  .settings(commonSettings)
+  .dependsOn(core)
+  .settings(
+    name := "cormorant-enumeratum",
+    libraryDependencies ++= Seq(
+      "com.beachape" %% "enumeratum" % enumeratumV
+    )
+  )
+
 lazy val docs = project
   .in(file("modules"))
   .disablePlugins(MimaPlugin)
   .settings(skip in publish := true)
   .settings(commonSettings)
-  .dependsOn(core, generic, parser, refined, fs2, http4s)
+  .dependsOn(core, generic, parser, refined, fs2, http4s, enumeratum)
   .enablePlugins(MicrositesPlugin)
   .enablePlugins(MdocPlugin)
   .settings {
