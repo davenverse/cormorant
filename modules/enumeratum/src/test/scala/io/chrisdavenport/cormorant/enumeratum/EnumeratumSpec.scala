@@ -8,7 +8,7 @@ class EnumeratumSpec extends munit.FunSuite {
 
   sealed trait SomeEnum extends EnumEntry
   object SomeEnum extends Enum[SomeEnum] {
-    val values: IndexedSeq[SomeEnum] = findValues
+    val values = findValues
     case object Case1 extends SomeEnum
     case object Case2 extends SomeEnum
   }
