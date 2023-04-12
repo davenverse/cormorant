@@ -55,18 +55,17 @@ package object parser {
       .parseOnly(text)
       .either
       .leftMap(ParseFailure.apply)
-      .map {
-        case c @ CSV.Complete(h @ CSV.Headers(headers), rows) =>
-          // Due to The Grammar Being Unclear CRLF can and will be parsed as
-          // a field. However the specification states that each must have the
-          // same number of fields. We use this to remove this data we know to
-          // be unclear in the specification. In CSV.Complete, we use headers
-          // as the size of reference.
-          if (cleanup && headers.size > 1) {
-            CSV.Complete(h, filterLastRowIfEmpty(rows))
-          } else {
-            c
-          }
+      .map { case c @ CSV.Complete(h @ CSV.Headers(headers), rows) =>
+        // Due to The Grammar Being Unclear CRLF can and will be parsed as
+        // a field. However the specification states that each must have the
+        // same number of fields. We use this to remove this data we know to
+        // be unclear in the specification. In CSV.Complete, we use headers
+        // as the size of reference.
+        if (cleanup && headers.size > 1) {
+          CSV.Complete(h, filterLastRowIfEmpty(rows))
+        } else {
+          c
+        }
       }
 
   object TSVParser extends CSVLikeParser('\t')

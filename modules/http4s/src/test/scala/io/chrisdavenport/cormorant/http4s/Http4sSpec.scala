@@ -23,8 +23,8 @@ class StreamingPrinterSuite
   test("Http4s Entity Encoder/Decoder round trip rows") {
     PropF
       .forAllF { (rows: CSV.Rows) =>
-        val service = HttpRoutes.of[IO] {
-          case _ => Ok(rows)
+        val service = HttpRoutes.of[IO] { case _ =>
+          Ok(rows)
         }
         val client = Client.fromHttpApp(service.orNotFound)
         client.expect[CSV.Rows]("").map(assertEquals(_, rows))
@@ -35,8 +35,8 @@ class StreamingPrinterSuite
   test("Http4s Entity Encoder/Decoder round trip complete") {
     PropF
       .forAllF { (rows: CSV.Complete) =>
-        val service = HttpRoutes.of[IO] {
-          case _ => Ok(rows)
+        val service = HttpRoutes.of[IO] { case _ =>
+          Ok(rows)
         }
         val client = Client.fromHttpApp(service.orNotFound)
         client.expect[CSV.Complete]("").map(assertEquals(_, rows))

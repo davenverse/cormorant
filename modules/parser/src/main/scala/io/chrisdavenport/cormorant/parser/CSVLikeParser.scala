@@ -5,6 +5,7 @@ import atto._
 import Atto._
 import cats.data._
 import cats.syntax.all._
+
 /**
  * This CSVParser tries to stay fairly close to the initial specification
  * https://tools.ietf.org/html/rfc4180
@@ -66,7 +67,7 @@ import cats.syntax.all._
  *     another double quote.  For example:
  *
  *     "aaa","b""bb","ccc"
- **/
+ */
 abstract class CSVLikeParser(val separator: Char) {
   val dquote: Char = '\"'
   val dquoteS: String = dquote.toString
