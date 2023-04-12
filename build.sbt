@@ -80,7 +80,7 @@ lazy val cormorant = project
   .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
 val catsV = "2.7.0"
-val catsEffectV = "3.3.12"
+val catsEffectV = "3.3.14"
 val catsEffectTestV = "1.1.0"
 val fs2V = "3.0.4"
 val shapelessV = "2.3.3"
