@@ -127,7 +127,7 @@ trait base {
 
   /**
    * Get for Either, favors the Right get if successful
-    **/
+   */
   implicit def eitherGet[A: Get, B: Get]: Get[Either[A, B]] = new Get[Either[A, B]] {
     def get(field: CSV.Field): Either[Error.DecodeFailure, Either[A, B]] =
       (Get[A].get(field), Get[B].get(field)) match {

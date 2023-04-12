@@ -24,20 +24,30 @@ object Printer {
     }
   }
 
-
   def generic(
       columnSeperator: String,
       rowSeperator: String,
       escape: String,
       surround: String,
-      additionalEscapes: Set[String] = Set.empty[String]): Printer =
+      additionalEscapes: Set[String] = Set.empty[String]
+  ): Printer =
     new Printer {
 
       override def print(csv: CSV): String = csv match {
         case CSV.Field(text) =>
-          escapedAsNecessary(text, Set(columnSeperator, rowSeperator, escape, surround) ++ additionalEscapes, escape, surround)
+          escapedAsNecessary(
+            text,
+            Set(columnSeperator, rowSeperator, escape, surround) ++ additionalEscapes,
+            escape,
+            surround
+          )
         case CSV.Header(text) =>
-          escapedAsNecessary(text, Set(columnSeperator, rowSeperator, escape, surround) ++ additionalEscapes, escape, surround)
+          escapedAsNecessary(
+            text,
+            Set(columnSeperator, rowSeperator, escape, surround) ++ additionalEscapes,
+            escape,
+            surround
+          )
         case CSV.Row(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Headers(xs) => xs.map(print).intercalate(columnSeperator)
         case CSV.Rows(xs) => xs.map(print).intercalate(rowSeperator)

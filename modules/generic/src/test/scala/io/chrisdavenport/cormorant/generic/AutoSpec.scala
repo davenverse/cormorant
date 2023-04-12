@@ -10,7 +10,7 @@ class AutoSpec extends munit.FunSuite {
   test("encode a row with Write automatically") {
     case class Example(i: Int, s: String, b: Int)
 
-    val encoded = Example(1,"Hello",73).writeRow
+    val encoded = Example(1, "Hello", 73).writeRow
     val expected = CSV.Row(NonEmptyList.of(CSV.Field("1"), CSV.Field("Hello"), CSV.Field("73")))
     assertEquals(encoded, expected)
   }

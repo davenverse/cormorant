@@ -18,7 +18,10 @@ class TSVParserSpec extends munit.FunSuite {
     val baseHeader = "Something\tSomething2\tSomething3"
     val expect = CSV.Header("Something")
 
-    assertEquals(TSVParser.name.parse(baseHeader), ParseResult.Done("\tSomething2\tSomething3", expect))
+    assertEquals(
+      TSVParser.name.parse(baseHeader),
+      ParseResult.Done("\tSomething2\tSomething3", expect)
+    )
   }
 
   test("parse a group of headers") {
@@ -28,7 +31,10 @@ class TSVParserSpec extends munit.FunSuite {
       CSV.Header("Something2"),
       CSV.Header("Something3")
     )
-    val result = (TSVParser.name, many(TSVParser.SEPARATOR ~> TSVParser.name)).mapN(_ :: _).parse(baseHeader).done
+    val result = (TSVParser.name, many(TSVParser.SEPARATOR ~> TSVParser.name))
+      .mapN(_ :: _)
+      .parse(baseHeader)
+      .done
     assertEquals(result, ParseResult.Done("", expect))
   }
 
@@ -86,10 +92,13 @@ class TSVParserSpec extends munit.FunSuite {
     val expectedCSVString =
       "Color\tFood\tNumber\nBlue\tPizza\t1\nRed\tMargarine\t2\nYellow\tBroccoli\t3"
 
-    assertEquals(TSVParser.`complete-file`
-      .parse(expectedCSVString)
-      .done
-      .either, Either.right(csv))
+    assertEquals(
+      TSVParser.`complete-file`
+        .parse(expectedCSVString)
+        .done
+        .either,
+      Either.right(csv)
+    )
   }
 
   test("parse a complete csv with a trailing new line by stripping it") {
@@ -108,51 +117,60 @@ class TSVParserSpec extends munit.FunSuite {
     val expectedCSVString =
       "Color\tFood\tNumber\nBlue\tPizza\t1\nRed\tMargarine\t2\nYellow\tBroccoli\t3\n"
 
-    assertEquals(TSVParser.`complete-file`
-      .parse(expectedCSVString)
-      .done
-      .either
-      .map(_.stripTrailingRow) , Either.right(csv))
+    assertEquals(
+      TSVParser.`complete-file`
+        .parse(expectedCSVString)
+        .done
+        .either
+        .map(_.stripTrailingRow),
+      Either.right(csv)
+    )
   }
 
   test("parse an escaped row with a tab") {
-    val csv = CSV.Row(NonEmptyList.of(
-      CSV.Field("Green"),
-      CSV.Field("Yellow\tDog"),
-      CSV.Field("Blue")
-    ))
+    val csv = CSV.Row(
+      NonEmptyList.of(
+        CSV.Field("Green"),
+        CSV.Field("Yellow\tDog"),
+        CSV.Field("Blue")
+      )
+    )
     val parseString = "Green\t\"Yellow\tDog\"\tBlue"
     assertEquals(TSVParser.record.parse(parseString).done.either, Either.right(csv))
   }
 
   test("parse an escaped row with a double quote escaped") {
-    val csv = CSV.Row(NonEmptyList.of(
-      CSV.Field("Green"),
-      CSV.Field("Yellow\t \"Dog\""),
-      CSV.Field("Blue")
-    ))
+    val csv = CSV.Row(
+      NonEmptyList.of(
+        CSV.Field("Green"),
+        CSV.Field("Yellow\t \"Dog\""),
+        CSV.Field("Blue")
+      )
+    )
     val parseString = "Green\t\"Yellow\t \"\"Dog\"\"\"\tBlue"
     assertEquals(TSVParser.record.parse(parseString).done.either, Either.right(csv))
   }
 
-
-
   test("parse an escaped row with embedded newline") {
-    val csv = CSV.Row(NonEmptyList.of(
-      CSV.Field("Green"),
-      CSV.Field("Yellow\n Dog"),
-      CSV.Field("Blue")
-    ))
+    val csv = CSV.Row(
+      NonEmptyList.of(
+        CSV.Field("Green"),
+        CSV.Field("Yellow\n Dog"),
+        CSV.Field("Blue")
+      )
+    )
     val parseString = "Green\t\"Yellow\n Dog\"\tBlue"
     assertEquals(TSVParser.record.parse(parseString).done.either, Either.right(csv))
   }
 
   test("parse an escaped row with embedded CRLF") {
-    val csv = CSV.Row(NonEmptyList.of(
-      CSV.Field("Green"),
-      CSV.Field("Yellow\r\n Dog"),
-      CSV.Field("Blue")
-    ))
+    val csv = CSV.Row(
+      NonEmptyList.of(
+        CSV.Field("Green"),
+        CSV.Field("Yellow\r\n Dog"),
+        CSV.Field("Blue")
+      )
+    )
     val parseString = "Green\t\"Yellow\r\n Dog\"\tBlue"
     assertEquals(TSVParser.record.parse(parseString).done.either, Either.right(csv))
   }

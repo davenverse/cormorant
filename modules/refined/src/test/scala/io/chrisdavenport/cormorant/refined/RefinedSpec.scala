@@ -1,6 +1,5 @@
 package io.chrisdavenport.cormorant.refined
 
-
 class RefinedSpec extends munit.FunSuite {
   test("be able to derive a put for a class") {
     import _root_.io.chrisdavenport.cormorant._
@@ -19,9 +18,9 @@ class RefinedSpec extends munit.FunSuite {
     // import eu.timepit.refined.string._
     // import shapeless.{ ::, HNil }
 
-    val refinedValue : String Refined NonEmpty = refineMV[NonEmpty]("Hello")
+    val refinedValue: String Refined NonEmpty = refineMV[NonEmpty]("Hello")
 
-      assertEquals(Put[String Refined NonEmpty].put(refinedValue), CSV.Field("Hello"))
+    assertEquals(Put[String Refined NonEmpty].put(refinedValue), CSV.Field("Hello"))
 
   }
 
@@ -33,7 +32,7 @@ class RefinedSpec extends munit.FunSuite {
     import eu.timepit.refined.api.Refined
     import eu.timepit.refined.collection.NonEmpty
 
-    val refinedValue : String Refined NonEmpty = refineMV[NonEmpty]("Hello")
+    val refinedValue: String Refined NonEmpty = refineMV[NonEmpty]("Hello")
     val csv = CSV.Field("Hello")
 
     assertEquals(Get[String Refined NonEmpty].get(csv), Right(refinedValue))
