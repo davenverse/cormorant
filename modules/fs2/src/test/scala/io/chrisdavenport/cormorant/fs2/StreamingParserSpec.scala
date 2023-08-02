@@ -25,7 +25,7 @@ Anonymous,Hippopotamus,hippo@example.com"""
       source,
       chunkSize = 4,
     )
-    .through(_root_.fs2.text.utf8Decode)
+    .through(fs2.text.utf8.decode)
     .through(parseComplete[IO])
     .compile
     .toVector
