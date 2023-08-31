@@ -6,6 +6,7 @@ import _root_.fs2._
 import _root_.io.chrisdavenport.cormorant.{fs2 => _}
 import _root_.io.chrisdavenport.cormorant.fs2._
 import org.http4s._
+import fs2.text.utf8
 
 package object http4s {
 
@@ -74,7 +75,7 @@ package object http4s {
       def decode(msg: Media[F], strict: Boolean): DecodeResult[F, CSV.Complete] =
         cats.data.EitherT {
           msg.body
-            .through(text.utf8Decode)
+            .through(utf8.decode)
             .compile
             .foldMonoid
             .map(
@@ -91,7 +92,7 @@ package object http4s {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Media[F], strict: Boolean): DecodeResult[F, CSV.Rows] = cats.data.EitherT {
         msg.body
-          .through(text.utf8Decode)
+          .through(utf8.decode)
           .compile
           .foldMonoid
           .map(
@@ -108,7 +109,7 @@ package object http4s {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Media[F], strict: Boolean): DecodeResult[F, Stream[F, A]] =
         msg.body
-          .through(text.utf8Decode)
+          .through(utf8.decode)
           .through(readLabelled[F, A])
           .pure[DecodeResult[F, *]]
     }
@@ -118,7 +119,7 @@ package object http4s {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
       def decode(msg: Media[F], strict: Boolean): DecodeResult[F, Stream[F, A]] =
         msg.body
-          .through(text.utf8Decode)
+          .through(utf8.decode)
           .through(readRows[F, A])
           .pure[DecodeResult[F, *]]
     }
