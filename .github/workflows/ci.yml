@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.15, 2.13.8]
+        scala: [2.12.15, 2.13.12]
         java: [temurin@11]
     runs-on: ${{ matrix.os }}
     steps:
@@ -52,13 +52,13 @@ jobs:
           key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
 
       - name: Setup Ruby
-        if: matrix.scala == '2.13.8'
+        if: matrix.scala == '2.13.12'
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6.0
 
       - name: Install microsite dependencies
-        if: matrix.scala == '2.13.8'
+        if: matrix.scala == '2.13.12'
         run: |
           gem install saas
           gem install jekyll -v 3.2.1
@@ -68,7 +68,7 @@ jobs:
 
       - run: sbt ++${{ matrix.scala }} test mimaReportBinaryIssues
 
-      - if: matrix.scala == '2.13.8'
+      - if: matrix.scala == '2.13.12'
         run: sbt ++${{ matrix.scala }} docs/makeMicrosite
 
   publish:
@@ -78,7 +78,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.8]
+        scala: [2.13.12]
         java: [temurin@11]
     runs-on: ${{ matrix.os }}
     steps:
@@ -127,4 +127,4 @@ jobs:
         run: sbt ++${{ matrix.scala }} ci-release
 
       - name: Publish microsite
-        run: sbt ++${{ matrix.scala }} ++2.13.8 docs/publishMicrosite
+        run: sbt ++${{ matrix.scala }} ++2.13.12 docs/publishMicrosite
