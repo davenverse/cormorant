@@ -75,7 +75,7 @@ inThisBuild(
 lazy val cormorant = project
   .in(file("."))
   .disablePlugins(MimaPlugin)
-  .settings(skip in publish := true)
+  .settings((publish / skip) := true)
   .settings(commonSettings)
   .aggregate(core, generic, parser, refined, fs2, http4s, docs)
 
@@ -158,7 +158,7 @@ lazy val http4s = project
 lazy val docs = project
   .in(file("modules"))
   .disablePlugins(MimaPlugin)
-  .settings(skip in publish := true)
+  .settings((publish / skip) := true)
   .settings(commonSettings)
   .dependsOn(core, generic, parser, refined, fs2, http4s)
   .enablePlugins(MicrositesPlugin)
