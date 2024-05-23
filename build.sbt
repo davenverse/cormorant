@@ -87,7 +87,7 @@ val shapelessV = "2.3.3"
 val http4sV = "0.23.0-RC1"
 val catsScalacheckV = "0.3.1"
 val munitV = "0.7.29"
-val munitCatsEffectV = "1.0.7"
+val munitCatsEffectV = "2.0.0"
 val scalacheckEffectV = "1.0.4"
 
 lazy val core = project
@@ -218,7 +218,7 @@ lazy val commonSettings = Seq(
     "org.typelevel"     %% "cats-effect"             % catsEffectV,
     "org.scalameta"     %% "munit"                   % munitV            % Test,
     "org.scalameta"     %% "munit-scalacheck"        % munitV            % Test,
-    "org.typelevel"     %% "munit-cats-effect-3"     % munitCatsEffectV  % Test,
+    "org.typelevel"     %% "munit-cats-effect"       % munitCatsEffectV  % Test,
     "org.typelevel"     %% "scalacheck-effect-munit" % scalacheckEffectV % Test,
     "io.chrisdavenport" %% "cats-scalacheck"         % catsScalacheckV   % Test
   )
