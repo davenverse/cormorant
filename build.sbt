@@ -1,94 +1,31 @@
-val Scala213 = "2.13.8"
+ThisBuild / tlBaseVersion := "0.5" // current series x.y
 
-ThisBuild / crossScalaVersions := Seq("2.12.15", Scala213)
-ThisBuild / scalaVersion := crossScalaVersions.value.last
-
-ThisBuild / githubWorkflowArtifactUpload := false
-
-val Scala213Cond = s"matrix.scala == '$Scala213'"
-
-def rubySetupSteps(cond: Option[String]) =
-  Seq(
-    WorkflowStep.Use(
-      UseRef.Public("ruby", "setup-ruby", "v1"),
-      name = Some("Setup Ruby"),
-      params = Map("ruby-version" -> "2.6.0"),
-      cond = cond
-    ),
-    WorkflowStep.Run(
-      List("gem install saas", "gem install jekyll -v 3.2.1"),
-      name = Some("Install microsite dependencies"),
-      cond = cond
-    )
-  )
-
-ThisBuild / githubWorkflowBuildPreamble ++=
-  rubySetupSteps(Some(Scala213Cond))
-
-ThisBuild / githubWorkflowBuild := Seq(
-  WorkflowStep.Sbt(List("test", "mimaReportBinaryIssues")),
-  WorkflowStep.Sbt(List("docs/makeMicrosite"), cond = Some(Scala213Cond))
+ThisBuild / organization := "io.chrisdavenport"
+ThisBuild / organizationName := "Christopher Davenport"
+ThisBuild / startYear := Some(2018)
+ThisBuild / licenses := Seq(License.MIT)
+ThisBuild / developers := List(
+  tlGitHubDev("ChristopherDavenport", "Christopher Davenport")
 )
 
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
-
-// currently only publishing tags
-ThisBuild / githubWorkflowPublishTargetBranches :=
-  Seq(RefPredicate.StartsWith(Ref.Tag("v")))
-
-ThisBuild / githubWorkflowPublishPreamble ++=
-  WorkflowStep.Use(UseRef.Public("olafurpg", "setup-gpg", "v3")) +: rubySetupSteps(None)
-
-ThisBuild / githubWorkflowPublish := Seq(
-  WorkflowStep.Sbt(
-    List("ci-release"),
-    name = Some("Publish artifacts to Sonatype"),
-    env = Map(
-      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
-      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
-    )
-  ),
-  WorkflowStep.Sbt(
-    List(s"++$Scala213", "docs/publishMicrosite"),
-    name = Some("Publish microsite")
-  )
-)
-
-inThisBuild(
-  List(
-    organization := "io.chrisdavenport",
-    homepage := Some(url("https://github.com/ChristopherDavenport/cormorant")),
-    licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
-    developers := List(
-      Developer(
-        "ChristopherDavenport",
-        "Christopher Davenport",
-        "chris@christopherdavenport.tech",
-        url("https://www.github.com/ChristopherDavenport")
-      )
-    )
-  )
-)
-
-lazy val cormorant = project
-  .in(file("."))
-  .disablePlugins(MimaPlugin)
-  .settings(skip in publish := true)
-  .settings(commonSettings)
-  .aggregate(core, generic, parser, refined, fs2, http4s, docs)
+val Scala213 = "2.13.18"
+// Scala 2 only: shapeless 2.x and atto have no Scala 3 build.
+ThisBuild / crossScalaVersions := Seq("2.12.20", Scala213)
+ThisBuild / scalaVersion := Scala213
 
 val catsV = "2.7.0"
 val catsEffectV = "3.3.12"
-val catsEffectTestV = "1.1.0"
 val fs2V = "3.0.4"
-val shapelessV = "2.3.3"
 val http4sV = "0.23.0-RC1"
 val catsScalacheckV = "0.3.1"
 val munitV = "0.7.29"
 val munitCatsEffectV = "1.0.7"
 val scalacheckEffectV = "1.0.4"
+
+lazy val root = project
+  .in(file("."))
+  .enablePlugins(NoPublishPlugin)
+  .aggregate(core, generic, parser, refined, fs2, http4s)
 
 lazy val core = project
   .in(file("modules/core"))
@@ -155,63 +92,33 @@ lazy val http4s = project
     )
   )
 
-lazy val docs = project
-  .in(file("modules"))
-  .disablePlugins(MimaPlugin)
-  .settings(skip in publish := true)
-  .settings(commonSettings)
+// Replaces the sbt-microsites (Jekyll/Ruby) site. mdocIn resolves to the
+// repo-root docs/ directory, which is where index.md now lives.
+lazy val site = project
+  .in(file("site"))
+  .enablePlugins(TypelevelSitePlugin)
   .dependsOn(core, generic, parser, refined, fs2, http4s)
-  .enablePlugins(MicrositesPlugin)
-  .enablePlugins(MdocPlugin)
-  .settings {
-    import microsites._
-    Seq(
-      micrositeName := "cormorant",
-      micrositeDescription := "CSV Library for Scala",
-      micrositeAuthor := "Christopher Davenport",
-      micrositeGithubOwner := "ChristopherDavenport",
-      micrositeGithubRepo := "cormorant",
-      micrositeBaseUrl := "/cormorant",
-      micrositeDocumentationUrl := "https://www.javadoc.io/doc/io.chrisdavenport/cormorant-core_2.12",
-      micrositeFooterText := None,
-      micrositeHighlightTheme := "atom-one-light",
-      micrositePalette := Map(
-        "brand-primary" -> "#3e5b95",
-        "brand-secondary" -> "#294066",
-        "brand-tertiary" -> "#2d5799",
-        "gray-dark" -> "#49494B",
-        "gray" -> "#7B7B7E",
-        "gray-light" -> "#E5E5E6",
-        "gray-lighter" -> "#F4F3F4",
-        "white-color" -> "#FFFFFF"
-      ),
-      libraryDependencies += "com.47deg" %% "github4s" % "0.28.1",
-      micrositePushSiteWith := GitHub4s,
-      micrositeGithubToken := sys.env.get("GITHUB_TOKEN"),
-      micrositeExtraMdFiles := Map(
-        file("CHANGELOG.md") -> ExtraMdFileConfig(
-          "changelog.md",
-          "page",
-          Map("title" -> "changelog", "section" -> "changelog", "position" -> "100")
-        ),
-        file("CODE_OF_CONDUCT.md") -> ExtraMdFileConfig(
-          "code-of-conduct.md",
-          "page",
-          Map("title" -> "code of conduct", "section" -> "code of conduct", "position" -> "101")
-        ),
-        file("LICENSE") -> ExtraMdFileConfig(
-          "license.md",
-          "page",
-          Map("title" -> "license", "section" -> "license", "position" -> "102")
-        )
+  .settings(
+    laikaTheme := tlSiteHelium.value.site
+      .topNavigationBar(
+        homeLink = laika.helium.config.IconLink.internal(laika.ast.Path.Root / "index.md", laika.helium.config.HeliumIcon.home)
       )
-    )
-  }
+      .build
+  )
+
+// refined 0.9.29 pulls scala-xml 1.3.0 while the 2.12 compiler pulls 2.3.0.
+// sbt 1.11's eviction check treats that as an error without an explicit scheme.
+ThisBuild / libraryDependencySchemes +=
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 
 // General Settings
 lazy val commonSettings = Seq(
-  addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.13.2" cross CrossVersion.full),
+  addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.13.4" cross CrossVersion.full),
   addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1"),
+  scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 12)) => Seq("-Ypartial-unification")
+    case _ => Nil
+  }),
   testFrameworks += new TestFramework("munit.Framework"),
   libraryDependencies ++= Seq(
     "org.typelevel"     %% "cats-core"               % catsV,
