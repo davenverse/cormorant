@@ -1,70 +1,193 @@
-<html><head><title>cormorant</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Christopher Davenport" /><meta name="description" content="CSV Library for Scala" /><meta name="og:image" content="/cormorant/img/poster.png" /><meta name="image" property="og:image" content="/cormorant/img/poster.png" /><meta name="og:title" content="cormorant" /><meta name="title" property="og:title" content="cormorant" /><meta name="og:site_name" content="cormorant" /><meta name="og:url" content="https://github.com/ChristopherDavenport/cormorant" /><meta name="og:type" content="website" /><meta name="og:description" content="CSV Library for Scala" /><link rel="icon" type="image/png" href="/cormorant/img/favicon.png" /><meta name="twitter:title" content="cormorant" /><meta name="twitter:image" content="/cormorant/img/poster.png" /><meta name="twitter:description" content="CSV Library for Scala" /><meta name="twitter:card" content="summary_large_image" /><link rel="icon" type="image/png" sizes="16x16" href="/cormorant/img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/cormorant/img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/cormorant/img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/cormorant/img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/cormorant/img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/cormorant/img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/cormorant/img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/cormorant/img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/cormorant/img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/cormorant/img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/cormorant/img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/cormorant/img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/cormorant/img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/cormorant/img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/cormorant/img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/cormorant/img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/cormorant/img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/cormorant/img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/cormorant/img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/cormorant/img/favicon310x150.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/cormorant/highlight/styles/atom-one-light.css" /><link rel="stylesheet" href="/cormorant/css/style.css" /><link rel="stylesheet" href="/cormorant/css/palette.css" /><link rel="stylesheet" href="/cormorant/css/codemirror.css" /></head><body><header id="site-header"><div class="navbar-wrapper"><div class="container"><div class="row"><div class="col-xs-6"><a href="/cormorant/" class="brand"><div class="icon-wrapper"><span>cormorant</span></div></a></div><div class="col-xs-6"><nav class="text-right"><ul class=""><li><a href="https://github.com/ChristopherDavenport/cormorant"><i class="fa fa-github"></i><span class="hidden-xs">GitHub</span></a></li><li><a href="https://www.javadoc.io/doc/io.chrisdavenport/cormorant-core_2.12"><i class="fa fa-file-text"></i><span class="hidden-xs">Documentation</span></a></li></ul></nav></div></div></div></div><div class="jumbotron"><div class="container"><h1 class="text-center">CSV Library for Scala</h1><h2></h2><p class="text-center"><a href="https://github.com/ChristopherDavenport/cormorant" class="btn btn-outline-inverse">View on GitHub</a></p></div></div><div><ul class="horizontalNav">       <li><a class="" href="/cormorant/changelog.html">changelog</a></li>  <li><a class="" href="/cormorant/code-of-conduct.html">code of conduct</a></li>  <li><a class="" href="/cormorant/license.html">license</a></li> </ul></div></header><main id="site-main"><section class="use"><div class="container"><div id="content"><h1 id="cormorant--">cormorant <a href="https://travis-ci.com/ChristopherDavenport/cormorant"><img src="https://travis-ci.com/ChristopherDavenport/cormorant.svg?branch=master" alt="Build Status" /></a> <a href="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12"><img src="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12/badge.svg" alt="Maven Central" /></a></h1>
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>cormorant  </title>
+  
+  <meta name="author" content="Christopher Davenport"/>
+  
+  
+  <meta name="description" content="site"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="helium/site/laika-helium.css" />
+  <script src="helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
 
-<h2 id="project-goals">Project Goals</h2>
+  <body>
 
-<p>Cormorant is a CSV Library for Scala</p>
+    <header id="top-bar" class="light-default dark-default">
 
-<h2 id="quick-start">Quick Start</h2>
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
 
-<p>To use cormorant in an existing SBT project with Scala 2.12 or a later version, add the following dependencies to your
-<code class="highlighter-rouge">build.sbt</code> depending on your needs:</p>
+  <a class="icon-link glyph-link" href="#"><i class="icofont-laika home" title="Home">&#xef47;</i></a>
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span>
-  <span class="s">"io.chrisdavenport"</span> <span class="o">%%</span> <span class="s">"cormorant-core"</span>     <span class="o">%</span> <span class="s">"&lt;version&gt;"</span><span class="o">,</span>
-  <span class="s">"io.chrisdavenport"</span> <span class="o">%%</span> <span class="s">"cormorant-generic"</span>  <span class="o">%</span> <span class="s">"&lt;version&gt;"</span><span class="o">,</span>
-  <span class="s">"io.chrisdavenport"</span> <span class="o">%%</span> <span class="s">"cormorant-parser"</span>   <span class="o">%</span> <span class="s">"&lt;version&gt;"</span><span class="o">,</span>
-  <span class="s">"io.chrisdavenport"</span> <span class="o">%%</span> <span class="s">"cormorant-fs2"</span>      <span class="o">%</span> <span class="s">"&lt;version&gt;"</span><span class="o">,</span>
-  <span class="s">"io.chrisdavenport"</span> <span class="o">%%</span> <span class="s">"cormorant-http4s"</span>   <span class="o">%</span> <span class="s">"&lt;version&gt;"</span><span class="o">,</span>
-  <span class="s">"io.chrisdavenport"</span> <span class="o">%%</span> <span class="s">"cormorant-refined"</span>  <span class="o">%</span> <span class="s">"&lt;version&gt;"</span>
-<span class="o">)</span>
-</code></pre>
-</div>
+  <div class="row links">
+    
+    <a class="icon-link svg-link" href="https://github.com/davenverse/cormorant"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>  
 
-<p>First the imports</p>
+</header>
+    
+    <nav id="sidebar">
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="k">import</span> <span class="nn">io.chrisdavenport.cormorant._</span>
-<span class="k">import</span> <span class="nn">io.chrisdavenport.cormorant.generic.semiauto._</span>
-<span class="k">import</span> <span class="nn">io.chrisdavenport.cormorant.parser._</span>
-<span class="k">import</span> <span class="nn">io.chrisdavenport.cormorant.implicits._</span>
-<span class="k">import</span> <span class="nn">cats.implicits._</span>
-<span class="k">import</span> <span class="nn">java.util.UUID</span>
-<span class="k">import</span> <span class="nn">java.time.Instant</span>
-</code></pre>
-</div>
+  <div class="row">
+    
+    <a class="icon-link svg-link" href="https://github.com/davenverse/cormorant"><span class="github" title="Source Code"><svg class="svg-icon" width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <g class="svg-shape">
+    <path d="M49.995,1c-27.609,-0 -49.995,22.386 -49.995,50.002c-0,22.09 14.325,40.83 34.194,47.444c2.501,0.458 3.413,-1.086 3.413,-2.412c0,-1.185 -0.043,-4.331 -0.067,-8.503c-13.908,3.021 -16.843,-6.704 -16.843,-6.704c-2.274,-5.773 -5.552,-7.311 -5.552,-7.311c-4.54,-3.103 0.344,-3.042 0.344,-3.042c5.018,0.356 7.658,5.154 7.658,5.154c4.46,7.64 11.704,5.433 14.552,4.156c0.454,-3.232 1.744,-5.436 3.174,-6.685c-11.102,-1.262 -22.775,-5.553 -22.775,-24.713c-0,-5.457 1.949,-9.92 5.147,-13.416c-0.516,-1.265 -2.231,-6.348 0.488,-13.233c0,0 4.199,-1.344 13.751,5.126c3.988,-1.108 8.266,-1.663 12.518,-1.682c4.245,0.019 8.523,0.574 12.517,1.682c9.546,-6.47 13.736,-5.126 13.736,-5.126c2.728,6.885 1.013,11.968 0.497,13.233c3.204,3.496 5.141,7.959 5.141,13.416c0,19.209 -11.691,23.436 -22.83,24.673c1.795,1.544 3.394,4.595 3.394,9.26c0,6.682 -0.061,12.076 -0.061,13.715c0,1.338 0.899,2.894 3.438,2.406c19.853,-6.627 34.166,-25.354 34.166,-47.438c-0,-27.616 -22.389,-50.002 -50.005,-50.002"/>
+  </g>
+</svg></span></a>
+    
+  </div>
 
-<p>Then some basic operations</p>
+  <ul class="nav-list">
+    <li class="level1 active nav-leaf"><a href="#">cormorant <a href="https://travis-ci.com/ChristopherDavenport/cormorant"><img src="https://travis-ci.com/ChristopherDavenport/cormorant.svg?branch=master" alt="Build Status"></a> <a href="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12"><img src="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12/badge.svg" alt="Maven Central"></a></a></li>
+  </ul>
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="k">case</span> <span class="k">class</span> <span class="nc">Bar</span><span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">c</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">d</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">UUID</span><span class="o">],</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Instant</span><span class="o">)</span>
-<span class="c1">// defined class Bar
-</span>
-<span class="k">implicit</span> <span class="k">val</span> <span class="n">lr</span><span class="k">:</span> <span class="kt">LabelledRead</span><span class="o">[</span><span class="kt">Bar</span><span class="o">]</span> <span class="k">=</span> <span class="n">deriveLabelledRead</span>
-<span class="c1">// lr: io.chrisdavenport.cormorant.LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@6b9a789
-</span>
-<span class="k">implicit</span> <span class="k">val</span> <span class="n">lw</span><span class="k">:</span> <span class="kt">LabelledWrite</span><span class="o">[</span><span class="kt">Bar</span><span class="o">]</span> <span class="k">=</span> <span class="n">deriveLabelledWrite</span>
-<span class="c1">// lw: io.chrisdavenport.cormorant.LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@e2b4593
-</span>
-<span class="c1">// A List of A given derived type
-// Don't use Instant.Now or UUID.randomUUID in pure code in the real world please.
-</span><span class="k">val</span> <span class="n">l</span> <span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Bar</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
-  <span class="nc">Bar</span><span class="o">(</span><span class="s">"Yellow"</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5L</span><span class="o">,</span> <span class="nc">UUID</span><span class="o">.</span><span class="n">randomUUID</span><span class="o">.</span><span class="n">some</span><span class="o">,</span> <span class="nc">Instant</span><span class="o">.</span><span class="n">now</span><span class="o">),</span>
-  <span class="nc">Bar</span><span class="o">(</span><span class="s">"Boo"</span><span class="o">,</span> <span class="mi">7</span><span class="o">,</span> <span class="mi">6L</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Instant</span><span class="o">.</span><span class="nc">MAX</span><span class="o">)</span>
-<span class="o">)</span>
-<span class="c1">// l: List[Bar] = List(Bar(Yellow,3,5,Some(101f83b5-3854-4005-b71a-af31c4dd995b),2021-02-03T15:51:55.292701Z), Bar(Boo,7,6,None,+1000000000-12-31T23:59:59.999999999Z))
-</span>
-<span class="c1">// From Type to String
-</span><span class="k">val</span> <span class="n">csv</span> <span class="k">=</span> <span class="n">l</span><span class="o">.</span><span class="n">writeComplete</span><span class="o">.</span><span class="n">print</span><span class="o">(</span><span class="nc">Printer</span><span class="o">.</span><span class="n">default</span><span class="o">)</span>
-<span class="c1">// csv: String =
-// a,b,c,d,e
-// Yellow,3,5,101f83b5-3854-4005-b71a-af31c4dd995b,2021-02-03T15:51:55.292701Z
-// Boo,7,6,,+1000000000-12-31T23:59:59.999999999Z
-</span>
-<span class="c1">// From String to Type
-</span><span class="k">val</span> <span class="n">decoded</span> <span class="k">:</span> <span class="kt">Either</span><span class="o">[</span><span class="kt">Error</span>, <span class="kt">List</span><span class="o">[</span><span class="kt">Bar</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
-  <span class="n">parseComplete</span><span class="o">(</span><span class="n">csv</span><span class="o">).</span><span class="n">leftWiden</span><span class="o">[</span><span class="kt">Error</span><span class="o">]</span>
-  <span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">readLabelled</span><span class="o">[</span><span class="kt">Bar</span><span class="o">].</span><span class="n">sequence</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// decoded: Either[io.chrisdavenport.cormorant.Error,List[Bar]] = Right(List(Bar(Yellow,3,5,Some(101f83b5-3854-4005-b71a-af31c4dd995b),2021-02-03T15:51:55.292701Z), Bar(Boo,7,6,None,+1000000000-12-31T23:59:59.999999999Z)))
-</span></code></pre>
-</div>
-</div></div></section><section class="technologies"><div class="container"><div class="row"></div></div></section></main><footer id="site-footer"><div class="container"><div class="row"><div class="col-xs-6"><p>cormorant is designed and developed by <a href="https://github.com/ChristopherDavenport/cormorant" target="_blank" rel="noopener noreferrer">Christopher Davenport</a></p></div><div class="col-xs-6"><p class="text-right"><a href="https://github.com/ChristopherDavenport/cormorant"><span class="fa fa-github"></span>View on GitHub</a></p></div></div><script src="/cormorant/highlight/highlight.pack.js"></script><script>hljs.initHighlighting();
-              </script></div></footer></body></html>
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">cormorant <a href="https://travis-ci.com/ChristopherDavenport/cormorant"><img src="https://travis-ci.com/ChristopherDavenport/cormorant.svg?branch=master" alt="Build Status"></a> <a href="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12"><img src="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12/badge.svg" alt="Maven Central"></a></a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#project-goals">Project Goals</a></li>
+    <li class="level1 nav-leaf"><a href="#quick-start">Quick Start</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <hr>
+        <p>layout: home</p>
+        <hr>
+        <h1 id="cormorant" class="title">cormorant <a href="https://travis-ci.com/ChristopherDavenport/cormorant"><img src="https://travis-ci.com/ChristopherDavenport/cormorant.svg?branch=master" alt="Build Status"></a> <a href="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12"><img src="https://maven-badges.herokuapp.com/maven-central/io.chrisdavenport/cormorant-core_2.12/badge.svg" alt="Maven Central"></a></h1>
+        
+        <h2 id="project-goals" class="section"><a class="anchor-link left" href="#project-goals"><i class="icofont-laika link">&#xef71;</i></a>Project Goals</h2>
+        <p>Cormorant is a CSV Library for Scala</p>
+        
+        <h2 id="quick-start" class="section"><a class="anchor-link left" href="#quick-start"><i class="icofont-laika link">&#xef71;</i></a>Quick Start</h2>
+        <p>To use cormorant in an existing SBT project with Scala 2.12 or a later version, add the following dependencies to your
+        <code>build.sbt</code> depending on your needs:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
+  </span><span class="string-literal">&quot;io.chrisdavenport&quot;</span><span> %% </span><span class="string-literal">&quot;cormorant-core&quot;</span><span>     % </span><span class="string-literal">&quot;&lt;version&gt;&quot;</span><span>,
+  </span><span class="string-literal">&quot;io.chrisdavenport&quot;</span><span> %% </span><span class="string-literal">&quot;cormorant-generic&quot;</span><span>  % </span><span class="string-literal">&quot;&lt;version&gt;&quot;</span><span>,
+  </span><span class="string-literal">&quot;io.chrisdavenport&quot;</span><span> %% </span><span class="string-literal">&quot;cormorant-parser&quot;</span><span>   % </span><span class="string-literal">&quot;&lt;version&gt;&quot;</span><span>,
+  </span><span class="string-literal">&quot;io.chrisdavenport&quot;</span><span> %% </span><span class="string-literal">&quot;cormorant-fs2&quot;</span><span>      % </span><span class="string-literal">&quot;&lt;version&gt;&quot;</span><span>,
+  </span><span class="string-literal">&quot;io.chrisdavenport&quot;</span><span> %% </span><span class="string-literal">&quot;cormorant-http4s&quot;</span><span>   % </span><span class="string-literal">&quot;&lt;version&gt;&quot;</span><span>,
+  </span><span class="string-literal">&quot;io.chrisdavenport&quot;</span><span> %% </span><span class="string-literal">&quot;cormorant-refined&quot;</span><span>  % </span><span class="string-literal">&quot;&lt;version&gt;&quot;</span><span>
+)</span></code></pre>
+        <p>First the imports</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">chrisdavenport</span><span>.</span><span class="identifier">cormorant</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">chrisdavenport</span><span>.</span><span class="identifier">cormorant</span><span>.</span><span class="identifier">generic</span><span>.</span><span class="identifier">semiauto</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">chrisdavenport</span><span>.</span><span class="identifier">cormorant</span><span>.</span><span class="identifier">parser</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">chrisdavenport</span><span>.</span><span class="identifier">cormorant</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">UUID</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">time</span><span>.</span><span class="type-name">Instant</span></code></pre>
+        <p>Then some basic operations</p>
+        <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Bar</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">c</span><span>: </span><span class="type-name">Long</span><span>, </span><span class="identifier">d</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">UUID</span><span>], </span><span class="identifier">e</span><span>: </span><span class="type-name">Instant</span><span>)
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lr</span><span>: </span><span class="type-name">LabelledRead</span><span>[</span><span class="type-name">Bar</span><span>] = </span><span class="identifier">deriveLabelledRead</span><span>
+</span><span class="comment">// lr: LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@5c2f2145
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lw</span><span>: </span><span class="type-name">LabelledWrite</span><span>[</span><span class="type-name">Bar</span><span>] = </span><span class="identifier">deriveLabelledWrite</span><span>
+</span><span class="comment">// lw: LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@15ef3c74
+</span><span>
+</span><span class="comment">// A List of A given derived type
+// Don&#39;t use Instant.Now or UUID.randomUUID in pure code in the real world please.
+</span><span class="keyword">val</span><span> </span><span class="identifier">l</span><span> : </span><span class="type-name">List</span><span>[</span><span class="type-name">Bar</span><span>] = </span><span class="type-name">List</span><span>(
+  </span><span class="type-name">Bar</span><span>(</span><span class="string-literal">&quot;Yellow&quot;</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">5L</span><span>, </span><span class="type-name">UUID</span><span>.</span><span class="identifier">randomUUID</span><span>.</span><span class="identifier">some</span><span>, </span><span class="type-name">Instant</span><span>.</span><span class="identifier">now</span><span>),
+  </span><span class="type-name">Bar</span><span>(</span><span class="string-literal">&quot;Boo&quot;</span><span>, </span><span class="number-literal">7</span><span>, </span><span class="number-literal">6L</span><span>, </span><span class="type-name">None</span><span>, </span><span class="type-name">Instant</span><span>.</span><span class="type-name">MAX</span><span>)
+)
+</span><span class="comment">// l: List[Bar] = List(
+//   Bar(
+//     a = &quot;Yellow&quot;,
+//     b = 3,
+//     c = 5L,
+//     d = Some(value = 92c8a35d-94c7-4626-8bed-8fce963dbb8e),
+//     e = 2026-09-24T06:54:00.204514Z
+//   ),
+//   Bar(
+//     a = &quot;Boo&quot;,
+//     b = 7,
+//     c = 6L,
+//     d = None,
+//     e = +1000000000-12-31T23:59:59.999999999Z
+//   )
+// )
+</span><span>
+</span><span class="comment">// From Type to String
+</span><span class="keyword">val</span><span> </span><span class="identifier">csv</span><span> = </span><span class="identifier">l</span><span>.</span><span class="identifier">writeComplete</span><span>.</span><span class="identifier">print</span><span>(</span><span class="type-name">Printer</span><span>.</span><span class="keyword">default</span><span>)
+</span><span class="comment">// csv: String = &quot;&quot;&quot;a,b,c,d,e
+// Yellow,3,5,92c8a35d-94c7-4626-8bed-8fce963dbb8e,2026-09-24T06:54:00.204514Z
+// Boo,7,6,,+1000000000-12-31T23:59:59.999999999Z&quot;&quot;&quot;
+</span><span>
+</span><span class="comment">// From String to Type
+</span><span class="keyword">val</span><span> </span><span class="identifier">decoded</span><span> : </span><span class="type-name">Either</span><span>[</span><span class="type-name">Error</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Bar</span><span>]] = {
+  </span><span class="identifier">parseComplete</span><span>(</span><span class="identifier">csv</span><span>).</span><span class="identifier">leftWiden</span><span>[</span><span class="type-name">Error</span><span>]
+  .</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">readLabelled</span><span>[</span><span class="type-name">Bar</span><span>].</span><span class="identifier">sequence</span><span>)
+}
+</span><span class="comment">// decoded: Either[Error, List[Bar]] = Right(
+//   value = List(
+//     Bar(
+//       a = &quot;Yellow&quot;,
+//       b = 3,
+//       c = 5L,
+//       d = Some(value = 92c8a35d-94c7-4626-8bed-8fce963dbb8e),
+//       e = 2026-09-24T06:54:00.204514Z
+//     ),
+//     Bar(
+//       a = &quot;Boo&quot;,
+//       b = 7,
+//       c = 6L,
+//       d = None,
+//       e = +1000000000-12-31T23:59:59.999999999Z
+//     )
+//   )
+// )</span></code></pre>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>
