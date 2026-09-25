@@ -120,9 +120,9 @@
         <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Bar</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">c</span><span>: </span><span class="type-name">Long</span><span>, </span><span class="identifier">d</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">UUID</span><span>], </span><span class="identifier">e</span><span>: </span><span class="type-name">Instant</span><span>)
 
 </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lr</span><span>: </span><span class="type-name">LabelledRead</span><span>[</span><span class="type-name">Bar</span><span>] = </span><span class="identifier">deriveLabelledRead</span><span>
-</span><span class="comment">// lr: LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@5c2f2145
+</span><span class="comment">// lr: LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@2a27e89e
 </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lw</span><span>: </span><span class="type-name">LabelledWrite</span><span>[</span><span class="type-name">Bar</span><span>] = </span><span class="identifier">deriveLabelledWrite</span><span>
-</span><span class="comment">// lw: LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@15ef3c74
+</span><span class="comment">// lw: LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@48947c63
 </span><span>
 </span><span class="comment">// A List of A given derived type
 // Don&#39;t use Instant.Now or UUID.randomUUID in pure code in the real world please.
@@ -135,8 +135,8 @@
 //     a = &quot;Yellow&quot;,
 //     b = 3,
 //     c = 5L,
-//     d = Some(value = 92c8a35d-94c7-4626-8bed-8fce963dbb8e),
-//     e = 2026-09-24T06:54:00.204514Z
+//     d = Some(value = 8bbfd843-dfba-40f2-bb18-16098d5cd61d),
+//     e = 2026-09-25T20:52:51.101618Z
 //   ),
 //   Bar(
 //     a = &quot;Boo&quot;,
@@ -150,7 +150,7 @@
 </span><span class="comment">// From Type to String
 </span><span class="keyword">val</span><span> </span><span class="identifier">csv</span><span> = </span><span class="identifier">l</span><span>.</span><span class="identifier">writeComplete</span><span>.</span><span class="identifier">print</span><span>(</span><span class="type-name">Printer</span><span>.</span><span class="keyword">default</span><span>)
 </span><span class="comment">// csv: String = &quot;&quot;&quot;a,b,c,d,e
-// Yellow,3,5,92c8a35d-94c7-4626-8bed-8fce963dbb8e,2026-09-24T06:54:00.204514Z
+// Yellow,3,5,8bbfd843-dfba-40f2-bb18-16098d5cd61d,2026-09-25T20:52:51.101618Z
 // Boo,7,6,,+1000000000-12-31T23:59:59.999999999Z&quot;&quot;&quot;
 </span><span>
 </span><span class="comment">// From String to Type
@@ -164,8 +164,8 @@
 //       a = &quot;Yellow&quot;,
 //       b = 3,
 //       c = 5L,
-//       d = Some(value = 92c8a35d-94c7-4626-8bed-8fce963dbb8e),
-//       e = 2026-09-24T06:54:00.204514Z
+//       d = Some(value = 8bbfd843-dfba-40f2-bb18-16098d5cd61d),
+//       e = 2026-09-25T20:52:51.101618Z
 //     ),
 //     Bar(
 //       a = &quot;Boo&quot;,
