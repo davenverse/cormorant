@@ -9,13 +9,17 @@ object Cursor {
     else Some(temp)
   }
 
+  // These messages describe the shape of the failure, not the contents of the
+  // row. Decode failures routinely reach logs and HTTP responses, and the row
+  // is the caller's data -- often from a different trust level than whoever
+  // reads the error.
   def atHeader(header: CSV.Header)(
       headers: CSV.Headers,
       row: CSV.Row): Either[Error.DecodeFailure, CSV.Field] = {
     optionIndexOf(headers.l.toList)(header)
       .fold[Either[Error.DecodeFailure, Int]](
         Either.left(Error.DecodeFailure.single(
-          s"Header $header not present in header: $headers for row: $row"))
+          s"Header $header not present in header: $headers for a row of ${row.l.size} field(s)"))
       )(Either.right)
       .flatMap(i => atIndex(row, i))
   }
@@ -27,7 +31,8 @@ object Cursor {
       .headOption
       .fold(
         Either.left[Error.DecodeFailure, CSV.Field](
-          Error.DecodeFailure.single(s"Index $index not present in row: $row "))
+          Error.DecodeFailure.single(
+            s"Index $index not present in a row of ${row.l.size} field(s)"))
       )(Either.right[Error.DecodeFailure, CSV.Field])
   }
 
