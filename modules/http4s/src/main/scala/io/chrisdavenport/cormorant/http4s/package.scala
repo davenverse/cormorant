@@ -68,6 +68,17 @@ package object http4s {
     )
   }
 
+  /**
+   * Decodes an entire CSV document.
+   *
+   * Parsing a complete document requires holding it, so this accumulates the
+   * whole body in memory before parsing -- as any non-streaming
+   * `EntityDecoder` must, including http4s' own `EntityDecoder[F, String]`.
+   * On a server accepting bodies from untrusted callers, bound the request
+   * size with http4s' `EntityLimiter` middleware, or use
+   * [[streamingLabelledReadDecoder]] / [[streamingReadDecoder]] below, which
+   * process rows incrementally and never hold the full document.
+   */
   implicit def completeEntityDecoder[F[_]: Sync]: EntityDecoder[F, CSV.Complete] =
     new EntityDecoder[F, CSV.Complete] {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
@@ -86,6 +97,12 @@ package object http4s {
         }
     }
 
+  /**
+   * Decodes CSV rows without a header.
+   *
+   * Accumulates the whole body in memory before parsing; see
+   * [[completeEntityDecoder]] for how to bound that.
+   */
   implicit def rowsEntityDecoder[F[_]: Sync]: EntityDecoder[F, CSV.Rows] =
     new EntityDecoder[F, CSV.Rows] {
       def consumes: Set[MediaRange] = Set(MediaType.text.csv)
