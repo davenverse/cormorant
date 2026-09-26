@@ -10,16 +10,16 @@ ThisBuild / developers := List(
 
 val Scala213 = "2.13.18"
 // Scala 2 only: shapeless 2.x and atto have no Scala 3 build.
-ThisBuild / crossScalaVersions := Seq("2.12.20", Scala213)
+ThisBuild / crossScalaVersions := Seq(Scala213)
 ThisBuild / scalaVersion := Scala213
 
-val catsV = "2.7.0"
-val catsEffectV = "3.3.12"
-val fs2V = "3.0.4"
-val http4sV = "0.23.0-RC1"
+val catsV = "2.13.0"
+val catsEffectV = "3.7.1"
+val fs2V = "3.14.0"
+val http4sV = "0.23.37"
 val catsScalacheckV = "0.3.1"
-val munitV = "0.7.29"
-val munitCatsEffectV = "1.0.7"
+val munitV = "1.3.1"
+val munitCatsEffectV = "2.2.1"
 val scalacheckEffectV = "1.0.4"
 
 lazy val root = project
@@ -125,7 +125,7 @@ lazy val commonSettings = Seq(
     "org.typelevel"     %% "cats-effect"             % catsEffectV,
     "org.scalameta"     %% "munit"                   % munitV            % Test,
     "org.scalameta"     %% "munit-scalacheck"        % munitV            % Test,
-    "org.typelevel"     %% "munit-cats-effect-3"     % munitCatsEffectV  % Test,
+    "org.typelevel"     %% "munit-cats-effect"     % munitCatsEffectV  % Test,
     "org.typelevel"     %% "scalacheck-effect-munit" % scalacheckEffectV % Test,
     "io.chrisdavenport" %% "cats-scalacheck"         % catsScalacheckV   % Test
   )
