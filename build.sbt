@@ -20,7 +20,7 @@ val http4sV = "0.23.37"
 val catsScalacheckV = "0.3.1"
 val munitV = "1.3.1"
 val munitCatsEffectV = "2.2.1"
-val scalacheckEffectV = "1.0.4"
+val scalacheckEffectV = "2.1.0"
 
 lazy val root = project
   .in(file("."))
